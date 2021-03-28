@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #define TRACE_MEMORY
-#include <Helper/Profiler.h>
+#include <Profiler/Profiler.h>
 
 static void glfw_error_callback(int error, const char* description)
 {

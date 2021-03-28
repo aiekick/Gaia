@@ -42,7 +42,7 @@
 #include "vk_mem_alloc.h"
 
 #define TRACE_MEMORY
-#include <Helper/Profiler.h>
+#include <Profiler/Profiler.h>
 
 static bool g_GainFocus = false;
 

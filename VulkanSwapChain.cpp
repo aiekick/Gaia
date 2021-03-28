@@ -11,7 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #define TRACE_MEMORY
-#include <Helper/Profiler.h>
+#include <Profiler/Profiler.h>
 
 
 namespace vkApi

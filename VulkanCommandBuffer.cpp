@@ -7,7 +7,7 @@
 #include "VulkanLogger.h"
 
 #define TRACE_MEMORY
-#include <Helper/Profiler.h>
+#include <Profiler/Profiler.h>
 
 namespace vkApi
 {

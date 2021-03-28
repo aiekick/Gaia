@@ -25,10 +25,11 @@
 
 #include "MainFrame.h"
 #include <Res/CustomFont.cpp>
+#include <Res/Roboto_Medium.cpp>
 #include <ctools/FileHelper.h>
 
 #define TRACE_MEMORY
-#include <Helper/Profiler.h>
+#include <Profiler/Profiler.h>
 
 namespace vkApi
 {
@@ -70,9 +71,9 @@ namespace vkApi
 		VulkanImGuiRenderer::Instance()->Init(&init_info, (VkRenderPass)VulkanCore::Instance()->getMainRenderPass());
 
 		// load memory font file
-		ImGui::GetIO().Fonts->AddFontDefault();
+		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_RM, 15.0f);
+		static ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
 		static const ImWchar icons_ranges[] = { ICON_MIN_VKNDP, ICON_MAX_VKNDP, 0 };
-		ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
 		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_VKNDP, 15.0f, &icons_config, icons_ranges);
 
 		VulkanImGuiRenderer::Instance()->CreateFontsTexture();
