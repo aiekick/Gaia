@@ -1,7 +1,7 @@
 #include "ImGuiTexture.h"
-#include <vkFramework/VulkanImGuiRenderer.h>
+#include "VulkanImGuiRenderer.h"
 #include <ctools/cTools.h>
-#include <vkFramework/VulkanLogger.h>
+#include "VulkanLogger.h"
 
 #define TRACE_MEMORY
 #include <vkProfiler/Profiler.h>
