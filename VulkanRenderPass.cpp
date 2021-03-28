@@ -4,7 +4,7 @@
 #include "VulkanRenderPass.h"
 
 #define TRACE_MEMORY
-#include <Profiler/Profiler.h>
+#include <vkProfiler/Profiler.h>
 
 VulkanRenderPass::VulkanRenderPass()
 {

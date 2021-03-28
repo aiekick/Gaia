@@ -7,7 +7,7 @@
 #include "VulkanCommandBuffer.h"
 
 #define TRACE_MEMORY
-#include <Profiler/Profiler.h>
+#include <vkProfiler/Profiler.h>
 
 namespace vkApi
 {

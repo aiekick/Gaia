@@ -4,10 +4,10 @@
 #include "VulkanFrameBuffer.h"
 #include "VulkanCore.h"
 #include <ctools/cTools.h>
-#include <VulkanFramework/VulkanLogger.h>
+#include <vkFramework/VulkanLogger.h>
 
 #define TRACE_MEMORY
-#include <Profiler/Profiler.h>
+#include <vkProfiler/Profiler.h>
 
 namespace vkApi
 {

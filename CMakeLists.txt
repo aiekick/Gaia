@@ -34,6 +34,9 @@ else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11") ## -std=gnu++0x
 endif ()
 
+find_package(Vulkan REQUIRED)
+add_definitions(-DVULKAN)
+
 add_library(vkFramework STATIC ${PROJECT_SRC_RECURSE})
 
 target_link_libraries(vkFramework PRIVATE 
@@ -43,6 +46,7 @@ target_link_libraries(vkFramework PRIVATE
 )
 include_directories(
 	${DEPENDS_PATH}
+	${Vulkan_INCLUDE_DIRS}
 )
 
 set_target_properties(vkFramework PROPERTIES LINKER_LANGUAGE CXX)

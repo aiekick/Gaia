@@ -9,8 +9,8 @@
 #include "VulkanCommandBuffer.h"
 
 #include <imgui/imgui.h>
-#include <ImguiImpl/imgui_impl_glfw.h>
-#include <VulkanFramework/VulkanImGuiRenderer.h>
+#include <imgui/backends/imgui_impl_glfw.h>
+#include "VulkanImGuiRenderer.h"
 #include <stdio.h>          // printf, fprintf
 #include <stdlib.h>         // abort
 
@@ -23,13 +23,12 @@
 
 #include <GLFW/glfw3.h>
 
-#include "MainFrame.h"
-#include <Res/CustomFont.cpp>
-#include <Res/Roboto_Medium.cpp>
+#include <FontIcons/CustomFont.cpp>
+#include <FontIcons/Roboto_Medium.cpp>
 #include <ctools/FileHelper.h>
 
 #define TRACE_MEMORY
-#include <Profiler/Profiler.h>
+#include <vkProfiler/Profiler.h>
 
 namespace vkApi
 {
@@ -73,8 +72,8 @@ namespace vkApi
 		// load memory font file
 		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_RM, 15.0f);
 		static ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-		static const ImWchar icons_ranges[] = { ICON_MIN_VKNDP, ICON_MAX_VKNDP, 0 };
-		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_VKNDP, 15.0f, &icons_config, icons_ranges);
+		static const ImWchar icons_ranges[] = { ICON_MIN_NDP, ICON_MAX_NDP, 0 };
+		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_NDP, 15.0f, &icons_config, icons_ranges);
 
 		VulkanImGuiRenderer::Instance()->CreateFontsTexture();
 	}

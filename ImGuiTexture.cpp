@@ -6,8 +6,7 @@
 ////#include <vkFramework/VulkanImGuiRenderer.h>
 #endif
 
-#define TRACE_MEMORY
-#include <cprofiler/TracyProfiler.h>
+#include <vkProfiler/Profiler.h>
 
 ImGuiTexture::~ImGuiTexture()
 {

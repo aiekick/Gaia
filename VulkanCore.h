@@ -18,7 +18,7 @@
 #include <list>
 #include <array>
 
-#include <Profiler/Profiler.h> // for TracyVkCtx
+#include <vkProfiler/Profiler.h> // for TracyVkCtx
 
 namespace vkApi
 {

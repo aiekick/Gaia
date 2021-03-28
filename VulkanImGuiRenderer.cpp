@@ -6,9 +6,9 @@
 
 #include <ctools/cTools.h>
 
-#include <VulkanFramework/VulkanCommandBuffer.h>
-#include <VulkanFramework/VulkanCore.h>
-#include <VulkanFramework/VulkanLogger.h>
+#include <vkFramework/VulkanCommandBuffer.h>
+#include <vkFramework/VulkanCore.h>
+#include <vkFramework/VulkanLogger.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// CONTENT of ImGui_impl_Vulkan.cpp ////////////////////////////////////////////////////////////////////
