@@ -10,7 +10,7 @@
 
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
-#include "VulkanImGuiRenderer.h"
+#include <vkFramework/VulkanImGuiRenderer.h>
 #include <stdio.h>          // printf, fprintf
 #include <stdlib.h>         // abort
 

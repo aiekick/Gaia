@@ -1,11 +1,9 @@
 #include "ImGuiTexture.h"
+#include <vkFramework/VulkanImGuiRenderer.h>
 #include <ctools/cTools.h>
-#include <ctools/Logger.h>
+#include <vkFramework/VulkanLogger.h>
 
-#ifdef VULKAN
-////#include <vkFramework/VulkanImGuiRenderer.h>
-#endif
-
+#define TRACE_MEMORY
 #include <vkProfiler/Profiler.h>
 
 ImGuiTexture::~ImGuiTexture()
@@ -13,16 +11,6 @@ ImGuiTexture::~ImGuiTexture()
 	ZoneScoped;
 }
 
-ImTextureID ImGuiTexture::GetImTextureID()
-{
-#ifdef VULKAN
-	return (ImTextureID)&descriptor;
-#else
-	return (ImTextureID)(size_t)textureID;
-#endif
-}
-
-#ifdef VULKAN
 void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, float vRatio)
 {
 	ZoneScoped;
@@ -32,7 +20,7 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, 
 		if (IS_FLOAT_DIFFERENT(vRatio, 0.0f))
 			ratio = vRatio;
 
-		/*if (firstLoad)
+		if (firstLoad)
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
 				vDescriptorImageInfo->sampler,
@@ -48,10 +36,10 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, 
 				vDescriptorImageInfo->sampler,
 				vDescriptorImageInfo->imageView,
 				(VkImageLayout)vDescriptorImageInfo->imageLayout,
-				(VkDescriptorSet*)&descriptor);
+				&descriptor);
 		}
 
-		canDisplayPreview = true;*/
+		canDisplayPreview = true;
 	}
 	else
 	{
@@ -65,7 +53,7 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment *vVulkanFram
 
 	if (vVulkanFrameBufferAttachment)
 	{
-		/*ratio = (float)vVulkanFrameBufferAttachment->width / (float)vVulkanFrameBufferAttachment->height;
+		ratio = (float)vVulkanFrameBufferAttachment->width / (float)vVulkanFrameBufferAttachment->height;
 
 		if (firstLoad)
 		{
@@ -83,10 +71,10 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment *vVulkanFram
 				vVulkanFrameBufferAttachment->attachmentSampler,
 				vVulkanFrameBufferAttachment->attachmentView,
 				(VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout,
-				(VkDescriptorSet*)&descriptor);
+				&descriptor);
 		}
 
-		canDisplayPreview = true;*/
+		canDisplayPreview = true;
 	}
 	else
 	{
@@ -101,7 +89,7 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget *vVulkanCompute
 	if (vVulkanComputeImageTarget && 
 		vVulkanComputeImageTarget->height > 0)
 	{
-		/*ratio = (float)vVulkanComputeImageTarget->width / (float)vVulkanComputeImageTarget->height;
+		ratio = (float)vVulkanComputeImageTarget->width / (float)vVulkanComputeImageTarget->height;
 
 		if (firstLoad)
 		{
@@ -119,26 +107,23 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget *vVulkanCompute
 				vVulkanComputeImageTarget->targetDescriptorInfo.sampler,
 				vVulkanComputeImageTarget->targetDescriptorInfo.imageView,
 				(VkImageLayout)vVulkanComputeImageTarget->targetDescriptorInfo.imageLayout,
-				(VkDescriptorSet*)&descriptor);
+				&descriptor);
 		}
 
-		canDisplayPreview = true;*/
+		canDisplayPreview = true;
 	}
 	else
 	{
 		ClearDescriptor();
 	}
 }
-#endif
 
 void ImGuiTexture::ClearDescriptor()
 {
 	ZoneScoped;
 
 	firstLoad = true;
-#ifdef VULKAN
 	descriptor = vk::DescriptorSet{};
-#endif
 	canDisplayPreview = false;
 
 	LogVarDebug("imGui Descriptor Cleared");
@@ -150,14 +135,12 @@ void ImGuiTexture::DestroyDescriptor()
 
 	if (!destroyed)
 	{
-#ifdef VULKAN
-		/*if (VulkanImGuiRenderer::Instance()->DestroyImGuiTexture(descriptor))
+		if (VulkanImGuiRenderer::Instance()->DestroyImGuiTexture(&descriptor))
 		{
 			destroyed = true;
 
 			LogVarDebug("imGui Descriptor Destroyed");
-		}*/
-#endif
+		}
 	}
 	else
 	{
