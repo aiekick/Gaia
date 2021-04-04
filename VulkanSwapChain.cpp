@@ -4,7 +4,7 @@
 #include "VulkanSwapChain.h"
 #include "VulkanWindow.h"
 #include "VulkanCore.h"
-#include "VulkanLogger.h"
+#include <ctools/Logger.h>
 #include "VulkanSubmitter.h"
 
 #define GLFW_INCLUDE_VULKAN

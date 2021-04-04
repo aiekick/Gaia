@@ -1,6 +1,6 @@
 #include "VulkanDevice.h"
 #include "VulkanWindow.h"
-#include "VulkanLogger.h"
+#include <ctools/Logger.h>
 
 #define TRACE_MEMORY
 #include <vkProfiler/Profiler.h>

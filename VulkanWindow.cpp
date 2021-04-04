@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include "VulkanWindow.h"
-#include "VulkanLogger.h"
+#include <ctools/Logger.h>
 #include <GLFW/glfw3.h>
 
 #define TRACE_MEMORY

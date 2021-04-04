@@ -3,7 +3,7 @@
 
 #include "VulkanBuffer.h"
 #include "VulkanCore.h"
-#include "VulkanLogger.h"
+#include <ctools/Logger.h>
 #include "VulkanCommandBuffer.h"
 
 #define TRACE_MEMORY

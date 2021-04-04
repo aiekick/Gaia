@@ -11,7 +11,7 @@
 #include <glslang/Include/ShHandle.h>
 #include <glslang/OSDependent/osinclude.h>
 
-#include "VulkanLogger.h"
+#include <ctools/Logger.h>
 #include "IRUniformsLocator.h"
 
 #include <cstdio>			// printf, fprintf

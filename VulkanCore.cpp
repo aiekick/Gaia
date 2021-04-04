@@ -3,7 +3,7 @@
 
 #include "VulkanCore.h"
 
-#include "VulkanLogger.h"
+#include <ctools/Logger.h>
 #include "VulkanSubmitter.h"
 
 //#define RECORD_VM_ALLOCATION

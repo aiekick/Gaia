@@ -4,7 +4,7 @@
 #include "VulkanFrameBuffer.h"
 #include "VulkanCore.h"
 #include <ctools/cTools.h>
-#include <vkFramework/VulkanLogger.h>
+#include <ctools/Logger.h>
 
 #define TRACE_MEMORY
 #include <vkProfiler/Profiler.h>

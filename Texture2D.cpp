@@ -3,7 +3,7 @@
 
 #include "Texture2D.h"
 #include <lodepng/lodepng.h>
-#include <vkFramework/VulkanLogger.h>
+#include <ctools/Logger.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
