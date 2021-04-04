@@ -30,6 +30,7 @@ if(MSVC)
 	add_definitions(-DMSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
+	add_definitions(-DNOMINMAX) ## for avoid issue regarding std::max and std::min
 else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11") ## -std=gnu++0x
 endif ()

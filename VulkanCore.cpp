@@ -94,6 +94,7 @@ namespace vkApi
 		setupComputeCommandsAndSynchronization();
 		setupDescriptorPool();
 
+#ifdef TRACY_ENABLE
 #ifdef ENABLE_CALIBRATED_CONTEXT
 		m_TracyContext = TracyVkContextCalibrated(
 			VulkanCore::Instance()->getPhysicalDevice(),
@@ -111,6 +112,7 @@ namespace vkApi
 #endif
 
 		tracy::SetThreadName("Main");
+#endif
 	}
 
 	void VulkanCore::Unit()
