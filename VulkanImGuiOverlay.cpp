@@ -24,6 +24,7 @@
 #include <GLFW/glfw3.h>
 
 #include <FontIcons/CustomFont.cpp>
+#include <FontIcons/CustomFont2.cpp>
 #include <FontIcons/Roboto_Medium.cpp>
 #include <ctools/FileHelper.h>
 
@@ -72,8 +73,10 @@ namespace vkApi
 		// load memory font file
 		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_RM, 15.0f);
 		static ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-		static const ImWchar icons_ranges[] = { ICON_MIN_NDP, ICON_MAX_NDP, 0 };
-		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_NDP, 15.0f, &icons_config, icons_ranges);
+		static ImWchar icons_ranges_NDP[] = { ICON_MIN_NDP, ICON_MAX_NDP, 0 };
+		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_NDP, 15.0f, &icons_config, icons_ranges_NDP);
+		static ImWchar icons_ranges_NDP2[] = { ICON_MIN_NDP2, ICON_MAX_NDP2, 0 };
+		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_NDP2, 15.0f, &icons_config, icons_ranges_NDP2);
 
 		VulkanImGuiRenderer::Instance()->CreateFontsTexture();
 	}
