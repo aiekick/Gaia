@@ -33,7 +33,7 @@ public:
 		ShaderMessagingFunction vMessagingFunction,
 		std::string *vShaderCode = 0, 
 		std::unordered_map<std::string, bool> *vUsedUniforms = 0);
-	void VulkanShader::ParseGLSLString(
+	void ParseGLSLString(
 		const std::string& vCode,
 		std::string vShaderSuffix,
 		const std::string& vOriginalFileName,

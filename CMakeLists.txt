@@ -44,6 +44,7 @@ target_link_libraries(vkFramework PRIVATE
 	${Vulkan_LIBRARIES}
 	${UTYPES_LIBRARIES}
 	${TRACY_LIBRARIES} ## profiler
+	${LODEPNG_LIBRARIES}
 )
 include_directories(
 	${DEPENDS_PATH}
