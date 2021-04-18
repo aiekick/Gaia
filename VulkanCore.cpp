@@ -6,7 +6,7 @@
 #include <ctools/Logger.h>
 #include "VulkanSubmitter.h"
 
-//#define RECORD_VM_ALLOCATION
+#define RECORD_VM_ALLOCATION
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
