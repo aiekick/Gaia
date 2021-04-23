@@ -452,7 +452,7 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t width = 0;
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
-	uint8 *bmBytesRGBA = nullptr;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t *bmBytesRGBA = nullptr;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	uint32_t bytesPerPixel = 4;
 
@@ -461,7 +461,7 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
 	// Sub Sampling
 	if (ss > 0 && bufSize > 0 && bmBytesRGBA)
 	{
-		auto tempdata = new uint8[bufSize];
+		auto tempdata = new uint8_t[bufSize];
 		memcpy(tempdata, bmBytesRGBA, bufSize);
 
 		uint32_t indexMaxSize = width * height;
@@ -487,10 +487,10 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
 				}
 			}
 
-			bmBytesRGBA[index * bytesPerPixel + 0] = (uint8)((float)r / (float)count);
-			bmBytesRGBA[index * bytesPerPixel + 1] = (uint8)((float)g / (float)count);
-			bmBytesRGBA[index * bytesPerPixel + 2] = (uint8)((float)b / (float)count);
-			bmBytesRGBA[index * bytesPerPixel + 3] = (uint8)((float)a / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 0] = (uint8_t)((float)r / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 1] = (uint8_t)((float)g / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 2] = (uint8_t)((float)b / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 3] = (uint8_t)((float)a / (float)count);
 		}
 
 		SAFE_DELETE_ARRAY(tempdata);
@@ -503,7 +503,7 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
 		int newWidth = vNewSize.x;
 		int newHeight = vNewSize.y;
 		unsigned int newBufSize = newWidth * newHeight * bytesPerPixel;
-		auto resizedData = new uint8[newBufSize];
+		auto resizedData = new uint8_t[newBufSize];
 
 		int resizeRes = stbir_resize_uint8(bmBytesRGBA, width, height, width * bytesPerPixel,
 			resizedData, newWidth, newHeight, newWidth * bytesPerPixel,
@@ -555,7 +555,7 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t width = 0;
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
-	uint8 *bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t *bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	uint32_t bytesPerPixel = 3;
 
@@ -564,7 +564,7 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 	// Sub Sampling
 	if (ss > 0)
 	{
-		uint8* tempdata = new uint8[bufSize];
+		uint8_t* tempdata = new uint8_t[bufSize];
 		memcpy(tempdata, bmBytesRGB, bufSize);
 
 		uint32_t indexMaxSize = width * height;
@@ -589,9 +589,9 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 				}
 			}
 
-			bmBytesRGB[index * bytesPerPixel + 0] = (uint8)((float)r / (float)count);
-			bmBytesRGB[index * bytesPerPixel + 1] = (uint8)((float)g / (float)count);
-			bmBytesRGB[index * bytesPerPixel + 2] = (uint8)((float)b / (float)count);
+			bmBytesRGB[index * bytesPerPixel + 0] = (uint8_t)((float)r / (float)count);
+			bmBytesRGB[index * bytesPerPixel + 1] = (uint8_t)((float)g / (float)count);
+			bmBytesRGB[index * bytesPerPixel + 2] = (uint8_t)((float)b / (float)count);
 		}
 
 		SAFE_DELETE_ARRAY(tempdata);
@@ -604,7 +604,7 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 		uint32_t newWidth = vNewSize.x;
 		uint32_t newHeight = vNewSize.y;
 		uint32_t newBufSize = newWidth * newHeight * bytesPerPixel;
-		uint8* resizedData = new uint8[newBufSize];
+		uint8_t* resizedData = new uint8_t[newBufSize];
 
 		int resizeRes = stbir_resize_uint8(bmBytesRGB, width, height, width * bytesPerPixel,
 			resizedData, newWidth, newHeight, newWidth * bytesPerPixel,
@@ -655,14 +655,14 @@ bool Texture2D::SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
 	uint32_t bytesPerPixel = 3;
-	uint8 *bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t *bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	int ss = vSubSamplesCount;
 
 	// Sub Sampling
 	if (ss > 0)
 	{
-		uint8* tempdata = new uint8[bufSize];
+		uint8_t* tempdata = new uint8_t[bufSize];
 		memcpy(tempdata, bmBytesRGB, bufSize);
 
 		unsigned indexMaxSize = width * height;
@@ -687,9 +687,9 @@ bool Texture2D::SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, 
 				}
 			}
 
-			bmBytesRGB[index * bytesPerPixel + 0] = (uint8)((float)r / (float)count);
-			bmBytesRGB[index * bytesPerPixel + 1] = (uint8)((float)g / (float)count);
-			bmBytesRGB[index * bytesPerPixel + 2] = (uint8)((float)b / (float)count);
+			bmBytesRGB[index * bytesPerPixel + 0] = (uint8_t)((float)r / (float)count);
+			bmBytesRGB[index * bytesPerPixel + 1] = (uint8_t)((float)g / (float)count);
+			bmBytesRGB[index * bytesPerPixel + 2] = (uint8_t)((float)b / (float)count);
 		}
 
 		SAFE_DELETE_ARRAY(tempdata);
@@ -702,7 +702,7 @@ bool Texture2D::SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, 
 		uint32_t newWidth = vNewSize.x;
 		uint32_t newHeight = vNewSize.y;
 		uint32_t newBufSize = newWidth * newHeight * bytesPerPixel;
-		uint8* resizedData = new uint8[newBufSize];
+		uint8_t* resizedData = new uint8_t[newBufSize];
 
 		int resizeRes = stbir_resize_uint8(bmBytesRGB, width, height, width * bytesPerPixel,
 			resizedData, newWidth, newHeight, newWidth * bytesPerPixel,
@@ -866,7 +866,7 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t width = 0;
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
-	uint8 *bmBytesRGBA = 0;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t *bmBytesRGBA = 0;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	uint32_t bytesPerPixel = 4;
 
@@ -875,7 +875,7 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 	// Sub Sampling
 	if (ss > 0)
 	{
-		uint8* tempdata = new uint8[bufSize];
+		uint8_t* tempdata = new uint8_t[bufSize];
 		memcpy(tempdata, bmBytesRGBA, bufSize);
 
 		unsigned indexMaxSize = width * height;
@@ -901,10 +901,10 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 				}
 			}
 
-			bmBytesRGBA[index * bytesPerPixel + 0] = (uint8)((float)r / (float)count);
-			bmBytesRGBA[index * bytesPerPixel + 1] = (uint8)((float)g / (float)count);
-			bmBytesRGBA[index * bytesPerPixel + 2] = (uint8)((float)b / (float)count);
-			bmBytesRGBA[index * bytesPerPixel + 3] = (uint8)((float)a / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 0] = (uint8_t)((float)r / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 1] = (uint8_t)((float)g / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 2] = (uint8_t)((float)b / (float)count);
+			bmBytesRGBA[index * bytesPerPixel + 3] = (uint8_t)((float)a / (float)count);
 		}
 
 		SAFE_DELETE_ARRAY(tempdata);
@@ -917,7 +917,7 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 		uint32_t newWidth = vNewSize.x;
 		uint32_t newHeight = vNewSize.y;
 		uint32_t newBufSize = newWidth * newHeight * bytesPerPixel;
-		uint8* resizedData = new uint8[newBufSize];
+		uint8_t* resizedData = new uint8_t[newBufSize];
 
 		int resizeRes = stbir_resize_uint8(bmBytesRGBA, width, height, width * bytesPerPixel,
 			resizedData, newWidth, newHeight, newWidth * bytesPerPixel,
