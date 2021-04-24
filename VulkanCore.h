@@ -27,8 +27,8 @@ namespace vkApi
 	protected:
 		VulkanSwapChain m_VulkanSwapChain;
 		VulkanDevice m_VulkanDevice;
-		VmaAllocator m_Allocator;
-		TracyVkCtx m_TracyContext = 0;
+		VmaAllocator m_Allocator = nullptr;
+		TracyVkCtx m_TracyContext = nullptr;
 		
 	protected:
 		std::vector<vk::CommandBuffer> m_CommandBuffers;

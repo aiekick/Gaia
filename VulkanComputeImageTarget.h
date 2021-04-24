@@ -19,7 +19,7 @@ namespace vkApi
 		vk::Format format = vk::Format::eR32G32B32A32Sfloat;
 		float ratio = 0.0f;
 		bool neverCleared = true;
-		vk::SampleCountFlagBits sampleCount;
+		vk::SampleCountFlagBits sampleCount = vk::SampleCountFlagBits::e1;
 
 	public:
 		VulkanComputeImageTarget() = default;

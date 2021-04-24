@@ -160,7 +160,7 @@ struct ImGui_ImplVulkanH_Window
 class VulkanImGuiRenderer
 {
 public:
-	ImGui_ImplVulkan_InitInfo m_Info;
+	ImGui_ImplVulkan_InitInfo m_Info = {};
 
 private:
 	VkRenderPass m_RenderPass = VK_NULL_HANDLE;
