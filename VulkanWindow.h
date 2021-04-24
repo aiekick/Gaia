@@ -29,7 +29,7 @@ namespace vkApi
 		std::vector<const char*> d_vkInstanceExtension;
 
 	public: // singleton
-		static VulkanWindow *Instance()
+		static VulkanWindow* Instance()
 		{
 			static VulkanWindow _instance;
 			return &_instance;

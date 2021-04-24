@@ -41,16 +41,16 @@ namespace vkApi
 		void Unit();
 
 		void WaitIdle();
-		
+
 		VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
 
 	private:
 		void CreateVulkanInstance();
 		void DestroyVulkanInstance();
-		
+
 		void CreatePhysicalDevice();
 		void DestroyPhysicalDevice();
-		
+
 		void CreateLogicalDevice();
 		void DestroyLogicalDevice();
 	};

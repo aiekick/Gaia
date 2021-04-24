@@ -17,8 +17,8 @@ namespace vkApi
 	class VulkanBuffer
 	{
 	public:
-		static void copy(vk::Buffer dst, vk::Buffer src, const vk::BufferCopy& region, vk::CommandPool *vCommandPool = 0);
-		static void copy(vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool *vCommandPool = 0);
+		static void copy(vk::Buffer dst, vk::Buffer src, const vk::BufferCopy& region, vk::CommandPool* vCommandPool = 0);
+		static void copy(vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool* vCommandPool = 0);
 		static void upload(VulkanBufferObject& dst_hostVisable, void* src_host, size_t size_bytes, size_t dst_offset = 0);
 
 		static std::shared_ptr<VulkanBufferObject> createSharedBufferObject(const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info);

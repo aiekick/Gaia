@@ -29,7 +29,7 @@ namespace vkApi
 		VulkanDevice m_VulkanDevice;
 		VmaAllocator m_Allocator = nullptr;
 		TracyVkCtx m_TracyContext = nullptr;
-		
+
 	protected:
 		std::vector<vk::CommandBuffer> m_CommandBuffers;
 		std::vector<vk::Semaphore> m_ComputeCompleteSemaphores;
@@ -70,7 +70,7 @@ namespace vkApi
 
 	public:
 		void resize();
-		
+
 	public:// graphic
 		void frameBegin();
 		void beginMainRenderPass();
@@ -92,17 +92,17 @@ namespace vkApi
 
 	protected:
 		void setupMemoryAllocator();
-		
+
 		void setupGraphicCommandsAndSynchronization();
 		void destroyGraphicCommandsAndSynchronization();
-		
+
 		void setupComputeCommandsAndSynchronization();
 		void destroyComputeCommandsAndSynchronization();
-		
+
 		void setupDescriptorPool();
 
 	public: // singleton
-		static VulkanCore *Instance()
+		static VulkanCore* Instance()
 		{
 			static VulkanCore _instance;
 			return &_instance;
@@ -114,7 +114,4 @@ namespace vkApi
 		VulkanCore& operator =(const VulkanCore&) { return *this; }; // Prevent assignment
 		~VulkanCore() {} // Prevent unwanted destruction
 	};
-
-	
 }
-

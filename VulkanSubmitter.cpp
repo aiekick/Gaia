@@ -12,7 +12,7 @@ namespace vkApi
 
 	bool VulkanSubmitter::Submit(
 		vk::QueueFlagBits vQueueType,
-		vk::SubmitInfo vSubmitInfo, 
+		vk::SubmitInfo vSubmitInfo,
 		vk::Fence vWaitFence)
 	{
 		ZoneScoped;

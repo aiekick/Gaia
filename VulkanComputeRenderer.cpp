@@ -11,14 +11,10 @@ namespace vkApi
 	VulkanComputeRenderer::VulkanComputeRenderer()
 	{
 		ZoneScoped;
-
-
 	}
 
 	VulkanComputeRenderer::~VulkanComputeRenderer()
 	{
 		ZoneScoped;
-
-
 	}
 }

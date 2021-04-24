@@ -34,7 +34,7 @@ namespace vkApi
 			width = size.x;
 			height = size.y;
 			format = vFormat;
-			ratio = (float)height / (float)width; 
+			ratio = (float)height / (float)width;
 			sampleCount = vSampleCount;
 
 			attachment = VulkanImage::createColorAttachment2D(width, height, mipLevelCount, format, sampleCount);
@@ -115,9 +115,9 @@ namespace vkApi
 			imViewInfo.components = vk::ComponentMapping();
 			imViewInfo.subresourceRange = vk::ImageSubresourceRange(
 				vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil,
-				0, 
-				1, 
-				0, 
+				0,
+				1,
+				0,
 				1);
 			attachmentView = VulkanCore::Instance()->getDevice().createImageView(imViewInfo);
 
@@ -142,7 +142,7 @@ namespace vkApi
 			attachmentDescriptorInfo.sampler = attachmentSampler;
 			attachmentDescriptorInfo.imageView = attachmentView;
 			attachmentDescriptorInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-			
+
 			attachmentDescription.flags = vk::AttachmentDescriptionFlags();
 			attachmentDescription.format = format;
 			attachmentDescription.samples = sampleCount;

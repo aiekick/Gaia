@@ -29,7 +29,7 @@ namespace vkApi
 			width = size.x;
 			height = size.y;
 			format = vFormat;
-			ratio = (float)height / (float)width; 
+			ratio = (float)height / (float)width;
 			sampleCount = vSampleCount;
 
 			target = VulkanImage::createComputeTarget2D(width, height, mipLevelCount, format, sampleCount);

@@ -99,7 +99,7 @@ namespace vkApi
 		const char* pMessage,
 		void* pUserData)
 	{
-		UNUSED(flags); 
+		UNUSED(flags);
 		UNUSED(object);
 		UNUSED(location);
 		UNUSED(messageCode);
@@ -118,11 +118,11 @@ namespace vkApi
 	{
 		ZoneScoped;
 
-		for (const char* const& w : wanted) 
+		for (const char* const& w : wanted)
 		{
-			for (const auto & i : installed) 
+			for (const auto& i : installed)
 			{
-				if (std::string((const char*)i.extensionName).compare(w) == 0) 
+				if (std::string((const char*)i.extensionName).compare(w) == 0)
 				{
 					out.emplace_back(w);
 					break;
@@ -135,11 +135,11 @@ namespace vkApi
 	{
 		ZoneScoped;
 
-		for (const char* const& w : wanted) 
+		for (const char* const& w : wanted)
 		{
-			for (const auto & i : installed) 
+			for (const auto& i : installed)
 			{
-				if (std::string((const char*)i.layerName).compare(w) == 0) 
+				if (std::string((const char*)i.layerName).compare(w) == 0)
 				{
 					out.emplace_back(w);
 					break;
@@ -266,7 +266,7 @@ namespace vkApi
 		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
 		LogVarDebug("Requesting Vulkan validation layers\t [%u]", layerCount);
-		
+
 		// Check needed validation layers against found layers`
 		for (const char* layerName : validationLayers)
 		{
@@ -307,7 +307,7 @@ namespace vkApi
 		//wantedLayers.emplace_back("VK_LAYER_LUNARG_api_dump");
 		//wantedLayers.emplace_back("VK_LAYER_LUNARG_device_simulation");
 		//wantedLayers.emplace_back("VK_LAYER_LUNARG_screenshot");
-		
+
 		wantedExtensions.emplace_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 		wantedExtensions.emplace_back(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME);
 #endif
@@ -356,13 +356,13 @@ namespace vkApi
 		// Setup the debug report callback
 		VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
 		debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-		debug_report_ci.flags = 
-			  VK_DEBUG_REPORT_ERROR_BIT_EXT
-			| VK_DEBUG_REPORT_WARNING_BIT_EXT 
-			| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT 
+		debug_report_ci.flags =
+			VK_DEBUG_REPORT_ERROR_BIT_EXT
+			| VK_DEBUG_REPORT_WARNING_BIT_EXT
+			| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
 			//| VK_DEBUG_REPORT_DEBUG_BIT_EXT  // affiche les extentions
 			//| VK_DEBUG_REPORT_INFORMATION_BIT_EXT
-		;
+			;
 		debug_report_ci.pfnCallback = debug_report;
 		debug_report_ci.pUserData = NULL;
 
@@ -386,7 +386,7 @@ namespace vkApi
 		ZoneScoped;
 
 #if VULKAN_DEBUG
-		if (m_DebugReport) 
+		if (m_DebugReport)
 			m_Dldy.vkDestroyDebugReportCallbackEXT(m_Instance, m_DebugReport, nullptr);
 #endif
 		m_Instance.destroy();
@@ -447,7 +447,7 @@ namespace vkApi
 
 		// Logical VulkanCore
 		std::vector<vk::ExtensionProperties> installedDeviceExtensions = m_PhysDevice.enumerateDeviceExtensionProperties();
-		std::vector<const char*> wantedDeviceExtensions = {	VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+		std::vector<const char*> wantedDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 		std::vector<const char*> deviceExtensions = {};
 		findBestExtensions(installedDeviceExtensions, wantedDeviceExtensions, deviceExtensions);
 
@@ -469,12 +469,12 @@ namespace vkApi
 		m_Queues[vk::QueueFlagBits::eGraphics].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
 		m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(
 			vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
-	
+
 		familyQueueIndex = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
 		m_Queues[vk::QueueFlagBits::eCompute].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
 		m_Queues[vk::QueueFlagBits::eCompute].cmdPools = m_LogDevice.createCommandPool(
 			vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
-		
+
 		familyQueueIndex = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
 		m_Queues[vk::QueueFlagBits::eTransfer].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
 		m_Queues[vk::QueueFlagBits::eTransfer].cmdPools = m_LogDevice.createCommandPool(
@@ -485,7 +485,7 @@ namespace vkApi
 	{
 		ZoneScoped;
 
-		for (auto& elem : m_Queues) { m_LogDevice.destroyCommandPool(elem.second.cmdPools);	}
+		for (auto& elem : m_Queues) { m_LogDevice.destroyCommandPool(elem.second.cmdPools); }
 		m_LogDevice.destroy();
 	}
 }

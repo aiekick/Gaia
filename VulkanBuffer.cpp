@@ -11,7 +11,7 @@
 
 namespace vkApi
 {
-	void VulkanBuffer::copy(vk::Buffer dst, vk::Buffer src, const vk::BufferCopy& region, vk::CommandPool *vCommandPool)
+	void VulkanBuffer::copy(vk::Buffer dst, vk::Buffer src, const vk::BufferCopy& region, vk::CommandPool* vCommandPool)
 	{
 		ZoneScoped;
 
@@ -35,7 +35,7 @@ namespace vkApi
 		vmaUnmapMemory(VulkanCore::Instance()->getMemAllocator(), dst_hostVisable.alloc_meta);
 	}
 
-	void VulkanBuffer::copy(vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool *vCommandPool)
+	void VulkanBuffer::copy(vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool* vCommandPool)
 	{
 		ZoneScoped;
 
@@ -48,12 +48,12 @@ namespace vkApi
 	{
 		ZoneScoped;
 
-		auto data = std::shared_ptr<VulkanBufferObject>(new VulkanBufferObject, [](VulkanBufferObject* obj) 
-		{
-			vmaDestroyBuffer(VulkanCore::Instance()->getMemAllocator(), (VkBuffer)obj->buffer, obj->alloc_meta); 
-		});
+		auto data = std::shared_ptr<VulkanBufferObject>(new VulkanBufferObject, [](VulkanBufferObject* obj)
+			{
+				vmaDestroyBuffer(VulkanCore::Instance()->getMemAllocator(), (VkBuffer)obj->buffer, obj->alloc_meta);
+			});
 		data->alloc_usage = alloc_info.usage;
-		VulkanCore::check_error(vmaCreateBuffer(VulkanCore::Instance()->getMemAllocator(), (VkBufferCreateInfo*)& bufferinfo, &alloc_info, (VkBuffer*)& data->buffer, &data->alloc_meta, nullptr));
+		VulkanCore::check_error(vmaCreateBuffer(VulkanCore::Instance()->getMemAllocator(), (VkBufferCreateInfo*)&bufferinfo, &alloc_info, (VkBuffer*)&data->buffer, &data->alloc_meta, nullptr));
 		return data;
 	}
 
@@ -134,7 +134,7 @@ namespace vkApi
 
 			return vbo;
 		}
-		
+
 		return 0;
 	}
 }

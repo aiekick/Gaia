@@ -9,5 +9,4 @@ public:
 	~VulkanRenderPass();
 
 public:
-
 };

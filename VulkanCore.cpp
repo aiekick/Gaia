@@ -195,16 +195,16 @@ namespace vkApi
 		m_VulkanDevice.WaitIdle();
 
 		destroyGraphicCommandsAndSynchronization();
-		
+
 		m_VulkanSwapChain.Reload();
-		
+
 		setupGraphicCommandsAndSynchronization();
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//// GRAPHIC //////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	void VulkanCore::frameBegin()
 	{
 		ZoneScoped;
@@ -244,7 +244,7 @@ namespace vkApi
 		ZoneScoped;
 
 		m_CommandBuffers[m_VulkanSwapChain.m_FrameIndex].end();
-		
+
 		vk::SubmitInfo submitInfo;
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 		submitInfo
@@ -293,7 +293,7 @@ namespace vkApi
 
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -357,7 +357,6 @@ namespace vkApi
 
 		m_VulkanDevice.m_LogDevice.waitForFences(1, &m_VulkanSwapChain.m_WaitFences[m_VulkanSwapChain.m_FrameIndex], VK_TRUE, UINT64_MAX);
 		m_VulkanSwapChain.Present();
-		
 	}
 
 	uint32_t VulkanCore::getSwapchainFrameBuffers() const
@@ -440,7 +439,7 @@ namespace vkApi
 
 		m_VulkanDevice.m_LogDevice.freeCommandBuffers(m_VulkanDevice.getQueue(vk::QueueFlagBits::eGraphics).cmdPools, m_CommandBuffers);
 
-		for (auto & queue : m_VulkanDevice.m_Queues)
+		for (auto& queue : m_VulkanDevice.m_Queues)
 		{
 			m_VulkanDevice.m_LogDevice.resetCommandPool(queue.second.cmdPools, vk::CommandPoolResetFlagBits::eReleaseResources);
 		}
@@ -453,7 +452,7 @@ namespace vkApi
 		auto queue = m_VulkanDevice.getQueue(vk::QueueFlagBits::eCompute);
 		m_VulkanDevice.m_LogDevice.freeCommandBuffers(queue.cmdPools, m_ComputeCommandBuffers);
 		m_VulkanDevice.m_LogDevice.resetCommandPool(queue.cmdPools, vk::CommandPoolResetFlagBits::eReleaseResources);
-	
+
 		m_VulkanDevice.m_LogDevice.destroySemaphore(m_ComputeCompleteSemaphores[0]);
 		m_ComputeCompleteSemaphores.clear();
 		m_VulkanDevice.m_LogDevice.destroyFence(m_ComputeWaitFences[0]);

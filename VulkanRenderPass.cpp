@@ -9,13 +9,9 @@
 VulkanRenderPass::VulkanRenderPass()
 {
 	ZoneScoped;
-
-
 }
 
 VulkanRenderPass::~VulkanRenderPass()
 {
 	ZoneScoped;
-
-
 }

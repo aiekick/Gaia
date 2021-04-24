@@ -16,7 +16,7 @@ static void glfw_error_callback(int error, const char* description)
 	LogVar("Glfw Error %d: %s\n", error, description);
 }
 
-static std::vector<const char*> getRequiredExtensions() 
+static std::vector<const char*> getRequiredExtensions()
 {
 	ZoneScoped;
 
@@ -26,7 +26,7 @@ static std::vector<const char*> getRequiredExtensions()
 
 	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	//if (enableValidationLayers) 
+	//if (enableValidationLayers)
 	{
 		extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}

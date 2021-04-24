@@ -32,7 +32,7 @@ namespace vkApi
 		bool Init(
 			ct::uvec2 vSize,
 			uint32_t vCount,
-			vk::RenderPass &vRenderPass,
+			vk::RenderPass& vRenderPass,
 			bool vCreateRenderPass,
 			bool vUseDepth = false,
 			bool vNeedToClear = false,

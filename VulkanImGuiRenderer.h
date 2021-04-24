@@ -174,10 +174,10 @@ public:
 	void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
 	bool CreateFontsTexture();
 	vk::DescriptorSet CreateImGuiTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout, vk::DescriptorSet* vExistingDescriptorSet = nullptr);
-	bool DestroyImGuiTexture(vk::DescriptorSet*vVkDescriptorSet);
+	bool DestroyImGuiTexture(vk::DescriptorSet* vVkDescriptorSet);
 
 public: // singleton
-	static VulkanImGuiRenderer *Instance()
+	static VulkanImGuiRenderer* Instance()
 	{
 		static VulkanImGuiRenderer _instance;
 		return &_instance;
@@ -189,5 +189,3 @@ protected:
 	VulkanImGuiRenderer& operator =(const VulkanImGuiRenderer&) { return *this; }; // Prevent assignment
 	~VulkanImGuiRenderer() {} // Prevent unwanted destruction
 };
-
-

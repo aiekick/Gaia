@@ -14,6 +14,5 @@ namespace vkApi
 		~VulkanComputeRenderer();
 
 	public:
-
 	};
 }

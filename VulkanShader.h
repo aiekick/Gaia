@@ -22,17 +22,17 @@ public:
 
 public:
 	const std::vector<unsigned int> CompileGLSLFile(
-		const std::string& filename, 
+		const std::string& filename,
 		ShaderMessagingFunction vMessagingFunction,
-		std::string *vShaderCode = 0,
-		std::unordered_map<std::string, bool> *vUsedUniforms = 0);
+		std::string* vShaderCode = 0,
+		std::unordered_map<std::string, bool>* vUsedUniforms = 0);
 	const std::vector<unsigned int> CompileGLSLString(
-		const std::string& vCode, 
-		std::string vShaderSuffix, 
+		const std::string& vCode,
+		std::string vShaderSuffix,
 		const std::string& vOriginalFileName,
 		ShaderMessagingFunction vMessagingFunction,
-		std::string *vShaderCode = 0, 
-		std::unordered_map<std::string, bool> *vUsedUniforms = 0);
+		std::string* vShaderCode = 0,
+		std::unordered_map<std::string, bool>* vUsedUniforms = 0);
 	void ParseGLSLString(
 		const std::string& vCode,
 		std::string vShaderSuffix,
@@ -49,7 +49,7 @@ public: // errors
 	std::unordered_map<EShLanguage, std::vector<std::string>> m_Warnings;
 
 public: // singleton
-	static VulkanShader *Instance()
+	static VulkanShader* Instance()
 	{
 		static VulkanShader _instance;
 		return &_instance;

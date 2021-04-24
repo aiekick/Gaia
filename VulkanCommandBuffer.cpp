@@ -16,7 +16,7 @@ namespace vkApi
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	std::mutex VulkanCommandBuffer::VulkanCommandBuffer_Mutex;
 
-	vk::CommandBuffer VulkanCommandBuffer::beginSingleTimeCommands(bool begin, vk::CommandPool *vCommandPool)
+	vk::CommandBuffer VulkanCommandBuffer::beginSingleTimeCommands(bool begin, vk::CommandPool* vCommandPool)
 	{
 		ZoneScoped;
 
@@ -40,7 +40,7 @@ namespace vkApi
 		return cmdBuffer;
 	}
 
-	void VulkanCommandBuffer::flushSingleTimeCommands(vk::CommandBuffer& commandBuffer, bool end, vk::CommandPool *vCommandPool)
+	void VulkanCommandBuffer::flushSingleTimeCommands(vk::CommandBuffer& commandBuffer, bool end, vk::CommandPool* vCommandPool)
 	{
 		ZoneScoped;
 
@@ -57,7 +57,7 @@ namespace vkApi
 
 		auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &commandBuffer, 0, nullptr);
 		VulkanSubmitter::Submit(vk::QueueFlagBits::eGraphics, submitInfos, fence);
-		
+
 		// Wait for the fence to signal that command buffer has finished executing
 		logDevice.waitForFences(1, &fence, VK_TRUE, UINT_MAX);
 		logDevice.destroyFence(fence);
@@ -67,7 +67,7 @@ namespace vkApi
 			logDevice.freeCommandBuffers(queue.cmdPools, 1, &commandBuffer);
 	}
 
-	VulkanCommandBuffer VulkanCommandBuffer::CreateCommandBuffer(vk::QueueFlagBits vQueueType, vk::CommandPool *vCommandPool)
+	VulkanCommandBuffer VulkanCommandBuffer::CreateCommandBuffer(vk::QueueFlagBits vQueueType, vk::CommandPool* vCommandPool)
 	{
 		ZoneScoped;
 
@@ -77,7 +77,7 @@ namespace vkApi
 
 		std::unique_lock<std::mutex> lck(VulkanCommandBuffer::VulkanCommandBuffer_Mutex, std::defer_lock);
 		lck.lock();
-		
+
 		if (vQueueType == vk::QueueFlagBits::eGraphics)
 		{
 			const auto graphicQueue = VulkanCore::Instance()->getQueue(vk::QueueFlagBits::eGraphics);
@@ -97,12 +97,12 @@ namespace vkApi
 
 		commandBuffer.cmd = device.allocateCommandBuffers(vk::CommandBufferAllocateInfo(commandBuffer.commandpool, vk::CommandBufferLevel::ePrimary, 1))[0];
 		commandBuffer.fence = device.createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
-		
+
 		commandBuffer.type = vQueueType;
 		commandBuffer.device = device;
 
 		lck.unlock();
-		
+
 		return commandBuffer;
 	}
 

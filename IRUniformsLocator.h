@@ -21,10 +21,8 @@ public:
 
 	virtual bool visitBinary(glslang::TVisit, glslang::TIntermBinary* vNode);
 	virtual void visitSymbol(glslang::TIntermSymbol* vNode);
-	
+
 protected:
 	TIRUniformsLocator(TIRUniformsLocator&);
 	TIRUniformsLocator& operator=(TIRUniformsLocator&);
 };
-
-

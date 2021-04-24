@@ -20,7 +20,7 @@ bool TIRUniformsLocator::visitBinary(glslang::TVisit /* visit */, glslang::TInte
 	if (vNode->getOp() == EOpIndexDirectStruct)
 	{
 		bool reference = vNode->getLeft()->getType().isReference();
-		const TTypeList *members = reference ? vNode->getLeft()->getType().getReferentType()->getStruct() : vNode->getLeft()->getType().getStruct();
+		const TTypeList* members = reference ? vNode->getLeft()->getType().getReferentType()->getStruct() : vNode->getLeft()->getType().getStruct();
 		auto tName = (*members)[vNode->getRight()->getAsConstantUnion()->getConstArray()[0].getIConst()].type->getFieldName();
 		std::string name = tName.c_str(); // corresponding structure name
 

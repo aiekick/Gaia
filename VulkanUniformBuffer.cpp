@@ -11,14 +11,10 @@ namespace vkApi
 	VulkanUniformBuffer::VulkanUniformBuffer()
 	{
 		ZoneScoped;
-
-
 	}
 
 	VulkanUniformBuffer::~VulkanUniformBuffer()
 	{
 		ZoneScoped;
-
-
 	}
 }

@@ -7,7 +7,6 @@
 #include <thread>         // std::thread
 #include <mutex>          // std::mutex, std::unique_lock, std::defer_lock
 
-
 namespace vkApi
 {
 	class VulkanSubmitter

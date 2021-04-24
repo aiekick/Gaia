@@ -10,9 +10,9 @@ namespace vkApi
 	class VulkanCommandBuffer
 	{
 	public:
-		static vk::CommandBuffer beginSingleTimeCommands(bool begin, vk::CommandPool *vCommandPool = 0);
-		static void flushSingleTimeCommands(vk::CommandBuffer& cmd, bool end, vk::CommandPool *vCommandPool = 0);
-		static VulkanCommandBuffer CreateCommandBuffer(vk::QueueFlagBits vQueueType, vk::CommandPool *vCommandPool = 0);
+		static vk::CommandBuffer beginSingleTimeCommands(bool begin, vk::CommandPool* vCommandPool = 0);
+		static void flushSingleTimeCommands(vk::CommandBuffer& cmd, bool end, vk::CommandPool* vCommandPool = 0);
+		static VulkanCommandBuffer CreateCommandBuffer(vk::QueueFlagBits vQueueType, vk::CommandPool* vCommandPool = 0);
 		static std::mutex VulkanCommandBuffer_Mutex;
 
 	public:

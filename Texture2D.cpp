@@ -214,7 +214,7 @@ bool Texture2D::LoadFile(const std::string& vFilePathName, const vk::Format& vFo
 
 bool Texture2D::LoadMemory(
 	uint8_t* buffer,
-	const uint32_t& width, const uint32_t& height, const uint32_t& channels, 
+	const uint32_t& width, const uint32_t& height, const uint32_t& channels,
 	const vk::Format& vFormat, const uint32_t& vMipLevelCount)
 {
 	ZoneScoped;
@@ -225,7 +225,7 @@ bool Texture2D::LoadMemory(
 	{
 		if (width == 0 || height == 0 || channels == 0)
 			return false;
-		
+
 		m_Width = width;
 		m_Height = height;
 
@@ -278,7 +278,7 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 {
 	ZoneScoped;
 
-    m_Loaded = false;
+	m_Loaded = false;
 
 	Destroy();
 
@@ -337,7 +337,7 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 		memset(image_data.data(), 0, image_data.size());
 	}
 
-    m_Texture2D = VulkanImage::createTextureImage2D(vSize.x, vSize.y, 1, vFormat, image_data.data());
+	m_Texture2D = VulkanImage::createTextureImage2D(vSize.x, vSize.y, 1, vFormat, image_data.data());
 
 	vk::ImageViewCreateInfo imViewInfo = {};
 	imViewInfo.flags = vk::ImageViewCreateFlags();
@@ -346,7 +346,7 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 	imViewInfo.format = vFormat;
 	imViewInfo.components = vk::ComponentMapping();
 	imViewInfo.subresourceRange = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, m_MipLevelCount, 0, 1);
-    m_TextureView = VulkanCore::Instance()->getDevice().createImageView(imViewInfo);
+	m_TextureView = VulkanCore::Instance()->getDevice().createImageView(imViewInfo);
 
 	vk::SamplerCreateInfo samplerInfo = {};
 	samplerInfo.flags = vk::SamplerCreateFlags();
@@ -364,15 +364,15 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 	//samplerInfo.minLod = 0.0f;
 	//samplerInfo.maxLod = static_cast<float>(m_MipLevelCount);
 	//samplerInfo.unnormalizedCoordinates = false;
-    m_Sampler = VulkanCore::Instance()->getDevice().createSampler(samplerInfo);
+	m_Sampler = VulkanCore::Instance()->getDevice().createSampler(samplerInfo);
 
 	m_DescriptorImageInfo.sampler = m_Sampler;
-    m_DescriptorImageInfo.imageView = m_TextureView;
-    m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+	m_DescriptorImageInfo.imageView = m_TextureView;
+	m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
 	m_Ratio = (float)m_Height / (float)m_Width;
 
-    m_Loaded = true;
+	m_Loaded = true;
 
 	return m_Loaded;
 }
@@ -382,7 +382,7 @@ bool Texture2D::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat
 {
 	ZoneScoped;
 
-    m_Loaded = false;
+	m_Loaded = false;
 
 	Destroy();
 
@@ -395,7 +395,7 @@ bool Texture2D::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat
 	imViewInfo.format = vFormat;
 	imViewInfo.components = vk::ComponentMapping();
 	imViewInfo.subresourceRange = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0U, m_MipLevelCount, 0U, 1U);
-    m_TextureView = VulkanCore::Instance()->getDevice().createImageView(imViewInfo);
+	m_TextureView = VulkanCore::Instance()->getDevice().createImageView(imViewInfo);
 
 	vk::SamplerCreateInfo samplerInfo = {};
 	samplerInfo.flags = vk::SamplerCreateFlags();
@@ -413,15 +413,15 @@ bool Texture2D::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat
 	//samplerInfo.minLod = 0.0f;
 	//samplerInfo.maxLod = static_cast<float>(m_MipLevelCount);
 	//samplerInfo.unnormalizedCoordinates = false;
-    m_Sampler = VulkanCore::Instance()->getDevice().createSampler(samplerInfo);
+	m_Sampler = VulkanCore::Instance()->getDevice().createSampler(samplerInfo);
 
-    m_DescriptorImageInfo.sampler = m_Sampler;
-    m_DescriptorImageInfo.imageView = m_TextureView;
-    m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eGeneral;
+	m_DescriptorImageInfo.sampler = m_Sampler;
+	m_DescriptorImageInfo.imageView = m_TextureView;
+	m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eGeneral;
 
 	m_Ratio = (float)m_Height / (float)m_Width;
 
-    m_Loaded = true;
+	m_Loaded = true;
 
 	return m_Loaded;
 }
@@ -436,7 +436,7 @@ void Texture2D::Destroy()
 	VulkanCore::Instance()->getDevice().destroyImageView(m_TextureView);
 	m_Texture2D.reset();
 
-    m_Loaded = false;
+	m_Loaded = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,7 +452,7 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t width = 0;
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
-	uint8_t *bmBytesRGBA = nullptr;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t* bmBytesRGBA = nullptr;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	uint32_t bytesPerPixel = 4;
 
@@ -555,7 +555,7 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t width = 0;
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
-	uint8_t *bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t* bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	uint32_t bytesPerPixel = 3;
 
@@ -655,7 +655,7 @@ bool Texture2D::SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
 	uint32_t bytesPerPixel = 3;
-	uint8_t *bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t* bmBytesRGB = 0;// GetRGBBytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	int ss = vSubSamplesCount;
 
@@ -866,7 +866,7 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 	uint32_t width = 0;
 	uint32_t height = 0;
 	uint32_t bufSize = 0;
-	uint8_t *bmBytesRGBA = 0;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
+	uint8_t* bmBytesRGBA = 0;// GetRGBABytesFromFrameBuffer(&width, &height, &bufSize, vAttachmentId);
 
 	uint32_t bytesPerPixel = 4;
 

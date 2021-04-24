@@ -51,7 +51,7 @@ namespace vkApi
 		std::vector<vk::ClearValue> m_ClearColorValues;
 
 		uint32_t m_CurrentFrame = 0; // current frame of 2d effects
-		
+
 		bool m_Loaded = false;
 		bool m_CanWeRender = true;
 		bool m_FirstRender = true;
@@ -66,15 +66,15 @@ namespace vkApi
 			bool vUseDepth = false,
 			bool vNeedToClear = false,
 			ct::fvec4 vClearColor = 0.0f,
-			vk::CommandPool *vCommandPool = 0,
-			vk::DescriptorPool *vDescriptorPool = 0);
+			vk::CommandPool* vCommandPool = 0,
+			vk::DescriptorPool* vDescriptorPool = 0);
 		void Unit();
 
 		// render in order
 		void Resize(ct::uvec2 vNewSize, uint32_t vCountColorBuffer);
 		void ResetFence();
 		vk::CommandBuffer* GetCommandBuffer();
-		void BeginTracyFrame(const char * vFrameName);
+		void BeginTracyFrame(const char* vFrameName);
 		void ResetCommandBuffer();
 		void BeginCommandBuffer();
 		void BeginRenderPass();
@@ -84,7 +84,7 @@ namespace vkApi
 		void Submit();
 		void WaitFence();
 		void Swap();
-		
+
 		void ClearAttachments(); // set clear flag for clearing at next render
 		void SetClearColorValue(ct::fvec4 vColor);
 
@@ -94,7 +94,7 @@ namespace vkApi
 		vk::DescriptorImageInfo GetFrontImageInfo(uint32_t vIndex);
 		vkApi::VulkanFrameBuffer* GetBackFbo();
 		vkApi::VulkanFrameBuffer* GetFrontFbo();
-		std::vector<vkApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t *vMaxBuffers = 0);
+		std::vector<vkApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t* vMaxBuffers = 0);
 
 	private:
 		bool CreateCommanBuffer();

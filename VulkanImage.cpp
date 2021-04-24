@@ -65,11 +65,11 @@ namespace vkApi
 		ZoneScoped;
 
 		auto ret = std::shared_ptr<VulkanImageObject>(new VulkanImageObject, [](VulkanImageObject* obj)
-		{
-			vmaDestroyImage(VulkanCore::Instance()->getMemAllocator(), (VkImage)obj->image, obj->alloc_meta);
-		});
+			{
+				vmaDestroyImage(VulkanCore::Instance()->getMemAllocator(), (VkImage)obj->image, obj->alloc_meta);
+			});
 
-		VulkanCore::check_error(vmaCreateImage(VulkanCore::Instance()->getMemAllocator(), (VkImageCreateInfo*)& image_info, &alloc_info, (VkImage*)& ret->image, &ret->alloc_meta, nullptr));
+		VulkanCore::check_error(vmaCreateImage(VulkanCore::Instance()->getMemAllocator(), (VkImageCreateInfo*)&image_info, &alloc_info, (VkImage*)&ret->image, &ret->alloc_meta, nullptr));
 		return ret;
 	}
 
@@ -166,7 +166,7 @@ namespace vkApi
 		return texture;
 	}
 
-	void VulkanImage::getDatasFromTextureImage2D(uint32_t width, uint32_t height, vk::Format format, std::shared_ptr<VulkanImageObject> vImage, void *vDatas, uint32_t *vSize)
+	void VulkanImage::getDatasFromTextureImage2D(uint32_t width, uint32_t height, vk::Format format, std::shared_ptr<VulkanImageObject> vImage, void* vDatas, uint32_t* vSize)
 	{
 		UNUSED(width);
 		UNUSED(height);
@@ -175,10 +175,10 @@ namespace vkApi
 		UNUSED(vDatas);
 		UNUSED(vSize);
 
-		ZoneScoped;	
+		ZoneScoped;
 	}
 
-	std::shared_ptr<VulkanImageObject> VulkanImage::createColorAttachment2D(uint32_t width, uint32_t height, uint32_t mipLevelCount, vk::Format format,	vk::SampleCountFlagBits vSampleCount)
+	std::shared_ptr<VulkanImageObject> VulkanImage::createColorAttachment2D(uint32_t width, uint32_t height, uint32_t mipLevelCount, vk::Format format, vk::SampleCountFlagBits vSampleCount)
 	{
 		ZoneScoped;
 
@@ -207,10 +207,10 @@ namespace vkApi
 		imageInfo.queueFamilyIndexCount = static_cast<uint32_t>(familyIndices.size());
 		imageInfo.pQueueFamilyIndices = familyIndices.data();
 		imageInfo.initialLayout = vk::ImageLayout::eUndefined;
-		
+
 		VmaAllocationCreateInfo image_alloc_info = {};
 		image_alloc_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
-		
+
 		return createSharedImageObject(imageInfo, image_alloc_info);
 	}
 
@@ -269,8 +269,8 @@ namespace vkApi
 		imageInfo.arrayLayers = 1U;
 		imageInfo.samples = vSampleCount;
 		imageInfo.tiling = vk::ImageTiling::eOptimal;
-		imageInfo.usage = 
-			vk::ImageUsageFlagBits::eDepthStencilAttachment | 
+		imageInfo.usage =
+			vk::ImageUsageFlagBits::eDepthStencilAttachment |
 			vk::ImageUsageFlagBits::eTransferSrc;
 		imageInfo.sharingMode = vk::SharingMode::eExclusive;
 		imageInfo.queueFamilyIndexCount = static_cast<uint32_t>(familyIndices.size());
@@ -290,7 +290,7 @@ namespace vkApi
 		if (mipLevels > 1)
 		{
 			auto physDevice = VulkanCore::Instance()->getPhysicalDevice();
-			
+
 			// Check if image format supports linear blitting
 			vk::FormatProperties formatProperties = physDevice.getFormatProperties(imageFormat);
 

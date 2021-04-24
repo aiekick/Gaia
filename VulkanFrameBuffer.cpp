@@ -14,8 +14,6 @@ namespace vkApi
 	VulkanFrameBuffer::VulkanFrameBuffer()
 	{
 		ZoneScoped;
-
-
 	}
 
 	VulkanFrameBuffer::~VulkanFrameBuffer()
@@ -28,7 +26,7 @@ namespace vkApi
 	bool VulkanFrameBuffer::Init(
 		ct::uvec2 vSize,
 		uint32_t vCountColorBuffer,
-		vk::RenderPass &vRenderPass,
+		vk::RenderPass& vRenderPass,
 		bool vCreateRenderPass,
 		bool vUseDepth,
 		bool vNeedToClear,
@@ -168,9 +166,9 @@ namespace vkApi
 						subPassDesc.pResolveAttachments = nullptr;
 					subPassDesc.preserveAttachmentCount = 0;
 					subPassDesc.pPreserveAttachments = nullptr;
-					if (vUseDepth) 
+					if (vUseDepth)
 						subPassDesc.pDepthStencilAttachment = depthReferences.data();
-					else 
+					else
 						subPassDesc.pDepthStencilAttachment = nullptr;
 					subpasses.push_back(subPassDesc);
 
@@ -202,7 +200,7 @@ namespace vkApi
 
 					vRenderPass = logDevice.createRenderPass(renderPassInfo);
 				}
-				
+
 				vk::FramebufferCreateInfo fboInfo = {};
 				fboInfo.flags = vk::FramebufferCreateFlags();
 				fboInfo.renderPass = vRenderPass;
@@ -211,7 +209,7 @@ namespace vkApi
 				fboInfo.width = size.x;
 				fboInfo.height = size.y;
 				fboInfo.layers = 1;
-				
+
 				framebuffer = logDevice.createFramebuffer(fboInfo);
 
 				res = true;
@@ -234,7 +232,7 @@ namespace vkApi
 		ZoneScoped;
 
 		auto logDevice = VulkanCore::Instance()->getDevice();
-		
+
 		attachmentViews.clear();
 		attachments.clear();
 		logDevice.destroyFramebuffer(framebuffer);

@@ -16,9 +16,9 @@ public:
 public:
 	ImGuiTexture() = default;
 	~ImGuiTexture();
-	void SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, float vRatio = 1.0f);
-	void SetDescriptor(vkApi::VulkanFrameBufferAttachment *vVulkanFrameBufferAttachment);
-	void SetDescriptor(vkApi::VulkanComputeImageTarget *vVulkanComputeImageTarget);
+	void SetDescriptor(vk::DescriptorImageInfo* vDescriptorImageInfo, float vRatio = 1.0f);
+	void SetDescriptor(vkApi::VulkanFrameBufferAttachment* vVulkanFrameBufferAttachment);
+	void SetDescriptor(vkApi::VulkanComputeImageTarget* vVulkanComputeImageTarget);
 	void ClearDescriptor();
 	void DestroyDescriptor();
 };

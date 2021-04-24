@@ -10,30 +10,26 @@
 
 namespace vkApi
 {
-	#define COUNT_BUFFERS 2
+#define COUNT_BUFFERS 2
 
 	VulkanFragmentRenderer::VulkanFragmentRenderer()
 	{
 		ZoneScoped;
-
-
 	}
 
 	VulkanFragmentRenderer::~VulkanFragmentRenderer()
 	{
 		ZoneScoped;
-
-
 	}
 
 	bool VulkanFragmentRenderer::Init(
-		ct::uvec2 vSize, 
+		ct::uvec2 vSize,
 		uint32_t vCountColorBuffer,
 		bool vUseDepth,
 		bool vNeedToClear,
 		ct::fvec4 vClearColor,
-		vk::CommandPool *vCommandPool,
-		vk::DescriptorPool *vDescriptorPool)
+		vk::CommandPool* vCommandPool,
+		vk::DescriptorPool* vDescriptorPool)
 	{
 		ZoneScoped;
 
@@ -133,7 +129,7 @@ namespace vkApi
 		return &m_CommandBuffers[m_CurrentFrame];
 	}
 
-	void VulkanFragmentRenderer::BeginTracyFrame(const char * vFrameName)
+	void VulkanFragmentRenderer::BeginTracyFrame(const char* vFrameName)
 	{
 		FrameMarkNamed(vFrameName);
 	}
@@ -243,12 +239,12 @@ namespace vkApi
 
 	void VulkanFragmentRenderer::ClearAttachments()
 	{
-		for (auto &fbo : m_FrameBuffers)
+		for (auto& fbo : m_FrameBuffers)
 		{
 			fbo.neverCleared = true;
 		}
 	}
-	
+
 	void VulkanFragmentRenderer::SetClearColorValue(ct::fvec4 vColor)
 	{
 		if (!m_ClearColorValues.empty())
@@ -299,7 +295,7 @@ namespace vkApi
 		return &m_FrameBuffers[m_CurrentFrame];
 	}
 
-	std::vector<vkApi::VulkanFrameBufferAttachment>* VulkanFragmentRenderer::GetBufferAttachments(uint32_t *vMaxBuffers)
+	std::vector<vkApi::VulkanFrameBufferAttachment>* VulkanFragmentRenderer::GetBufferAttachments(uint32_t* vMaxBuffers)
 	{
 		if (vMaxBuffers)
 			*vMaxBuffers = (uint32_t)m_FrameBuffers[m_CurrentFrame].attachments.size();
@@ -429,5 +425,4 @@ namespace vkApi
 
 		m_Device.destroyRenderPass(m_RenderPass);
 	}
-
 }

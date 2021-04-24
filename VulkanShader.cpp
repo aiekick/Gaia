@@ -131,13 +131,13 @@ std::string GetFullShaderStageString(const EShLanguage& stage)
 
 //TODO: Multithread, manage SpirV that doesn't need recompiling (only recompile when dirty)
 const std::vector<unsigned int> VulkanShader::CompileGLSLFile(
-	const std::string& filename, 
+	const std::string& filename,
 	ShaderMessagingFunction vMessagingFunction,
-	std::string *vShaderCode,
-	std::unordered_map<std::string, bool> *vUsedUniforms)
+	std::string* vShaderCode,
+	std::unordered_map<std::string, bool>* vUsedUniforms)
 {
 	ZoneScoped;
-	
+
 	std::vector<unsigned int> SpirV;
 
 	//Load GLSL into a string
@@ -168,16 +168,16 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLFile(
 //TODO: Multithread, manage SpirV that doesn't need recompiling (only recompile when dirty)
 const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 	const std::string& vCode,
-	std::string vShaderSuffix, 
-	const std::string& vOriginalFileName, 
+	std::string vShaderSuffix,
+	const std::string& vOriginalFileName,
 	ShaderMessagingFunction vMessagingFunction,
-	std::string *vShaderCode,
-	std::unordered_map<std::string, bool> *vUsedUniforms)
+	std::string* vShaderCode,
+	std::unordered_map<std::string, bool>* vUsedUniforms)
 {
 	ZoneScoped;
 
 	LogVarDebug("==== VulkanShader::CompileGLSLString (%s) =====", vShaderSuffix.c_str());
-	
+
 	m_Error.clear();
 	m_Warnings.clear();
 
@@ -186,7 +186,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 	std::string InputGLSL = vCode;
 
 	EShLanguage shaderType = GetShaderStage(vShaderSuffix);
-	
+
 	if (!InputGLSL.empty() && shaderType != EShLanguage::EShLangCount)
 	{
 		if (vShaderCode)
@@ -214,7 +214,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 		DirStackFileIncluder Includer;
 
 		std::string PreprocessedGLSL;
-		
+
 		std::string shaderTypeString = GetFullShaderStageString(shaderType);
 
 		if (!Shader.preprocess(&glslang::DefaultTBuiltInResource, DefaultVersion, ENoProfile, false, false, messages, &PreprocessedGLSL, Includer))
@@ -333,7 +333,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 			}
 #endif
 		}
-		
+
 		glslang::TProgram Program;
 		Program.addShader(&Shader);
 
@@ -402,7 +402,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 				(*vUsedUniforms)[u.first] |= u.second;
 			}
 		}
-		
+
 		spv::SpvBuildLogger logger;
 		glslang::SpvOptions spvOptions;
 		spvOptions.optimizeSize = true;
@@ -525,7 +525,7 @@ void VulkanShader::ParseGLSLString(
 			}
 #endif
 		}
-		
+
 		const char* PreprocessedCStr = PreprocessedGLSL.c_str();
 		Shader.setStrings(&PreprocessedCStr, 1);
 

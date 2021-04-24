@@ -13,7 +13,6 @@
 #define TRACE_MEMORY
 #include <vkProfiler/Profiler.h>
 
-
 namespace vkApi
 {
 	static int g_SwapChainResizeWidth = 1280;
@@ -457,7 +456,7 @@ namespace vkApi
 		ZoneScoped;
 
 		auto logDevice = VulkanCore::Instance()->getDevice();
-		
+
 		DestroyRenderPass();
 		DestroyFrameBuffers();
 		DestroySyncObjects();
@@ -498,7 +497,7 @@ namespace vkApi
 		ZoneScoped;
 
 		auto logDevice = VulkanCore::Instance()->getDevice();
-		
+
 		for (size_t i = 0; i < SWAPCHAIN_IMAGES_COUNT; i++)
 		{
 			logDevice.destroySemaphore(m_PresentCompleteSemaphores[i]);
@@ -512,7 +511,7 @@ namespace vkApi
 		ZoneScoped;
 
 		auto instance = VulkanCore::Instance()->getInstance();
-		
+
 		instance.destroySurfaceKHR(m_Surface);
 	}
 

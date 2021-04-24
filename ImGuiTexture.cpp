@@ -11,7 +11,7 @@ ImGuiTexture::~ImGuiTexture()
 	ZoneScoped;
 }
 
-void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, float vRatio)
+void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo* vDescriptorImageInfo, float vRatio)
 {
 	ZoneScoped;
 
@@ -24,7 +24,7 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, 
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
 				vDescriptorImageInfo->sampler,
-				vDescriptorImageInfo->imageView, 
+				vDescriptorImageInfo->imageView,
 				(VkImageLayout)vDescriptorImageInfo->imageLayout);
 			firstLoad = false;
 
@@ -47,7 +47,7 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo *vDescriptorImageInfo, 
 	}
 }
 
-void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment *vVulkanFrameBufferAttachment)
+void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment* vVulkanFrameBufferAttachment)
 {
 	ZoneScoped;
 
@@ -82,11 +82,11 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment *vVulkanFram
 	}
 }
 
-void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget *vVulkanComputeImageTarget)
+void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget* vVulkanComputeImageTarget)
 {
 	ZoneScoped;
 
-	if (vVulkanComputeImageTarget && 
+	if (vVulkanComputeImageTarget &&
 		vVulkanComputeImageTarget->height > 0)
 	{
 		ratio = (float)vVulkanComputeImageTarget->width / (float)vVulkanComputeImageTarget->height;
@@ -148,5 +148,4 @@ void ImGuiTexture::DestroyDescriptor()
 		assert(0);
 #endif
 	}
-	
 }
