@@ -176,7 +176,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 {
 	ZoneScoped;
 
-	LogVarDebug("==== VulkanShader::CompileGLSLString (%s) =====", vShaderSuffix.c_str());
+	//LogVarDebug("==== VulkanShader::CompileGLSLString (%s) =====", vShaderSuffix.c_str());
 
 	m_Error.clear();
 	m_Warnings.clear();
@@ -245,7 +245,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 #endif
 			m_Warnings.clear();
 
-			LogVarDebug("==========================================");
+			//LogVarDebug("==========================================");
 
 			return SpirV;
 		}
@@ -305,7 +305,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 #endif
 			m_Warnings.clear();
 
-			LogVarDebug("==========================================");
+			//LogVarDebug("==========================================");
 
 			return SpirV;
 		}
@@ -365,7 +365,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 #endif
 			m_Warnings.clear();
 
-			LogVarDebug("==========================================");
+			//LogVarDebug("==========================================");
 
 			return SpirV;
 		}
@@ -422,10 +422,10 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 	}
 	else
 	{
-		LogVarDebug("Shader stage %s Spirv generation of %s : OK !", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+		//LogVarDebug("Shader stage %s Spirv generation of %s : OK !", vShaderSuffix.c_str(), vOriginalFileName.c_str());
 	}
 
-	LogVarDebug("==========================================");
+	//LogVarDebug("==========================================");
 
 	return SpirV;
 }
@@ -499,7 +499,7 @@ void VulkanShader::ParseGLSLString(
 #endif
 			m_Warnings.clear();
 
-			LogVarDebug("==========================================");
+			//LogVarDebug("==========================================");
 		}
 		else
 		{
@@ -557,7 +557,7 @@ void VulkanShader::ParseGLSLString(
 #endif
 			m_Warnings.clear();
 
-			LogVarDebug("==========================================");
+			//LogVarDebug("==========================================");
 		}
 		else
 		{

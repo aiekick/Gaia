@@ -28,7 +28,7 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo* vDescriptorImageInfo, 
 				(VkImageLayout)vDescriptorImageInfo->imageLayout);
 			firstLoad = false;
 
-			LogVarDebug("New imGui Descriptor");
+			//LogVarDebug("New imGui Descriptor");
 		}
 		else
 		{
@@ -63,7 +63,7 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment* vVulkanFram
 				(VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout);
 			firstLoad = false;
 
-			LogVarDebug("New imGui Descriptor");
+			//LogVarDebug("New imGui Descriptor");
 		}
 		else
 		{
@@ -99,7 +99,7 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget* vVulkanCompute
 				(VkImageLayout)vVulkanComputeImageTarget->targetDescriptorInfo.imageLayout);
 			firstLoad = false;
 
-			LogVarDebug("New imGui Descriptor");
+			//LogVarDebug("New imGui Descriptor");
 		}
 		else
 		{
@@ -126,7 +126,7 @@ void ImGuiTexture::ClearDescriptor()
 	descriptor = vk::DescriptorSet{};
 	canDisplayPreview = false;
 
-	LogVarDebug("imGui Descriptor Cleared");
+	//LogVarDebug("imGui Descriptor Cleared");
 }
 
 void ImGuiTexture::DestroyDescriptor()
@@ -139,13 +139,13 @@ void ImGuiTexture::DestroyDescriptor()
 		{
 			destroyed = true;
 
-			LogVarDebug("imGui Descriptor Destroyed");
+			//LogVarDebug("imGui Descriptor Destroyed");
 		}
 	}
 	else
 	{
 #if _DEBUG
-		assert(0);
+		CTOOL_DEBUG_BREAK;
 #endif
 	}
 }
