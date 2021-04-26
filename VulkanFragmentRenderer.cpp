@@ -338,7 +338,7 @@ namespace vkApi
 
 		m_RenderCompleteSemaphores.resize(COUNT_BUFFERS);
 		m_WaitFences.resize(COUNT_BUFFERS);
-		for (size_t i = 0; i < COUNT_BUFFERS; i++)
+		for (size_t i = 0; i < COUNT_BUFFERS; ++i)
 		{
 			m_RenderCompleteSemaphores[i] = m_Device.createSemaphore(vk::SemaphoreCreateInfo());
 			m_WaitFences[i] = m_Device.createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
@@ -351,7 +351,7 @@ namespace vkApi
 	{
 		ZoneScoped;
 
-		for (size_t i = 0; i < COUNT_BUFFERS; i++)
+		for (size_t i = 0; i < COUNT_BUFFERS; ++i)
 		{
 			m_Device.destroySemaphore(m_RenderCompleteSemaphores[i]);
 			m_Device.destroyFence(m_WaitFences[i]);
@@ -398,7 +398,7 @@ namespace vkApi
 
 				res = true;
 
-				for (int i = 0; i < COUNT_BUFFERS; i++)
+				for (int i = 0; i < COUNT_BUFFERS; ++i)
 				{
 					// on cree la rednerpass que pour le 1er fbo, apres on reutilisé la meme
 					res &= m_FrameBuffers[i].Init(size, m_CountColorBuffers, m_RenderPass, i == 0, vUseDepth, vNeedToClear, vClearColor);

@@ -313,7 +313,7 @@ namespace vkApi
 			int32_t mipWidth = texWidth;
 			int32_t mipHeight = texHeight;
 
-			for (uint32_t i = 1; i < mipLevels; i++)
+			for (uint32_t i = 1; i < mipLevels; ++i)
 			{
 				barrier.subresourceRange.baseMipLevel = i - 1;
 				barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;

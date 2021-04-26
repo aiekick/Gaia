@@ -223,7 +223,7 @@ namespace vkApi
 		m_PresentCompleteSemaphores.resize(SWAPCHAIN_IMAGES_COUNT);
 		m_RenderCompleteSemaphores.resize(SWAPCHAIN_IMAGES_COUNT);
 		m_WaitFences.resize(SWAPCHAIN_IMAGES_COUNT);
-		for (size_t i = 0; i < SWAPCHAIN_IMAGES_COUNT; i++)
+		for (size_t i = 0; i < SWAPCHAIN_IMAGES_COUNT; ++i)
 		{
 			m_PresentCompleteSemaphores[i] = logDevice.createSemaphore(vk::SemaphoreCreateInfo());
 			m_RenderCompleteSemaphores[i] = logDevice.createSemaphore(vk::SemaphoreCreateInfo());
@@ -290,7 +290,7 @@ namespace vkApi
 
 		assert(colorImagesInSwapchain.size() == m_SwapchainFrameBuffers.size());
 
-		for (size_t i = 0; i < colorImagesInSwapchain.size(); i++)
+		for (size_t i = 0; i < colorImagesInSwapchain.size(); ++i)
 		{
 			// Color
 			m_SwapchainFrameBuffers[i].views[COLOR] =
@@ -498,7 +498,7 @@ namespace vkApi
 
 		auto logDevice = VulkanCore::Instance()->getDevice();
 
-		for (size_t i = 0; i < SWAPCHAIN_IMAGES_COUNT; i++)
+		for (size_t i = 0; i < SWAPCHAIN_IMAGES_COUNT; ++i)
 		{
 			logDevice.destroySemaphore(m_PresentCompleteSemaphores[i]);
 			logDevice.destroySemaphore(m_RenderCompleteSemaphores[i]);

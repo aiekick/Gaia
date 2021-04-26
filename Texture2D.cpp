@@ -181,7 +181,7 @@ static inline uint32_t GetMiplevelCount(uint32_t width, uint32_t height)
 	{
 		width >>= 1;
 		height >>= 1;
-		levels++;
+		++levels;
 	}
 	// other fucntion :
 	// levels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
@@ -482,7 +482,7 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
 						b += tempdata[ssIndex * bytesPerPixel + 2];
 						a += tempdata[ssIndex * bytesPerPixel + 3];
 
-						count++;
+						++count;
 					}
 				}
 			}
@@ -584,7 +584,7 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 						g += tempdata[ssIndex * bytesPerPixel + 1];
 						b += tempdata[ssIndex * bytesPerPixel + 2];
 
-						count++;
+						++count;
 					}
 				}
 			}
@@ -682,7 +682,7 @@ bool Texture2D::SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, 
 						g += tempdata[ssIndex * bytesPerPixel + 1];
 						b += tempdata[ssIndex * bytesPerPixel + 2];
 
-						count++;
+						++count;
 					}
 				}
 			}
@@ -792,7 +792,7 @@ bool Texture2D::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, 
 								if (bytesPerPixel > 3)
 									a += tempdata->buf[ssIndex * bytesPerPixel + 3];
 
-								count++;
+								++count;
 							}
 						}
 					}
@@ -896,7 +896,7 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 						b += tempdata[ssIndex * bytesPerPixel + 2];
 						a += tempdata[ssIndex * bytesPerPixel + 3];
 
-						count++;
+						++count;
 					}
 				}
 			}

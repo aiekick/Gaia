@@ -97,7 +97,7 @@ namespace vkApi
 						LogVarDebug("Color Attachement %u cant be loaded...", attIndex);
 						return false;
 					}
-					attIndex++;
+					++attIndex;
 				}
 
 				// https://vulkan-tutorial.com/Multisampling
@@ -123,7 +123,7 @@ namespace vkApi
 							LogVarDebug("Resolve Attachement %u cant be loaded...", attIndex);
 							return false;
 						}
-						attIndex++;
+						++attIndex;
 					}
 				}
 
@@ -146,7 +146,7 @@ namespace vkApi
 						LogVarDebug("Depth Attachement cant be loaded");
 						return false;
 					}
-					attIndex++;
+					++attIndex;
 				}
 
 				if (vCreateRenderPass)
