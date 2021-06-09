@@ -320,7 +320,7 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 		elem_size = 32 / 8; // sizeof(float)
 		break;
 	default:
-		LogVarDebug("unsupported type: %s", vk::to_string(vFormat).c_str());
+		LogVarDebug("Debug : unsupported type: %s", vk::to_string(vFormat).c_str());
 		throw std::invalid_argument("unsupported fomat type!");
 		assert(0);
 	}

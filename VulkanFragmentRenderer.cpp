@@ -406,12 +406,12 @@ namespace vkApi
 			}
 			else
 			{
-				LogVarDebug("Size is empty on one chnannel at least : x:%u,y:%u", size.x, size.y);
+				LogVarDebug("Debug : Size is empty on one chnannel at least : x:%u,y:%u", size.x, size.y);
 			}
 		}
 		else
 		{
-			LogVarDebug("CountColorBuffer must be between 0 and 8. here => %u", vCountColorBuffer);
+			LogVarDebug("Debug : CountColorBuffer must be between 0 and 8. here => %u", vCountColorBuffer);
 		}
 
 		return res;

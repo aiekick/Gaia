@@ -4,18 +4,10 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//// CONTENT of ImGui_impl_Vulkan.h ////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// dear imgui: Renderer Backend for Vulkan
-// This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
-
 // Implemented features:
 //  [X] Renderer: Support for large meshes (64k+ vertices) with 16-bit indices.
-// Missing features:
-//  [ ] Platform: Multi-viewport / platform windows.
-//  [ ] Renderer: User texture binding. Changes of ImTextureID aren't supported by this backend! See https://github.com/ocornut/imgui/pull/914
+//  [x] Platform: Multi-viewport / platform windows. With issues (flickering when creating a new viewport).
+//  [X] Renderer: User texture binding. Changes of ImTextureID aren't supported by this backend! See https://github.com/ocornut/imgui/pull/914
 
 // You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
@@ -30,6 +22,9 @@
 // - Helper ImGui_ImplVulkanH_XXX functions and structures are only used by this example (main.cpp) and by
 //   the backend itself (imgui_impl_vulkan.cpp), but should PROBABLY NOT be used by your own engine/app code.
 // Read comments in imgui_impl_vulkan.h.
+
+#pragma once
+#include "imgui.h"      // IMGUI_IMPL_API
 
 // [Configuration] in order to use a custom Vulkan function loader:
 // (1) You'll need to disable default Vulkan function prototypes.
@@ -47,24 +42,25 @@
 #if defined(IMGUI_IMPL_VULKAN_NO_PROTOTYPES) && !defined(VK_NO_PROTOTYPES)
 #define VK_NO_PROTOTYPES
 #endif
+#include <vulkan/vulkan.h>
 
 // Initialization data, for ImGui_ImplVulkan_Init()
 // [Please zero-clear before use!]
 struct ImGui_ImplVulkan_InitInfo
 {
-	VkInstance                      Instance;
-	VkPhysicalDevice                PhysicalDevice;
-	VkDevice                        Device;
-	uint32_t                        QueueFamily;
-	VkQueue                         Queue;
-	VkPipelineCache                 PipelineCache;
-	VkDescriptorPool                DescriptorPool;
-	uint32_t                        Subpass;
-	uint32_t                        MinImageCount;          // >= 2
-	uint32_t                        ImageCount;             // >= MinImageCount
-	VkSampleCountFlagBits           MSAASamples;            // >= VK_SAMPLE_COUNT_1_BIT
-	const VkAllocationCallbacks* Allocator;
-	void                            (*CheckVkResultFn)(VkResult err);
+    VkInstance                      Instance;
+    VkPhysicalDevice                PhysicalDevice;
+    VkDevice                        Device;
+    uint32_t                        QueueFamily;
+    VkQueue                         Queue;
+    VkPipelineCache                 PipelineCache;
+    VkDescriptorPool                DescriptorPool;
+    uint32_t                        Subpass;
+    uint32_t                        MinImageCount;          // >= 2
+    uint32_t                        ImageCount;             // >= MinImageCount
+    VkSampleCountFlagBits           MSAASamples;            // >= VK_SAMPLE_COUNT_1_BIT
+    const VkAllocationCallbacks* Allocator;
+    void                            (*CheckVkResultFn)(VkResult err);
 };
 
 // Called by user code
@@ -105,52 +101,55 @@ IMGUI_IMPL_API void                 ImGui_ImplVulkanH_DestroyWindow(VkInstance i
 IMGUI_IMPL_API VkSurfaceFormatKHR   ImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space);
 IMGUI_IMPL_API VkPresentModeKHR     ImGui_ImplVulkanH_SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count);
 IMGUI_IMPL_API int                  ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode);
+IMGUI_IMPL_API VkDescriptorSet      ImGui_ImplVulkanH_Create_UserTexture_Descriptor(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout, VkDescriptorSet* vExistingDescriptorSet = nullptr);
+IMGUI_IMPL_API bool                 ImGui_ImplVulkanH_Destroy_UserTexture_Descriptor(VkDescriptorSet* vVkDescriptorSet);
+IMGUI_IMPL_API uint32_t             ImGui_ImplVulkanH_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);
 
 // Helper structure to hold the data needed by one rendering frame
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
 // [Please zero-clear before use!]
 struct ImGui_ImplVulkanH_Frame
 {
-	VkCommandPool       CommandPool;
-	VkCommandBuffer     CommandBuffer;
-	VkFence             Fence;
-	VkImage             Backbuffer;
-	VkImageView         BackbufferView;
-	VkFramebuffer       Framebuffer;
+    VkCommandPool       CommandPool;
+    VkCommandBuffer     CommandBuffer;
+    VkFence             Fence;
+    VkImage             Backbuffer;
+    VkImageView         BackbufferView;
+    VkFramebuffer       Framebuffer;
 };
 
 struct ImGui_ImplVulkanH_FrameSemaphores
 {
-	VkSemaphore         ImageAcquiredSemaphore;
-	VkSemaphore         RenderCompleteSemaphore;
+    VkSemaphore         ImageAcquiredSemaphore;
+    VkSemaphore         RenderCompleteSemaphore;
 };
 
 // Helper structure to hold the data needed by one rendering context into one OS window
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
 struct ImGui_ImplVulkanH_Window
 {
-	int                 Width;
-	int                 Height;
-	VkSwapchainKHR      Swapchain;
-	VkSurfaceKHR        Surface;
-	VkSurfaceFormatKHR  SurfaceFormat;
-	VkPresentModeKHR    PresentMode;
-	VkRenderPass        RenderPass;
-	VkPipeline          Pipeline;               // The window pipeline may uses a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo
-	bool                ClearEnable;
-	VkClearValue        ClearValue;
-	uint32_t            FrameIndex;             // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
-	uint32_t            ImageCount;             // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
-	uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
-	ImGui_ImplVulkanH_Frame* Frames;
-	ImGui_ImplVulkanH_FrameSemaphores* FrameSemaphores;
+    int                 Width;
+    int                 Height;
+    VkSwapchainKHR      Swapchain;
+    VkSurfaceKHR        Surface;
+    VkSurfaceFormatKHR  SurfaceFormat;
+    VkPresentModeKHR    PresentMode;
+    VkRenderPass        RenderPass;
+    VkPipeline          Pipeline;               // The window pipeline may uses a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo
+    bool                ClearEnable;
+    VkClearValue        ClearValue;
+    uint32_t            FrameIndex;             // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
+    uint32_t            ImageCount;             // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
+    uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
+    ImGui_ImplVulkanH_Frame* Frames;
+    ImGui_ImplVulkanH_FrameSemaphores* FrameSemaphores;
 
-	ImGui_ImplVulkanH_Window()
-	{
-		memset(this, 0, sizeof(*this));
-		PresentMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
-		ClearEnable = true;
-	}
+    ImGui_ImplVulkanH_Window()
+    {
+        memset(this, 0, sizeof(*this));
+        PresentMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
+        ClearEnable = true;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////

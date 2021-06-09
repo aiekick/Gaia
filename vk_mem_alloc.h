@@ -1,9 +1,10 @@
+#ifdef MSVC
 #pragma warning(disable:4100)
 #pragma warning(disable:4127)
 #pragma warning(disable:4324)
 #pragma warning(disable:4239)
 #pragma warning(disable:4702)
-
+#endif
 //
 // Copyright (c) 2017-2020 Advanced Micro Devices, Inc. All rights reserved.
 //

@@ -94,7 +94,7 @@ namespace vkApi
 					}
 					else
 					{
-						LogVarDebug("Color Attachement %u cant be loaded...", attIndex);
+						LogVarDebug("Debug : Color Attachement %u cant be loaded...", attIndex);
 						return false;
 					}
 					++attIndex;
@@ -120,7 +120,7 @@ namespace vkApi
 						}
 						else
 						{
-							LogVarDebug("Resolve Attachement %u cant be loaded...", attIndex);
+							LogVarDebug("Debug : Resolve Attachement %u cant be loaded...", attIndex);
 							return false;
 						}
 						++attIndex;
@@ -143,7 +143,7 @@ namespace vkApi
 					}
 					else
 					{
-						LogVarDebug("Depth Attachement cant be loaded");
+						LogVarDebug("Debug : Depth Attachement cant be loaded");
 						return false;
 					}
 					++attIndex;
@@ -216,12 +216,12 @@ namespace vkApi
 			}
 			else
 			{
-				LogVarDebug("Size is empty on one chnannel at least : x:%u,y:%u", size.x, size.y);
+				LogVarDebug("Debug : Size is empty on one chnannel at least : x:%u,y:%u", size.x, size.y);
 			}
 		}
 		else
 		{
-			LogVarDebug("CountColorBuffer must be between 0 and 8. here => %u", vCountColorBuffer);
+			LogVarDebug("Debug : CountColorBuffer must be between 0 and 8. here => %u", vCountColorBuffer);
 		}
 
 		return res;

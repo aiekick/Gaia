@@ -76,7 +76,7 @@ namespace vkApi
 
 		if (result != vk::Result::eSuccess)
 		{
-			LogVarDebug("vulkan: error %s", vk::to_string(result).c_str());
+			LogVarDebug("Debug : vulkan: error %s", vk::to_string(result).c_str());
 		}
 	}
 
@@ -262,7 +262,7 @@ namespace vkApi
 		if (result == vk::Result::eErrorDeviceLost)
 		{
 			// driver lost, we'll crash in this case:
-			LogVarDebug("Driver Lost after submit");
+			LogVarDebug("Debug : Driver Lost after submit");
 		}
 		lck.unlock();
 	}

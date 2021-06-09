@@ -170,7 +170,7 @@ namespace vkApi
 		auto result = queue.submit(1, &vSubmitInfo, fence);
 		if (result == vk::Result::eErrorDeviceLost)
 		{
-			LogVarDebug("Driver seem lost");
+			LogVarDebug("Debug : Driver seem lost");
 		}
 		device.waitForFences(1, &fence, VK_TRUE, UINT64_MAX);
 		VulkanSubmitter::criticalSectionMutex.unlock();

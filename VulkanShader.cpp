@@ -145,7 +145,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLFile(
 
 	if (!file.is_open())
 	{
-		LogVarDebug("Failed to load shader %s", filename.c_str());
+		LogVarDebug("Debug : Failed to load shader %s", filename.c_str());
 		return SpirV;
 	}
 
@@ -176,7 +176,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 {
 	ZoneScoped;
 
-	//LogVarDebug("==== VulkanShader::CompileGLSLString (%s) =====", vShaderSuffix.c_str());
+	//LogVarDebug("Debug : ==== VulkanShader::CompileGLSLString (%s) =====", vShaderSuffix.c_str());
 
 	m_Error.clear();
 	m_Warnings.clear();
@@ -219,9 +219,9 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 
 		if (!Shader.preprocess(&glslang::DefaultTBuiltInResource, DefaultVersion, ENoProfile, false, false, messages, &PreprocessedGLSL, Includer))
 		{
-			LogVarDebug("GLSL stage %s Preprocessing Failed for : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
-			LogVarDebug("%s", Shader.getInfoLog());
-			LogVarDebug("%s", Shader.getInfoDebugLog());
+			LogVarDebug("Debug : GLSL stage %s Preprocessing Failed for : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+			LogVarDebug("Debug : %s", Shader.getInfoLog());
+			LogVarDebug("Debug : %s", Shader.getInfoDebugLog());
 
 			std::string log = Shader.getInfoLog();
 			if (!log.empty())
@@ -245,7 +245,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 #endif
 			m_Warnings.clear();
 
-			//LogVarDebug("==========================================");
+			//LogVarDebug("Debug : ==========================================");
 
 			return SpirV;
 		}
@@ -279,9 +279,9 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 
 		if (!Shader.parse(&glslang::DefaultTBuiltInResource, 100, false, messages))
 		{
-			LogVarDebug("GLSL stage %s Parse Failed for stage : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
-			LogVarDebug("%s", Shader.getInfoLog());
-			LogVarDebug("%s", Shader.getInfoDebugLog());
+			LogVarDebug("Debug : GLSL stage %s Parse Failed for stage : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+			LogVarDebug("Debug : %s", Shader.getInfoLog());
+			LogVarDebug("Debug : %s", Shader.getInfoDebugLog());
 
 			std::string log = Shader.getInfoLog();
 			if (!log.empty())
@@ -305,7 +305,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 #endif
 			m_Warnings.clear();
 
-			//LogVarDebug("==========================================");
+			//LogVarDebug("Debug : ==========================================");
 
 			return SpirV;
 		}
@@ -339,9 +339,9 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 
 		if (!Program.link(messages))
 		{
-			LogVarDebug("GLSL stage %s Linking Failed for : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
-			LogVarDebug("%s", Shader.getInfoLog());
-			LogVarDebug("%s", Shader.getInfoDebugLog());
+			LogVarDebug("Debug : GLSL stage %s Linking Failed for : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+			LogVarDebug("Debug : %s", Shader.getInfoLog());
+			LogVarDebug("Debug : %s", Shader.getInfoDebugLog());
 
 			std::string log = Shader.getInfoLog();
 			if (!log.empty())
@@ -365,7 +365,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 #endif
 			m_Warnings.clear();
 
-			//LogVarDebug("==========================================");
+			//LogVarDebug("Debug : ==========================================");
 
 			return SpirV;
 		}
@@ -418,14 +418,14 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
 
 	if (SpirV.empty())
 	{
-		LogVarDebug("Shader stage %s Spirv generation of %s : NOK !", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+		LogVarDebug("Debug : Shader stage %s Spirv generation of %s : NOK !", vShaderSuffix.c_str(), vOriginalFileName.c_str());
 	}
 	else
 	{
-		//LogVarDebug("Shader stage %s Spirv generation of %s : OK !", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+		//LogVarDebug("Debug : Shader stage %s Spirv generation of %s : OK !", vShaderSuffix.c_str(), vOriginalFileName.c_str());
 	}
 
-	//LogVarDebug("==========================================");
+	//LogVarDebug("Debug : ==========================================");
 
 	return SpirV;
 }
@@ -473,9 +473,9 @@ void VulkanShader::ParseGLSLString(
 
 		if (!Shader.preprocess(&glslang::DefaultTBuiltInResource, DefaultVersion, ENoProfile, false, false, messages, &PreprocessedGLSL, Includer))
 		{
-			LogVarDebug("GLSL stage %s Preprocessing Failed for : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
-			LogVarDebug("%s", Shader.getInfoLog());
-			LogVarDebug("%s", Shader.getInfoDebugLog());
+			LogVarDebug("Debug : GLSL stage %s Preprocessing Failed for : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+			LogVarDebug("Debug : %s", Shader.getInfoLog());
+			LogVarDebug("Debug : %s", Shader.getInfoDebugLog());
 
 			std::string log = Shader.getInfoLog();
 			if (!log.empty())
@@ -499,7 +499,7 @@ void VulkanShader::ParseGLSLString(
 #endif
 			m_Warnings.clear();
 
-			//LogVarDebug("==========================================");
+			//LogVarDebug("Debug : ==========================================");
 		}
 		else
 		{
@@ -531,9 +531,9 @@ void VulkanShader::ParseGLSLString(
 
 		if (!Shader.parse(&glslang::DefaultTBuiltInResource, 100, false, messages))
 		{
-			LogVarDebug("GLSL stage %s Parse Failed for stage : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
-			LogVarDebug("%s", Shader.getInfoLog());
-			LogVarDebug("%s", Shader.getInfoDebugLog());
+			LogVarDebug("Debug : GLSL stage %s Parse Failed for stage : %s", vShaderSuffix.c_str(), vOriginalFileName.c_str());
+			LogVarDebug("Debug : %s", Shader.getInfoLog());
+			LogVarDebug("Debug : %s", Shader.getInfoDebugLog());
 
 			std::string log = Shader.getInfoLog();
 			if (!log.empty())
@@ -557,7 +557,7 @@ void VulkanShader::ParseGLSLString(
 #endif
 			m_Warnings.clear();
 
-			//LogVarDebug("==========================================");
+			//LogVarDebug("Debug : ==========================================");
 		}
 		else
 		{
@@ -606,19 +606,19 @@ VkShaderModule VulkanShader::CreateShaderModule(VkDevice vLogicalDevice, std::ve
 
 		if (vkCreateShaderModule(vLogicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 		{
-			LogVarDebug("fail to create shader module !");
+			LogVarDebug("Debug : fail to create shader module !");
 			shaderModule = 0;
 		}
 	}
 	else
 	{
-		LogVarDebug("SPIRV Code is empty. Fail to create shader module !");
+		LogVarDebug("Debug : SPIRV Code is empty. Fail to create shader module !");
 		shaderModule = 0;
 	}
 
 	if (shaderModule)
 	{
-		//LogVarDebug("shader module compilation : OK !");
+		//LogVarDebug("Debug : shader module compilation : OK !");
 	}
 
 	return shaderModule;

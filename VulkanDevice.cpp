@@ -251,7 +251,7 @@ namespace vkApi
 		string patch = to_string(VK_VERSION_PATCH(layer_info.specVersion));
 		string version = major + "." + minor + "." + patch;
 
-		LogVarDebug("%s Vulkan vers %s layer vers %u \tDescription:", layer_name.c_str(), version.c_str(), layer_info.implementationVersion);
+		LogVarDebug("Debug : %s Vulkan vers %s layer vers %u \tDescription:", layer_name.c_str(), version.c_str(), layer_info.implementationVersion);
 	}
 
 	// Find available validation layers
@@ -265,7 +265,7 @@ namespace vkApi
 		std::vector<VkLayerProperties> availableLayers(layerCount);
 		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-		LogVarDebug("Requesting Vulkan validation layers\t [%u]", layerCount);
+		LogVarDebug("Debug : Requesting Vulkan validation layers\t [%u]", layerCount);
 
 		// Check needed validation layers against found layers`
 		for (const char* layerName : validationLayers)

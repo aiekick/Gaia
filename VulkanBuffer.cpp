@@ -26,7 +26,7 @@ namespace vkApi
 
 		if (dst_hostVisable.alloc_usage == VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY)
 		{
-			LogVarDebug("upload not done because it is VMA_MEMORY_USAGE_GPU_ONLY");
+			LogVarDebug("Debug : upload not done because it is VMA_MEMORY_USAGE_GPU_ONLY");
 			return;
 		}
 		void* dst = nullptr;

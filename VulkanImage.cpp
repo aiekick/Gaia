@@ -242,7 +242,7 @@ namespace vkApi
 			imageInfo.sharingMode = vk::SharingMode::eExclusive;
 		imageInfo.queueFamilyIndexCount = static_cast<uint32_t>(familyIndices.size());
 		imageInfo.pQueueFamilyIndices = familyIndices.data();
-		imageInfo.initialLayout = vk::ImageLayout::eGeneral;
+		imageInfo.initialLayout = vk::ImageLayout::eUndefined;
 
 		VmaAllocationCreateInfo image_alloc_info = {};
 		image_alloc_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
@@ -463,7 +463,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVarDebug("unsupported layouts: %s, %s",
+			LogVarDebug("Debug : unsupported layouts: %s, %s",
 				vk::to_string(oldLayout).c_str(),
 				vk::to_string(newLayout).c_str());
 			throw std::invalid_argument("unsupported layout transition!");
