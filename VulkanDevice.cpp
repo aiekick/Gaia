@@ -106,7 +106,7 @@ namespace vkApi
 		UNUSED(pUserData);
 		UNUSED(pLayerPrefix);
 
-		LogVarLight("[VULKAN][%s] => %s", GetStringFromObjetType(objectType), pMessage);
+		LogVarLight("[VULKAN][%s] => %s\n-----------", GetStringFromObjetType(objectType), pMessage);
 		return VK_FALSE;
 	}
 
@@ -187,13 +187,13 @@ namespace vkApi
 	//// INIT / UNIT /////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	bool VulkanDevice::Init()
+	bool VulkanDevice::Init(const char* vAppName, const int& vAppVersion, const char* vEngineName, const int& vEngineVersion)
 	{
 		ZoneScoped;
 
 		bool res = false;
 
-		CreateVulkanInstance();
+		CreateVulkanInstance(vAppName, vAppVersion, vEngineName, vEngineVersion);
 		CreatePhysicalDevice();
 		CreateLogicalDevice();
 
@@ -238,12 +238,12 @@ namespace vkApi
 		"VK_LAYER_LUNARG_core_validation",
 		"VK_LAYER_LUNARG_swapchain",
 		"VK_LAYER_GOOGLE_unique_objects",
+		"VK_LAYER_LUNARG_core_validation",
+		"VK_LAYER_KHRONOS_validation"
 	};
 
-	void PrintLayerStatus(VkLayerProperties layer_info, string layer_name, bool layer_found)
+	void PrintLayerStatus(const VkLayerProperties& layer_info, const bool& vWanted, const size_t& vMaxLayerNameSize)
 	{
-		UNUSED(layer_found);
-
 		ZoneScoped;
 
 		string major = to_string(VK_VERSION_MAJOR(layer_info.specVersion));
@@ -251,7 +251,12 @@ namespace vkApi
 		string patch = to_string(VK_VERSION_PATCH(layer_info.specVersion));
 		string version = major + "." + minor + "." + patch;
 
-		LogVarDebug("Debug : %s Vulkan vers %s layer vers %u \tDescription:", layer_name.c_str(), version.c_str(), layer_info.implementationVersion);
+		static char spaceBuffer[255 + 1] = "";
+		memset(spaceBuffer, 32, 255); // 32 is space code in ASCII table
+		size_t of = vMaxLayerNameSize - strlen(layer_info.layerName);
+		if (of < 255)
+			spaceBuffer[of] = '\0';
+		printf("Debug : [%s] Layer %s %s [%s] %s \n", (vWanted ? "X" : " "), layer_info.layerName, spaceBuffer, version.c_str(), layer_info.description);
 	}
 
 	// Find available validation layers
@@ -259,31 +264,38 @@ namespace vkApi
 	{
 		ZoneScoped;
 
+		printf("-- DEBUG --\n");
+		
 		// Query validation layers currently isntalled
 		uint32_t layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 		std::vector<VkLayerProperties> availableLayers(layerCount);
 		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-		LogVarDebug("Debug : Requesting Vulkan validation layers\t [%u]", layerCount);
-
-		// Check needed validation layers against found layers`
-		for (const char* layerName : validationLayers)
+		size_t maxSize = 0U;
+		for (const auto& layer_info : availableLayers)
 		{
-			bool layerFound = false;
-			VkLayerProperties layer_info = {};
-			for (const auto& layerProperties : availableLayers)
+			maxSize = ct::maxi(maxSize, strlen(layer_info.layerName));
+		}
+
+		printf("Vulkan available validation layers : [%u]\n", layerCount);
+
+		for (const auto& layer_info : availableLayers)
+		{
+			bool layerWanted = false;
+			for (const auto& layer_name : validationLayers)
 			{
-				if (strcmp(layerName, layerProperties.layerName) == 0)
+				if (strcmp(layer_name, layer_info.layerName) == 0)
 				{
-					layerFound = true;
-					layer_info = layerProperties;
+					layerWanted = true;
 					break;
 				}
 			}
 
-			PrintLayerStatus(layer_info, layerName, layerFound);
+			PrintLayerStatus(layer_info, layerWanted, maxSize);
 		}
+
+		printf("-----------\n");
 
 		return true;
 	}
@@ -292,17 +304,20 @@ namespace vkApi
 	//// PRIVATE /////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void VulkanDevice::CreateVulkanInstance()
+	void VulkanDevice::CreateVulkanInstance(const char* vAppName, const int& vAppVersion, const char* vEngineName, const int& vEngineVersion)
 	{
 		ZoneScoped;
 
-		//CheckValidationLayerSupport();
+#ifdef _DEBUG
+		CheckValidationLayerSupport();
+#endif
 
 		auto wantedExtensions = VulkanWindow::Instance()->vkInstanceExtensions();
 		auto wantedLayers = std::vector<const char*>();
 
 #if VULKAN_DEBUG
 		wantedLayers.emplace_back("VK_LAYER_KHRONOS_validation");
+		wantedLayers.emplace_back("VK_LAYER_LUNARG_core_validation");
 		//wantedLayers.emplace_back("VK_LAYER_LUNARG_monitor");
 		//wantedLayers.emplace_back("VK_LAYER_LUNARG_api_dump");
 		//wantedLayers.emplace_back("VK_LAYER_LUNARG_device_simulation");
@@ -326,7 +341,21 @@ namespace vkApi
 		std::vector<const char*> layers = {};
 		findBestLayers(installedLayers, wantedLayers, layers);
 
-		vk::ApplicationInfo appInfo("vkSdfMesher", 0, "vkSDm", 0, VK_API_VERSION_1_0);
+		uint32_t apiVersion = VK_API_VERSION_1_0;
+		if (vk::enumerateInstanceVersion(&apiVersion) != vk::Result::eSuccess)
+		{
+			apiVersion = VK_API_VERSION_1_0;
+		}
+		else
+		{
+			LogVarLight("Vulkan api version is : %u.%u.%u.%u\n-----------",
+				VK_API_VERSION_VARIANT(apiVersion),
+				VK_API_VERSION_MAJOR(apiVersion),
+				VK_API_VERSION_MINOR(apiVersion),
+				VK_API_VERSION_PATCH(apiVersion));
+		}
+
+		vk::ApplicationInfo appInfo(vAppName, vAppVersion, vEngineName, vEngineVersion);
 
 		vk::InstanceCreateInfo instanceCreateInfo(
 			vk::InstanceCreateFlags(),
@@ -375,7 +404,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVar("%s library is not there. VkDebug is not enabled",
+			LogVar("Debug : %s library is not there. VkDebug is not enabled",
 				VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 		}
 #endif
@@ -426,11 +455,13 @@ namespace vkApi
 	void VulkanDevice::CreateLogicalDevice()
 	{
 		ZoneScoped;
-
+		
 		std::map<uint32_t, uint32_t> counts;
 		counts[m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex]++;
-		counts[m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex]++;
-		counts[m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex]++;
+		if (counts.find(m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex) == counts.end())
+			counts[m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex]++;
+		if (counts.find(m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex) == counts.end())
+			counts[m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex]++;
 
 		float mQueuePriority = 0.5f;
 		std::vector<vk::DeviceQueueCreateInfo> qcinfo;
@@ -440,7 +471,7 @@ namespace vkApi
 			{
 				qcinfo.push_back({});
 				qcinfo.back().setQueueFamilyIndex(elem.first);
-				qcinfo.back().setQueueCount(elem.second);
+				qcinfo.back().setQueueCount(1);
 				qcinfo.back().setPQueuePriorities(&mQueuePriority);
 			}
 		}
