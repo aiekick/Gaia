@@ -126,7 +126,7 @@ namespace vkApi
 		uint32_t backbufferCount = ct::clamp<uint32_t>(SWAPCHAIN_IMAGES_COUNT, 2u, surfaceCapabilities.maxImageCount);
 		if (backbufferCount != SWAPCHAIN_IMAGES_COUNT)
 		{
-			LogVar("Cant Create swapchain. exit!");
+			LogVarInfo("Cant Create swapchain. exit!");
 			exit(1);
 		}
 
@@ -208,7 +208,7 @@ namespace vkApi
 		if (!physDevice.getSurfaceSupportKHR(queue.familyQueueIndex, m_Surface))
 		{
 			// Check if queueFamily supports this surface
-			LogVar("No surface found for this queueFamily");
+			LogVarInfo("No surface found for this queueFamily");
 			return;
 		}
 	}

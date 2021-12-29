@@ -106,7 +106,7 @@ namespace vkApi
 		UNUSED(pUserData);
 		UNUSED(pLayerPrefix);
 
-		LogVarLight("[VULKAN][%s] => %s", GetStringFromObjetType(objectType), pMessage);
+		LogVarLightInfo("[VULKAN][%s] => %s", GetStringFromObjetType(objectType), pMessage);
 		return VK_FALSE;
 	}
 
@@ -375,7 +375,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVar("%s library is not there. VkDebug is not enabled",
+			LogVarInfo("%s library is not there. VkDebug is not enabled",
 				VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 		}
 #endif
@@ -403,7 +403,7 @@ namespace vkApi
 
 		if (gpuid < 0 || gpuid >= physicalDevices.size())
 		{
-			LogVar("GPU ID error.");
+			LogVarInfo("GPU ID error.");
 			exit(EXIT_FAILURE);
 		}
 
