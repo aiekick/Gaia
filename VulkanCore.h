@@ -43,7 +43,7 @@ namespace vkApi
 		static void check_error(VkResult result);
 
 	public:
-		void Init();
+		void Init(const char* vAppName, const int& vAppVersion, const char* vEngineName, const int& vEngineVersion);
 		void Unit();
 
 	public: // get

@@ -23,7 +23,7 @@ namespace vkApi
 		if (result == vk::Result::eErrorDeviceLost)
 		{
 			// driver lost, we'll crash in this case:
-			LogVarInfo("Driver Lost after submit");
+			LogVarError("Driver Lost after submit");
 			return false;
 		}
 		lck.unlock();

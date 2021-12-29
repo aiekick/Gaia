@@ -348,7 +348,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVarLight("Vulkan api version is : %u.%u.%u.%u\n-----------",
+			LogVarLightInfo("Vulkan api version is : %u.%u.%u.%u\n-----------",
 				VK_API_VERSION_VARIANT(apiVersion),
 				VK_API_VERSION_MAJOR(apiVersion),
 				VK_API_VERSION_MINOR(apiVersion),
@@ -404,7 +404,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVarLightInfo("Debug : %s library is not there. VkDebug is not enabled",
+			LogVarInfo("Debug : %s library is not there. VkDebug is not enabled",
 				VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 		}
 #endif

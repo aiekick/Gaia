@@ -13,7 +13,7 @@ static void glfw_error_callback(int error, const char* description)
 	ZoneScoped;
 
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-	LogVarInfo("Glfw Error %d: %s\n", error, description);
+	LogVarError("Glfw Error %d: %s\n", error, description);
 }
 
 static std::vector<const char*> getRequiredExtensions()
