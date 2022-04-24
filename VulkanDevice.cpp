@@ -106,7 +106,7 @@ namespace vkApi
 		UNUSED(pUserData);
 		UNUSED(pLayerPrefix);
 
-		LogVarLight("[VULKAN][%s] => %s\n-----------", GetStringFromObjetType(objectType), pMessage);
+		LogVarLightInfo("[VULKAN][%s] => %s\n-----------", GetStringFromObjetType(objectType), pMessage);
 		return VK_FALSE;
 	}
 
@@ -348,7 +348,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVarLight("Vulkan api version is : %u.%u.%u.%u\n-----------",
+			LogVarLightInfo("Vulkan api version is : %u.%u.%u.%u\n-----------",
 				VK_API_VERSION_VARIANT(apiVersion),
 				VK_API_VERSION_MAJOR(apiVersion),
 				VK_API_VERSION_MINOR(apiVersion),
@@ -404,7 +404,7 @@ namespace vkApi
 		}
 		else
 		{
-			LogVar("Debug : %s library is not there. VkDebug is not enabled",
+			LogVarInfo("Debug : %s library is not there. VkDebug is not enabled",
 				VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 		}
 #endif
@@ -432,7 +432,7 @@ namespace vkApi
 
 		if (gpuid < 0 || gpuid >= physicalDevices.size())
 		{
-			LogVar("GPU ID error.");
+			LogVarError("GPU ID error.");
 			exit(EXIT_FAILURE);
 		}
 

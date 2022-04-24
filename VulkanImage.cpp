@@ -115,7 +115,7 @@ namespace vkApi
 			elem_size = 32 / 8;
 			break;
 		default:
-			LogVar("unsupported type: %s", vk::to_string(format).c_str());
+			LogVarError("unsupported type: %s", vk::to_string(format).c_str());
 			throw std::invalid_argument("unsupported fomat type!");
 		}
 

@@ -81,13 +81,13 @@ namespace vkApi
 	}
 
 	// MEMBERS
-	void VulkanCore::Init()
+	void VulkanCore::Init(const char* vAppName, const int& vAppVersion, const char* vEngineName, const int& vEngineVersion)
 	{
 		ZoneScoped;
 
 		glfwSetWindowFocusCallback(VulkanWindow::Instance()->WinPtr(), window_focus_callback);
 
-		m_VulkanDevice.Init("vkSdfMesher", 1, "1.0", 1);
+		m_VulkanDevice.Init(vAppName, vAppVersion, vEngineName, vEngineVersion);
 		setupMemoryAllocator();
 		m_VulkanSwapChain.Init(std::bind(&VulkanCore::resize, this));
 		setupGraphicCommandsAndSynchronization();

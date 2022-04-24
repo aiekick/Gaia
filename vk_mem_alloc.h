@@ -197,7 +197,7 @@ vmaDestroyAllocator(allocator);
 
 Physical devices in Vulkan support various combinations of memory heaps and
 types. Help with choosing correct and optimal memory type for your specific
-resource is one of the key features of this library. You can use it by filling
+resource is one of the Block features of this library. You can use it by filling
 appropriate members of VmaAllocationCreateInfo structure, as described below.
 You can also combine multiple methods.
 
@@ -1298,7 +1298,7 @@ This allows e.g. to visualize the memory or assess fragmentation.
 You can annotate allocations with your own information, e.g. for debugging purposes.
 To do that, fill VmaAllocationCreateInfo::pUserData field when creating
 an allocation. It's an opaque `void*` pointer. You can use it e.g. as a pointer,
-some handle, index, key, ordinal number or any other value that would associate
+some handle, index, Block, ordinal number or any other value that would associate
 the allocation with your custom metadata.
 
 \code
@@ -4696,21 +4696,21 @@ static const VkDeviceSize VMA_MIN_FREE_SUBALLOCATION_SIZE_TO_REGISTER = 16;
 
 /*
 Performs binary search and returns iterator to first element that is greater or
-equal to (key), according to comparison (cmp).
+equal to (Block), according to comparison (cmp).
 
 Cmp should return true if first argument is less than second argument.
 
 Returned value is the found element, if present in the collection or place where
-new element with value (key) should be inserted.
+new element with value (Block) should be inserted.
 */
-template <typename CmpLess, typename IterT, typename KeyT>
-static IterT VmaBinaryFindFirstNotLess(IterT beg, IterT end, const KeyT& key, const CmpLess& cmp)
+template <typename CmpLess, typename IterT, typename BlockT>
+static IterT VmaBinaryFindFirstNotLess(IterT beg, IterT end, const BlockT& Block, const CmpLess& cmp)
 {
 	size_t down = 0, up = (end - beg);
 	while (down < up)
 	{
 		const size_t mid = (down + up) / 2;
-		if (cmp(*(beg + mid), key))
+		if (cmp(*(beg + mid), Block))
 		{
 			down = mid + 1;
 		}
@@ -4722,10 +4722,10 @@ static IterT VmaBinaryFindFirstNotLess(IterT beg, IterT end, const KeyT& key, co
 	return beg + down;
 }
 
-template<typename CmpLess, typename IterT, typename KeyT>
-IterT VmaBinaryFindSorted(const IterT& beg, const IterT& end, const KeyT& value, const CmpLess& cmp)
+template<typename CmpLess, typename IterT, typename BlockT>
+IterT VmaBinaryFindSorted(const IterT& beg, const IterT& end, const BlockT& value, const CmpLess& cmp)
 {
-	IterT it = VmaBinaryFindFirstNotLess<CmpLess, IterT, KeyT>(
+	IterT it = VmaBinaryFindFirstNotLess<CmpLess, IterT, BlockT>(
 		beg, end, value, cmp);
 	if (it == end ||
 		(!cmp(*it, value) && !cmp(value, *it)))
@@ -5943,8 +5943,8 @@ private:
 
 #define VmaPair std::pair
 
-#define VMA_MAP_TYPE(KeyT, ValueT) \
-    std::unordered_map< KeyT, ValueT, std::hash<KeyT>, std::equal_to<KeyT>, VmaStlAllocator< std::pair<KeyT, ValueT> > >
+#define VMA_MAP_TYPE(BlockT, ValueT) \
+    std::unordered_map< BlockT, ValueT, std::hash<BlockT>, std::equal_to<BlockT>, VmaStlAllocator< std::pair<BlockT, ValueT> > >
 
 #else // #if VMA_USE_STL_UNORDERED_MAP
 
@@ -5959,13 +5959,13 @@ struct VmaPair
 };
 
 /* Class compatible with subset of interface of std::unordered_map.
-KeyT, ValueT must be POD because they will be stored in VmaVector.
+BlockT, ValueT must be POD because they will be stored in VmaVector.
 */
-template<typename KeyT, typename ValueT>
+template<typename BlockT, typename ValueT>
 class VmaMap
 {
 public:
-	typedef VmaPair<KeyT, ValueT> PairType;
+	typedef VmaPair<BlockT, ValueT> PairType;
 	typedef PairType* iterator;
 
 	VmaMap(const VmaStlAllocator<PairType>& allocator) : m_Vector(allocator) { }
@@ -5974,14 +5974,14 @@ public:
 	iterator end() { return m_Vector.end(); }
 
 	void insert(const PairType& pair);
-	iterator find(const KeyT& key);
+	iterator find(const BlockT& Block);
 	void erase(iterator it);
 
 private:
 	VmaVector< PairType, VmaStlAllocator<PairType> > m_Vector;
 };
 
-#define VMA_MAP_TYPE(KeyT, ValueT) VmaMap<KeyT, ValueT>
+#define VMA_MAP_TYPE(BlockT, ValueT) VmaMap<BlockT, ValueT>
 
 template<typename FirstT, typename SecondT>
 struct VmaPairFirstLess
@@ -5996,26 +5996,26 @@ struct VmaPairFirstLess
 	}
 };
 
-template<typename KeyT, typename ValueT>
-void VmaMap<KeyT, ValueT>::insert(const PairType& pair)
+template<typename BlockT, typename ValueT>
+void VmaMap<BlockT, ValueT>::insert(const PairType& pair)
 {
 	const size_t indexToInsert = VmaBinaryFindFirstNotLess(
 		m_Vector.data(),
 		m_Vector.data() + m_Vector.size(),
 		pair,
-		VmaPairFirstLess<KeyT, ValueT>()) - m_Vector.data();
+		VmaPairFirstLess<BlockT, ValueT>()) - m_Vector.data();
 	VmaVectorInsert(m_Vector, indexToInsert, pair);
 }
 
-template<typename KeyT, typename ValueT>
-VmaPair<KeyT, ValueT>* VmaMap<KeyT, ValueT>::find(const KeyT& key)
+template<typename BlockT, typename ValueT>
+VmaPair<BlockT, ValueT>* VmaMap<BlockT, ValueT>::find(const BlockT& Block)
 {
 	PairType* it = VmaBinaryFindFirstNotLess(
 		m_Vector.data(),
 		m_Vector.data() + m_Vector.size(),
-		key,
-		VmaPairFirstLess<KeyT, ValueT>());
-	if ((it != m_Vector.end()) && (it->first == key))
+		Block,
+		VmaPairFirstLess<BlockT, ValueT>());
+	if ((it != m_Vector.end()) && (it->first == Block))
 	{
 		return it;
 	}
@@ -6025,8 +6025,8 @@ VmaPair<KeyT, ValueT>* VmaMap<KeyT, ValueT>::find(const KeyT& key)
 	}
 }
 
-template<typename KeyT, typename ValueT>
-void VmaMap<KeyT, ValueT>::erase(iterator it)
+template<typename BlockT, typename ValueT>
+void VmaMap<BlockT, ValueT>::erase(iterator it)
 {
 	VmaVectorRemove(m_Vector, it - m_Vector.begin());
 }

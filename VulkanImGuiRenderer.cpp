@@ -14,7 +14,6 @@
 // Implemented features:
 //  [X] Renderer: Support for large meshes (64k+ vertices) with 16-bit indices.
 //  [x] Platform: Multi-viewport / platform windows. With issues (flickering when creating a new viewport).
-// Missing features:
 //  [X] Renderer: User texture binding. Changes of ImTextureID aren't supported by this backend! See https://github.com/ocornut/imgui/pull/914
 
 // You can copy and use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
