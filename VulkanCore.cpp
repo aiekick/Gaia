@@ -87,7 +87,7 @@ namespace vkApi
 
 		glfwSetWindowFocusCallback(VulkanWindow::Instance()->WinPtr(), window_focus_callback);
 
-		m_VulkanDevice.Init();
+		m_VulkanDevice.Init("vkSdfMesher", 1, "1.0", 1);
 		setupMemoryAllocator();
 		m_VulkanSwapChain.Init(std::bind(&VulkanCore::resize, this));
 		setupGraphicCommandsAndSynchronization();

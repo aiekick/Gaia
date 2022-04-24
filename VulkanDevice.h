@@ -37,7 +37,7 @@ namespace vkApi
 		VulkanDevice();
 		~VulkanDevice();
 
-		bool Init();
+		bool Init(const char* vAppName, const int& vAppVersion, const char* vEngineName, const int& vEngineVersion);
 		void Unit();
 
 		void WaitIdle();
@@ -45,7 +45,7 @@ namespace vkApi
 		VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
 
 	private:
-		void CreateVulkanInstance();
+		void CreateVulkanInstance(const char* vAppName, const int& vAppVersion, const char* vEngineName, const int& vEngineVersion);
 		void DestroyVulkanInstance();
 
 		void CreatePhysicalDevice();
