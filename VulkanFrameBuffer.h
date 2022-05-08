@@ -23,6 +23,7 @@ namespace vkApi
 		bool neverCleared = true;
 		bool neverToClear = false;
 		vk::SampleCountFlagBits sampleCount;
+		uint32_t depthAttIndex = 0U;
 
 	public:
 		VulkanFrameBuffer();
@@ -39,5 +40,7 @@ namespace vkApi
 			ct::fvec4 vClearColor = 0.0f,
 			vk::SampleCountFlagBits vSampleCount = vk::SampleCountFlagBits::e1);
 		void Unit();
+
+		VulkanFrameBufferAttachment* GetDepthAttachment();
 	};
 }

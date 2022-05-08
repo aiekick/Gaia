@@ -129,6 +129,7 @@ namespace vkApi
 
 				if (vUseDepth)
 				{
+					depthAttIndex = attIndex;
 					if (attachments[attIndex].InitDepth(size, vk::Format::eD32SfloatS8Uint, sampleCount))
 					{
 						attachmentViews.push_back(attachments[attIndex].attachmentView);
@@ -143,7 +144,7 @@ namespace vkApi
 					}
 					else
 					{
-						LogVarDebug("Debug : Depth Attachement cant be loaded");
+						LogVarDebug("Debug : Depth Attachement can't be loaded");
 						return false;
 					}
 					++attIndex;
@@ -236,5 +237,14 @@ namespace vkApi
 		attachmentViews.clear();
 		attachments.clear();
 		logDevice.destroyFramebuffer(framebuffer);
+	}
+
+	VulkanFrameBufferAttachment* VulkanFrameBuffer::GetDepthAttachment()
+	{
+		if (depthAttIndex < attachments.size())
+		{
+			return &attachments[depthAttIndex];
+		}
+		return nullptr;
 	}
 }
