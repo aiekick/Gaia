@@ -23,16 +23,16 @@ public:
 public:
 	const std::vector<unsigned int> CompileGLSLFile(
 		const std::string& filename,
-		ShaderMessagingFunction vMessagingFunction,
-		std::string* vShaderCode = 0,
-		std::unordered_map<std::string, bool>* vUsedUniforms = 0);
+		ShaderMessagingFunction vMessagingFunction = nullptr,
+		std::string* vShaderCode = nullptr,
+		std::unordered_map<std::string, bool>* vUsedUniforms = nullptr);
 	const std::vector<unsigned int> CompileGLSLString(
 		const std::string& vCode,
 		std::string vShaderSuffix,
 		const std::string& vOriginalFileName,
-		ShaderMessagingFunction vMessagingFunction,
-		std::string* vShaderCode = 0,
-		std::unordered_map<std::string, bool>* vUsedUniforms = 0);
+		ShaderMessagingFunction vMessagingFunction = nullptr,
+		std::string* vShaderCode = nullptr,
+		std::unordered_map<std::string, bool>* vUsedUniforms = nullptr);
 	void ParseGLSLString(
 		const std::string& vCode,
 		std::string vShaderSuffix,
