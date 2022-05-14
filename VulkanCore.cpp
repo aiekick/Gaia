@@ -164,7 +164,7 @@ namespace vkApi
 	vk::SampleCountFlagBits VulkanCore::GetMaxUsableSampleCount()
 	{
 		VkPhysicalDeviceProperties physicalDeviceProperties;
-		vkGetPhysicalDeviceProperties(m_VulkanDevice.m_PhysDevice, &physicalDeviceProperties);
+		vkGetPhysicalDeviceProperties((VkPhysicalDevice)m_VulkanDevice.m_PhysDevice, &physicalDeviceProperties);
 
 		VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
 		if (counts & VK_SAMPLE_COUNT_64_BIT) { return vk::SampleCountFlagBits::e64; }

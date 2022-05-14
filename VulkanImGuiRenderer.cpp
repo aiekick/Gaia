@@ -1826,7 +1826,7 @@ vk::DescriptorSet VulkanImGuiRenderer::CreateImGuiTexture(VkSampler sampler, VkI
 
 		VkWriteDescriptorSet write_desc[1] = {};
 		write_desc[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		write_desc[0].dstSet = descriptor_set;
+		write_desc[0].dstSet = (VkDescriptorSet)descriptor_set;
 		write_desc[0].descriptorCount = 1;
 		write_desc[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		write_desc[0].pImageInfo = desc_image;

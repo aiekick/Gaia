@@ -343,9 +343,9 @@ namespace vkApi
 				blit.dstSubresource.baseArrayLayer = 0;
 				blit.dstSubresource.layerCount = 1;
 
-				vkCmdBlitImage(commandBuffer,
-					image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-					image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				vkCmdBlitImage((VkCommandBuffer)commandBuffer,
+					(VkImage)image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+					(VkImage)image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 					1, &blit,
 					VK_FILTER_LINEAR);
 

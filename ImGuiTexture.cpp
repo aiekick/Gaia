@@ -23,8 +23,8 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo* vDescriptorImageInfo, 
 		if (firstLoad)
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
-				vDescriptorImageInfo->sampler,
-				vDescriptorImageInfo->imageView,
+				(VkSampler)vDescriptorImageInfo->sampler,
+				(VkImageView)vDescriptorImageInfo->imageView,
 				(VkImageLayout)vDescriptorImageInfo->imageLayout);
 			firstLoad = false;
 
@@ -33,8 +33,8 @@ void ImGuiTexture::SetDescriptor(vk::DescriptorImageInfo* vDescriptorImageInfo, 
 		else
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
-				vDescriptorImageInfo->sampler,
-				vDescriptorImageInfo->imageView,
+				(VkSampler)vDescriptorImageInfo->sampler,
+				(VkImageView)vDescriptorImageInfo->imageView,
 				(VkImageLayout)vDescriptorImageInfo->imageLayout,
 				&descriptor);
 		}
@@ -58,8 +58,8 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment* vVulkanFram
 		if (firstLoad)
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
-				vVulkanFrameBufferAttachment->attachmentDescriptorInfo.sampler,
-				vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageView,
+				(VkSampler)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.sampler,
+				(VkImageView)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageView,
 				(VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout);
 			firstLoad = false;
 
@@ -68,8 +68,8 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanFrameBufferAttachment* vVulkanFram
 		else
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
-				vVulkanFrameBufferAttachment->attachmentSampler,
-				vVulkanFrameBufferAttachment->attachmentView,
+				(VkSampler)vVulkanFrameBufferAttachment->attachmentSampler,
+				(VkImageView)vVulkanFrameBufferAttachment->attachmentView,
 				(VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout,
 				&descriptor);
 		}
@@ -94,8 +94,8 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget* vVulkanCompute
 		if (firstLoad)
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
-				vVulkanComputeImageTarget->targetDescriptorInfo.sampler,
-				vVulkanComputeImageTarget->targetDescriptorInfo.imageView,
+				(VkSampler)vVulkanComputeImageTarget->targetDescriptorInfo.sampler,
+				(VkImageView)vVulkanComputeImageTarget->targetDescriptorInfo.imageView,
 				(VkImageLayout)vVulkanComputeImageTarget->targetDescriptorInfo.imageLayout);
 			firstLoad = false;
 
@@ -104,8 +104,8 @@ void ImGuiTexture::SetDescriptor(vkApi::VulkanComputeImageTarget* vVulkanCompute
 		else
 		{
 			descriptor = VulkanImGuiRenderer::Instance()->CreateImGuiTexture(
-				vVulkanComputeImageTarget->targetDescriptorInfo.sampler,
-				vVulkanComputeImageTarget->targetDescriptorInfo.imageView,
+				(VkSampler)vVulkanComputeImageTarget->targetDescriptorInfo.sampler,
+				(VkImageView)vVulkanComputeImageTarget->targetDescriptorInfo.imageView,
 				(VkImageLayout)vVulkanComputeImageTarget->targetDescriptorInfo.imageLayout,
 				&descriptor);
 		}

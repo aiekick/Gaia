@@ -379,7 +379,7 @@ namespace vkApi
 		m_Instance = vk::createInstance(chain.get<vk::InstanceCreateInfo>());
 
 #if VULKAN_DEBUG
-		m_Dldy.init(m_Instance, vkGetInstanceProcAddr);
+		m_Dldy.init((VkInstance)m_Instance, vkGetInstanceProcAddr);
 		VkDebugReportCallbackEXT handle;
 
 		// Setup the debug report callback
@@ -416,7 +416,7 @@ namespace vkApi
 
 #if VULKAN_DEBUG
 		if (m_DebugReport)
-			m_Dldy.vkDestroyDebugReportCallbackEXT(m_Instance, m_DebugReport, nullptr);
+			m_Dldy.vkDestroyDebugReportCallbackEXT((VkInstance)m_Instance, (VkDebugReportCallbackEXT)m_DebugReport, nullptr);
 #endif
 		m_Instance.destroy();
 	}
