@@ -5,12 +5,14 @@
 
 #include <vector>
 
-struct VulkanBufferObject
+class VulkanBufferObject
 {
+public:
 	vk::Buffer buffer;
 	VmaAllocation alloc_meta;
 	VmaMemoryUsage alloc_usage;
 };
+typedef std::shared_ptr<VulkanBufferObject> VulkanBufferObjectPtr;
 
 namespace vkApi
 {
@@ -21,18 +23,18 @@ namespace vkApi
 		static void copy(vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool* vCommandPool = 0);
 		static void upload(VulkanBufferObject& dst_hostVisable, void* src_host, size_t size_bytes, size_t dst_offset = 0);
 
-		static std::shared_ptr<VulkanBufferObject> createSharedBufferObject(const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info);
-		static std::shared_ptr<VulkanBufferObject> createUniformBufferObject(uint64_t vSize);
-		static std::shared_ptr<VulkanBufferObject> createStagingBufferObject(uint64_t vSize);
-		static std::shared_ptr<VulkanBufferObject> createStorageBufferObject(uint64_t vSize, VmaMemoryUsage vMemoryUsage);
-		static std::shared_ptr<VulkanBufferObject> createGPUOnlyStorageBufferObject(void* vData, uint64_t vSize);
+		static VulkanBufferObjectPtr createSharedBufferObject(const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info);
+		static VulkanBufferObjectPtr createUniformBufferObject(uint64_t vSize);
+		static VulkanBufferObjectPtr createStagingBufferObject(uint64_t vSize);
+		static VulkanBufferObjectPtr createStorageBufferObject(uint64_t vSize, VmaMemoryUsage vMemoryUsage);
+		static VulkanBufferObjectPtr createGPUOnlyStorageBufferObject(void* vData, uint64_t vSize);
 
-		template<class T> static std::shared_ptr<VulkanBufferObject> createVertexBufferObject(const std::vector<T>& data, bool vUseSSBO = false, bool vUseTransformFeedback = false);
-		template<class T> static std::shared_ptr<VulkanBufferObject> createIndexBufferObject(const std::vector<T>& data);
+		template<class T> static VulkanBufferObjectPtr createVertexBufferObject(const std::vector<T>& data, bool vUseSSBO = false, bool vUseTransformFeedback = false);
+		template<class T> static VulkanBufferObjectPtr createIndexBufferObject(const std::vector<T>& data);
 	};
 
 	template<class T>
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createVertexBufferObject(const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback)
+	VulkanBufferObjectPtr VulkanBuffer::createVertexBufferObject(const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback)
 	{
 		vk::BufferCreateInfo stagingBufferInfo = {};
 		VmaAllocationCreateInfo stagingAllocInfo = {};
@@ -60,7 +62,7 @@ namespace vkApi
 	}
 
 	template<class T>
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createIndexBufferObject(const std::vector<T>& data)
+	VulkanBufferObjectPtr VulkanBuffer::createIndexBufferObject(const std::vector<T>& data)
 	{
 		vk::BufferCreateInfo stagingBufferInfo = {};
 		VmaAllocationCreateInfo stagingAllocInfo = {};

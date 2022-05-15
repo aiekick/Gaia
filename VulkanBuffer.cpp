@@ -44,11 +44,11 @@ namespace vkApi
 		VulkanCommandBuffer::flushSingleTimeCommands(cmd, true, vCommandPool);
 	}
 
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createSharedBufferObject(const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info)
+	VulkanBufferObjectPtr VulkanBuffer::createSharedBufferObject(const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info)
 	{
 		ZoneScoped;
 
-		auto data = std::shared_ptr<VulkanBufferObject>(new VulkanBufferObject, [](VulkanBufferObject* obj)
+		auto data = VulkanBufferObjectPtr(new VulkanBufferObject, [](VulkanBufferObject* obj)
 			{
 				vmaDestroyBuffer(VulkanCore::Instance()->getMemAllocator(), (VkBuffer)obj->buffer, obj->alloc_meta);
 			});
@@ -57,7 +57,7 @@ namespace vkApi
 		return data;
 	}
 
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createUniformBufferObject(uint64_t vSize)
+	VulkanBufferObjectPtr VulkanBuffer::createUniformBufferObject(uint64_t vSize)
 	{
 		ZoneScoped;
 
@@ -69,7 +69,7 @@ namespace vkApi
 		return createSharedBufferObject(sbo_create_info, sbo_alloc_info);
 	}
 
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createStagingBufferObject(uint64_t vSize)
+	VulkanBufferObjectPtr VulkanBuffer::createStagingBufferObject(uint64_t vSize)
 	{
 		ZoneScoped;
 
@@ -81,7 +81,7 @@ namespace vkApi
 		return createSharedBufferObject(stagingBufferInfo, stagingAllocInfo);
 	}
 
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createStorageBufferObject(uint64_t vSize, VmaMemoryUsage vMemoryUsage)
+	VulkanBufferObjectPtr VulkanBuffer::createStorageBufferObject(uint64_t vSize, VmaMemoryUsage vMemoryUsage)
 	{
 		ZoneScoped;
 
@@ -108,7 +108,7 @@ namespace vkApi
 		return 0;
 	}
 
-	std::shared_ptr<VulkanBufferObject> VulkanBuffer::createGPUOnlyStorageBufferObject(void* vData, uint64_t vSize)
+	VulkanBufferObjectPtr VulkanBuffer::createGPUOnlyStorageBufferObject(void* vData, uint64_t vSize)
 	{
 		if (vData && vSize)
 		{
