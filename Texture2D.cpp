@@ -266,7 +266,7 @@ bool Texture2D::LoadMemory(
 		m_DescriptorImageInfo.imageView = m_TextureView;
 		m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
-		m_Ratio = (float)m_Height / (float)m_Width;
+		m_Ratio = (float)m_Width / (float)m_Height;
 
 		m_Loaded = true;
 	}
@@ -370,7 +370,7 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 	m_DescriptorImageInfo.imageView = m_TextureView;
 	m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
-	m_Ratio = (float)m_Height / (float)m_Width;
+	m_Ratio = (float)m_Width / (float)m_Height;
 
 	m_Loaded = true;
 
@@ -419,7 +419,7 @@ bool Texture2D::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat
 	m_DescriptorImageInfo.imageView = m_TextureView;
 	m_DescriptorImageInfo.imageLayout = vk::ImageLayout::eGeneral;
 
-	m_Ratio = (float)m_Height / (float)m_Width;
+	m_Ratio = (float)m_Width / (float)m_Height;
 
 	m_Loaded = true;
 
