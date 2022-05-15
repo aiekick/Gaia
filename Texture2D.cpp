@@ -105,7 +105,7 @@ vk::DescriptorImageInfo Texture2D::GetImageInfoFromMemory(uint8_t* buffer, const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::shared_ptr<Texture2D> Texture2D::CreateFromFile(std::string vFilePathName)
+Texture2DPtr Texture2D::CreateFromFile(std::string vFilePathName)
 {
 	ZoneScoped;
 
@@ -119,7 +119,7 @@ std::shared_ptr<Texture2D> Texture2D::CreateFromFile(std::string vFilePathName)
 	return res;
 }
 
-std::shared_ptr<Texture2D> Texture2D::CreateFromMemory(uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels)
+Texture2DPtr Texture2D::CreateFromMemory(uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels)
 {
 	ZoneScoped;
 
@@ -133,7 +133,7 @@ std::shared_ptr<Texture2D> Texture2D::CreateFromMemory(uint8_t* buffer, const ui
 	return res;
 }
 
-std::shared_ptr<Texture2D> Texture2D::CreateEmptyTexture(ct::uvec2 vSize, vk::Format vFormat)
+Texture2DPtr Texture2D::CreateEmptyTexture(ct::uvec2 vSize, vk::Format vFormat)
 {
 	ZoneScoped;
 
@@ -147,7 +147,7 @@ std::shared_ptr<Texture2D> Texture2D::CreateEmptyTexture(ct::uvec2 vSize, vk::Fo
 	return res;
 }
 
-std::shared_ptr<Texture2D> Texture2D::CreateEmptyImage(ct::uvec2 vSize, vk::Format vFormat)
+Texture2DPtr Texture2D::CreateEmptyImage(ct::uvec2 vSize, vk::Format vFormat)
 {
 	ZoneScoped;
 
@@ -432,6 +432,7 @@ void Texture2D::Destroy()
 
 	if (!m_Loaded) return;
 
+	VulkanCore::Instance()->getDevice().waitIdle();
 	VulkanCore::Instance()->getDevice().destroySampler(m_Sampler);
 	VulkanCore::Instance()->getDevice().destroyImageView(m_TextureView);
 	m_Texture2D.reset();

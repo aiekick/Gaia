@@ -1,9 +1,14 @@
 #pragma once
 
+#include <ctools/cTools.h>
 #include <vulkan/vulkan.hpp>
 #include <vkFramework/VulkanCore.h>
 #include <vkFramework/VulkanImage.h>
 #include <string>
+
+class Texture2D;
+typedef std::shared_ptr<Texture2D> Texture2DPtr;
+typedef ct::cWeak<Texture2D> Texture2DWeak;
 
 class Texture2D
 {
@@ -13,10 +18,10 @@ public:
 	static vk::DescriptorImageInfo GetImageInfoFromMemory(uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
 
 public:
-	static std::shared_ptr<Texture2D> CreateFromFile(std::string vFilePathName);
-	static std::shared_ptr<Texture2D> CreateFromMemory(uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
-	static std::shared_ptr<Texture2D> CreateEmptyTexture(ct::uvec2 vSize, vk::Format vFormat);
-	static std::shared_ptr<Texture2D> CreateEmptyImage(ct::uvec2 vSize, vk::Format vFormat);
+	static Texture2DPtr CreateFromFile(std::string vFilePathName);
+	static Texture2DPtr CreateFromMemory(uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
+	static Texture2DPtr CreateEmptyTexture(ct::uvec2 vSize, vk::Format vFormat);
+	static Texture2DPtr CreateEmptyImage(ct::uvec2 vSize, vk::Format vFormat);
 
 public:
 	std::shared_ptr<VulkanImageObject> m_Texture2D = nullptr;

@@ -122,10 +122,10 @@ void ImGuiTexture::ClearDescriptor()
 {
 	ZoneScoped;
 
+	canDisplayPreview = false;
 	firstLoad = true;
 	descriptor = vk::DescriptorSet{};
-	canDisplayPreview = false;
-
+	
 	//LogVarDebug("Debug : imGui Descriptor Cleared");
 }
 
