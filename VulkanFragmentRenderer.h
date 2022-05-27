@@ -97,8 +97,8 @@ namespace vkApi
 		std::vector<vkApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t* vMaxBuffers = 0);
 
 	private:
-		bool CreateCommanBuffer();
-		void DestroyCommanBuffer();
+		bool CreateCommandBuffer();
+		void DestroyCommandBuffer();
 		bool CreateSyncObjects();
 		void DestroySyncObjects();
 		bool CreateFrameBuffers(

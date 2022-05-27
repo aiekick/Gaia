@@ -55,7 +55,7 @@ namespace vkApi
 			m_ClearColor = vClearColor;
 
 			if (CreateFrameBuffers(vSize, vCountColorBuffer, m_UseDepth, m_NeedToClear, m_ClearColor)) // renderpass est créé dans createFrameBuffers
-				if (CreateCommanBuffer())
+				if (CreateCommandBuffer())
 					if (CreateSyncObjects())
 						m_Loaded = true;
 		}
@@ -79,7 +79,7 @@ namespace vkApi
 		m_Device.waitIdle();
 
 		DestroySyncObjects();
-		DestroyCommanBuffer();
+		DestroyCommandBuffer();
 		DestroyFrameBuffers();
 	}
 
@@ -306,7 +306,7 @@ namespace vkApi
 	//// PRIVATE / COMMANDBUFFER ///////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	bool VulkanFragmentRenderer::CreateCommanBuffer()
+	bool VulkanFragmentRenderer::CreateCommandBuffer()
 	{
 		ZoneScoped;
 
@@ -321,7 +321,7 @@ namespace vkApi
 		return true;
 	}
 
-	void VulkanFragmentRenderer::DestroyCommanBuffer()
+	void VulkanFragmentRenderer::DestroyCommandBuffer()
 	{
 		ZoneScoped;
 
