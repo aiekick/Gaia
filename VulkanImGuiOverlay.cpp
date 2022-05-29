@@ -81,6 +81,11 @@ namespace vkApi
 		VulkanImGuiRenderer::Instance()->CreateFontsTexture();
 	}
 
+	VulkanImGuiOverlay::~VulkanImGuiOverlay()
+	{
+		Destroy(); // detuire les descripteur de imgui
+	}
+
 	void VulkanImGuiOverlay::Destroy()
 	{
 		ZoneScoped;

@@ -11,7 +11,7 @@ namespace vkApi
 	{
 	public:
 		VulkanImGuiOverlay();
-		~VulkanImGuiOverlay() = default;
+		~VulkanImGuiOverlay();
 
 		void Destroy();
 
