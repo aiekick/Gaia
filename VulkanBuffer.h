@@ -30,7 +30,7 @@ namespace vkApi
 		static VulkanBufferObjectPtr createGPUOnlyStorageBufferObject(void* vData, uint64_t vSize);
 
 		template<class T> static VulkanBufferObjectPtr createVertexBufferObject(const std::vector<T>& data, bool vUseSSBO = false, bool vUseTransformFeedback = false);
-		template<class T> static VulkanBufferObjectPtr createIndexBufferObject(const std::vector<T>& data);
+		template<class T> static VulkanBufferObjectPtr createIndexBufferObject(const std::vector<T>& data, bool vUseSSBO = false, bool vUseTransformFeedback = false);
 	};
 
 	template<class T>
@@ -62,7 +62,7 @@ namespace vkApi
 	}
 
 	template<class T>
-	VulkanBufferObjectPtr VulkanBuffer::createIndexBufferObject(const std::vector<T>& data)
+	VulkanBufferObjectPtr VulkanBuffer::createIndexBufferObject(const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback)
 	{
 		vk::BufferCreateInfo stagingBufferInfo = {};
 		VmaAllocationCreateInfo stagingAllocInfo = {};
@@ -76,6 +76,9 @@ namespace vkApi
 		VmaAllocationCreateInfo vboAllocInfo = {};
 		vboInfo.size = data.size() * sizeof(T);
 		vboInfo.usage = vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst;
+		if (vUseSSBO) vboInfo.usage = vboInfo.usage | vk::BufferUsageFlagBits::eStorageBuffer;
+		if (vUseTransformFeedback) vboInfo.usage = vboInfo.usage | vk::BufferUsageFlagBits::eTransformFeedbackBufferEXT;
+
 		vboAllocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
 		auto vbo = createSharedBufferObject(vboInfo, vboAllocInfo);
 
