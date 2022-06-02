@@ -6,6 +6,13 @@
 #define TRACE_MEMORY
 #include <vkProfiler/Profiler.h>
 
+ImGuiTexturePtr ImGuiTexture::Create()
+{
+	ImGuiTexturePtr res = std::make_shared<ImGuiTexture>();
+	res->m_This = res;
+	return res;
+}
+
 ImGuiTexture::~ImGuiTexture()
 {
 	ZoneScoped;

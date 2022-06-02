@@ -1,12 +1,21 @@
 #pragma once
 
+#include <ctools/cTools.h>
 #include <vulkan/vulkan.hpp>
-#include <vkFramework/VulkanFrameBufferAttachment.h>
 #include <vkFramework/VulkanComputeImageTarget.h>
+#include <vkFramework/VulkanFrameBufferAttachment.h>
+
+class ImGuiTexture;
+typedef std::shared_ptr<ImGuiTexture> ImGuiTexturePtr;
+typedef ct::cWeak<ImGuiTexture> ImGuiTextureWeak;
 
 class ImGuiTexture
 {
 public:
+	static ImGuiTexturePtr Create();
+
+public:
+	ImGuiTextureWeak m_This;
 	vk::DescriptorSet descriptor = {};
 	float ratio = 0.0f;
 	bool canDisplayPreview = false;
