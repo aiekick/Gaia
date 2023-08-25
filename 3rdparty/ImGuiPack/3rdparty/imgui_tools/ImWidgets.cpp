@@ -2970,10 +2970,10 @@ bool ImGui::ContrastedCombo(float vWidth, const char* label, int* current_item, 
     return value_changed;
 }
 
-bool ImGui::ContrastedComboVectorDefault(float vWidth, const char* label, int* current_item, const std::vector<std::string>& items, int items_count, int vDefault, int height_in_items) {
+bool ImGui::ContrastedComboVectorDefault(float vWidth, const char* label, int* current_item, const std::vector<std::string>& items, int vDefault, int height_in_items) {
     bool change = false;
 
-    if (items_count > 0) {
+    if (!items.empty()) {
         ImGui::PushID(++CustomStyle::pushId);
 
         change = ImGui::ContrastedButton(BUTTON_LABEL_RESET, "Reset");
@@ -2988,7 +2988,7 @@ bool ImGui::ContrastedComboVectorDefault(float vWidth, const char* label, int* c
                 *out_text = ((const std::vector<std::string>*)data)->at(idx).c_str();
                 return true;
             },
-            (void*)&items, items_count, height_in_items);
+            (void*)&items, (int32_t)items.size(), height_in_items);
 
         ImGui::PopID();
     }
