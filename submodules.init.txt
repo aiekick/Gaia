@@ -1,0 +1,7 @@
+git submodule add --force -b "master" https://github.com/KhronosGroup/glslang.git 3rdparty/glslang
+git submodule add --force -b "master" https://github.com/glfw/glfw.git 3rdparty/glfw
+git submodule add --force -b "master" https://github.com/aiekick/cTools.git 3rdparty/ctools
+git submodule add --force -b "master" https://github.com/aiekick/ImGuiPack.git 3rdparty/ImGuiPack
+git submodule add --force -b "master" https://github.com/g-truc/glm.git 3rdparty/glm
+
+

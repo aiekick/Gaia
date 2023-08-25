@@ -1,0 +1,22 @@
+*.o
+*.a
+*.so
+*.exe
+.vscode/
+tags
+TAGS
+bazel-*
+build/
+Test/localResults/
+External/googletest
+out/
+
+# GN generated files
+.cipd/
+*.gclient_entries
+third_party/
+buildtools/
+
+# Random OS stuff
+.DS_Store
+._*
