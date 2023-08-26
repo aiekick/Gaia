@@ -100,7 +100,7 @@ if (GAIA_DEBUG_PRINT)
 	add_compile_definitions(${PROJECT} PRIVATE PRINT_BLOCK_DATAS)
 endif()
 
-target_link_libraries(${PROJECT} PUBLIC 
+target_link_libraries(${PROJECT} 
 	${GLFW_LIBRARIES}
 	${TRACY_LIBRARIES}
 	${CTOOLS_LIBRARIES}
