@@ -18,12 +18,16 @@
 #define MESSAGING_TYPE_DEBUG 5
 #endif  // MESSAGING_TYPE_DEBUG
 
+#if defined(USE_GAIA_SHARED_LIBS)
 #if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
 #if defined(Gaia_EXPORTS)
 #define GAIA_API __declspec(dllexport)
 #elif defined(BUILD_SHARED_LIBS)
 #define GAIA_API __declspec(dllimport)
 #define VULKAN_HPP_STORAGE_SHARED
+#else
+#define GAIA_API
+#endif
 #else
 #define GAIA_API
 #endif
