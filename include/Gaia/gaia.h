@@ -23,6 +23,7 @@
 #define GAIA_API __declspec(dllexport)
 #elif defined(BUILD_SHARED_LIBS)
 #define GAIA_API __declspec(dllimport)
+#define VULKAN_HPP_STORAGE_SHARED
 #else
 #define GAIA_API
 #endif
