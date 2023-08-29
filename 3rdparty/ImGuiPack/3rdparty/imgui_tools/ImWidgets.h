@@ -448,7 +448,40 @@ IMGUI_API bool ContrastedComboVectorDefault(float vWidth, const char* label, int
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IMGUI_API bool InputFloatDefault(float vWidth, const char* vName, float* vVar, float vDefault, const char* vInputPrec = "%.3f", const char* vPopupPrec = "%.3f", bool vShowResetButton = true, float vStep = 0.0f, float vStepFast = 0.0f);
+IMGUI_API bool InputDoubleDefault(float vWidth, const char* vName, double* vVar, double vDefault, const char* vInputPrec = "%.3f", const char* vPopupPrec = "%.3f", bool vShowResetButton = true, double vStep = 0.0, double vStepFast = 0.0);
 IMGUI_API bool InputFloatDefaultStepper(float vWidth, const char* vName, float* vVar, float vDefault, float vStep, float vStepFast, const char* vInputPrec = "%.3f", const char* vPopupPrec = "%.3f", bool vShowResetButton = true);
 IMGUI_API bool InputIntDefault(float vWidth, const char* vName, int* vVar, int step, int step_fast, int vDefault);
+IMGUI_API bool InputUIntDefault(float vWidth, const char* vName, uint32_t* vVar, uint32_t step, uint32_t step_fast, uint32_t vDefault);
 
 }  // namespace ImGui
+
+namespace ImWidgets {
+class IMGUI_API InputText {
+private:
+    static constexpr size_t m_Len = 512U;
+    char buffer[m_Len + 1] = "";
+    std::string m_Text;
+
+public:
+    InputText() = default;
+    InputText(const std::string& vText) { SetText(vText); }
+
+    bool DisplayInputText(const float& vWidth, const std::string& vLabel, const std::string& vDefaultText);
+    void SetText(const std::string& vText);
+    std::string GetText(const std::string& vNumericType = "") const;
+    const char* GetConstCharPtrText() const;
+};
+
+class IMGUI_API QuickStringCombo {
+private:
+    std::vector<std::string> m_Array;
+
+public:
+    int32_t index = 0;
+
+public:
+    QuickStringCombo() = default;
+    QuickStringCombo(const int32_t& vDefaultIndex, const std::vector<std::string>& vArray);
+    bool DisplayCombo(const float& vWidth, const char* vLabel);
+};
+}  // namespace ImWidgets

@@ -3000,7 +3000,7 @@ bool ImGui::ContrastedComboVectorDefault(float vWidth, const char* label, int* c
 ///// INPUT ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-IMGUI_API bool ImGui::InputFloatDefault(float vWidth, const char* vName, float* vVar, float vDefault, const char* vInputPrec, const char* vPopupPrec, bool vShowResetButton, float vStep, float vStepFast) {
+bool ImGui::InputFloatDefault(float vWidth, const char* vName, float* vVar, float vDefault, const char* vInputPrec, const char* vPopupPrec, bool vShowResetButton, float vStep, float vStepFast) {
     bool change = false;
 
     const float padding = ImGui::GetStyle().FramePadding.x;
@@ -3031,6 +3031,41 @@ IMGUI_API bool ImGui::InputFloatDefault(float vWidth, const char* vName, float* 
         ImGui::SetTooltip(vPopupPrec, *vVar);
 
     return change;
+}
+
+bool ImGui::InputDoubleDefault(float vWidth, const char* vName, double* vVar, double vDefault, const char* vInputPrec, const char* vPopupPrec, bool vShowResetButton, double vStep, double vStepFast)
+{
+	bool change = false;
+
+	const float padding = ImGui::GetStyle().FramePadding.x;
+
+	/*if (!ImGui::GetCurrentWindow()->ScrollbarY)
+	{
+		vWidth -= ImGui::GetStyle().ScrollbarSize;
+	}*/
+
+	float w = vWidth - padding * 2.0f;// -24;
+
+	if (vShowResetButton)
+	{
+        change = ImGui::ContrastedButton(BUTTON_LABEL_RESET);
+		w -= ImGui::GetItemRectSize().x - ImGui::GetStyle().ItemInnerSpacing.x * 2.0f;
+		if (change)
+			*vVar = vDefault;
+	}
+
+	ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+	ImGui::PushID(++CustomStyle::pushId);
+	ImGui::PushItemWidth(w);
+	change |= ImGui::InputDouble(vName, vVar, vStep, vStepFast, vInputPrec);
+	ImGui::PopItemWidth();
+	ImGui::PopID();
+
+	if (ImGui::IsItemActive() || ImGui::IsItemHovered())
+		ImGui::SetTooltip(vPopupPrec, *vVar);
+
+	return change;
 }
 
 bool ImGui::InputFloatDefaultStepper(float vWidth, const char* vName, float* vVar, float vDefault, float vStep, float vStepFast, const char* vInputPrec, const char* vPopupPrec, bool vShowResetButton) {
@@ -3077,7 +3112,7 @@ bool ImGui::InputFloatDefaultStepper(float vWidth, const char* vName, float* vVa
     return change;
 }
 
-IMGUI_API bool ImGui::InputIntDefault(float vWidth, const char* vName, int* vVar, int step, int step_fast, int vDefault) {
+bool ImGui::InputIntDefault(float vWidth, const char* vName, int* vVar, int step, int step_fast, int vDefault) {
     bool change = false;
 
     const float padding = ImGui::GetStyle().FramePadding.x;
@@ -3103,4 +3138,101 @@ IMGUI_API bool ImGui::InputIntDefault(float vWidth, const char* vName, int* vVar
         ImGui::SetTooltip("%.3f", *vVar);
 
     return change;
+}
+
+bool ImGui::InputUIntDefault(
+    float vWidth, const char* vName, uint32_t* vVar, uint32_t step, uint32_t step_fast, uint32_t vDefault) {
+    bool change = false;
+
+    const float padding = ImGui::GetStyle().FramePadding.x;
+
+    if (!ImGui::GetCurrentWindow()->ScrollbarY) {
+        vWidth -= ImGui::GetStyle().ScrollbarSize;
+    }
+
+    change = ImGui::ContrastedButton(BUTTON_LABEL_RESET);
+    const float w = vWidth - ImGui::GetItemRectSize().x - padding * 2.0f - 24;
+    if (change)
+        *vVar = vDefault;
+
+    ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+    ImGui::PushID(++CustomStyle::pushId);
+    ImGui::PushItemWidth(w);
+    change |= InputScalar(vName, ImGuiDataType_U32, (void*)vVar, (void*)(step > 0 ? &step : NULL),
+        (void*)(step_fast > 0 ? &step_fast : NULL), "%d", 0);
+    ImGui::PopItemWidth();
+    ImGui::PopID();
+
+    if (ImGui::IsItemActive() || ImGui::IsItemHovered())
+        ImGui::SetTooltip("%.3f", *vVar);
+
+    return change;
+}
+
+bool ImWidgets::InputText::DisplayInputText(
+    const float& vWidth, const std::string& vLabel, const std::string& vDefaultText) {
+    bool res = false;
+    float px = ImGui::GetCursorPosX();
+    ImGui::Text(vLabel.c_str());
+    ImGui::SameLine();
+    const float w = vWidth - (ImGui::GetCursorPosX() - px);
+    ImGui::PushID(++ImGui::CustomStyle::pushId);
+    ImGui::PushItemWidth(w);
+    if (buffer[0] == '\0')  // default text
+    {
+        SetText(vDefaultText);
+    }
+    if (ImGui::InputText("##ImWidgets_InputText_DisplayInputText", buffer, 512)) {
+        m_Text = std::string(buffer, strlen(buffer));
+        res = true;
+    }
+    ImGui::PopItemWidth();
+    ImGui::PopID();
+    return res;
+}
+
+void ImWidgets::InputText::SetText(const std::string& vText) {
+    m_Text = vText;
+    size_t len = m_Len;
+    if (vText.size() < len)
+        len = vText.size();
+#ifdef _MSC_VER
+    strncpy_s(buffer, vText.c_str(), len);
+#else
+    strncpy(buffer, vText.c_str(), len);
+#endif
+}
+
+std::string ImWidgets::InputText::GetText(const std::string& vNumericType) const {
+    if (vNumericType == "float") {
+        auto pos = m_Text.find('.');
+        if (pos == std::string::npos) {
+            return m_Text + ".0f";
+        } else {
+            auto pos = m_Text.find('f');
+            if (pos == std::string::npos) {
+                return m_Text + "f";
+            } else {
+                return m_Text;
+            }
+        }
+    } else if (vNumericType == "uint") {
+        return m_Text + "U";
+    }
+
+    return m_Text;
+}
+
+const char* ImWidgets::InputText::GetConstCharPtrText() const { return m_Text.c_str(); }
+
+ImWidgets::QuickStringCombo::QuickStringCombo(const int32_t& vDefaultIndex, const std::vector<std::string>& vArray)
+    : m_Array(vArray) {
+    if (vDefaultIndex < m_Array.size()) {
+        index = vDefaultIndex;
+    }
+}
+
+bool ImWidgets::QuickStringCombo::DisplayCombo(const float& vWidth, const char* vLabel) {
+    return ImGui::ContrastedComboVectorDefault(vWidth, vLabel, &index, m_Array, 0);
 }
