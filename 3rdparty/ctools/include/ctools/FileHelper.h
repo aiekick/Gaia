@@ -29,16 +29,12 @@ SOFTWARE.
 #include <map>
 #include <memory>
 
-#if defined(USE_CTOOLS_SHARED_LIBS)
 #if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || \
     defined(_WIN64) || defined(_MSC_VER)
 #if defined(ctools_EXPORTS)
 #define CTOOLS_API __declspec(dllexport)
-#elif defined(BUILD_SHARED_LIBS)
+#elif defined(BUILD_CTOOLS_SHARED_LIBS)
 #define CTOOLS_API __declspec(dllimport)
-#else
-#define CTOOLS_API
-#endif
 #else
 #define CTOOLS_API
 #endif
@@ -97,6 +93,7 @@ public: // funcs
 #ifdef _DEBUG
 	void Test_GetRelativePathToPath();
 #endif
+    std::string GetAppRelativeFilePathName(const std::string& vFilePathName);
 	std::string GetRelativePathToPath(const std::string& vFilePathName, const std::string& vRootPath);
 	bool IsAbsolutePath(const std::string& vFilePathName);
 

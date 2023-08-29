@@ -34,24 +34,17 @@
 #pragma GCC diagnostic ignored "-Wclass-memaccess"      // [__GNUC__ >= 8] warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
 #endif
 
-#if defined(USE_IMGUI_PACK_SHARED_LIBS)
 #if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
 #if defined(ImGuiPack_EXPORTS)
 #define IMGUI_API __declspec(dllexport)
 #define IMPLOT_API __declspec(dllexport)
 #define IGFD_API __declspec(dllexport)
 #define IMGUI_IMPL_API __declspec(dllexport)
-#elif defined(BUILD_SHARED_LIBS)
+#elif defined(IMGUI_PACK_SHARED_LIBS)
 #define IMGUI_API __declspec(dllimport)
 #define IMPLOT_API __declspec(dllimport)
 #define IGFD_API __declspec(dllimport)
 #define IMGUI_IMPL_API __declspec(dllimport)
-#else
-#define IMGUI_API
-#define IMPLOT_API
-#define IGFD_API
-#define IMGUI_IMPL_API
-#endif
 #else
 #define IMGUI_API
 #define IMPLOT_API

@@ -17,9 +17,8 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <vulkan/vulkan.hpp>
-#include <Gaia/Core/vk_mem_alloc.h>
 #include <Gaia/gaia.h>
+#include <Gaia/Core/vk_mem_alloc.h>
 
 #include <ctools/cTools.h>
 

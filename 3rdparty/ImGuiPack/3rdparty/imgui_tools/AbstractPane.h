@@ -16,6 +16,31 @@ limitations under the License.
 
 #pragma once
 #pragma warning(disable : 4251)
+#pragma warning(disable : 4005)
+
+#if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
+#if defined(ImGuiPack_EXPORTS)
+#define IMGUI_API __declspec(dllexport)
+#define IMPLOT_API __declspec(dllexport)
+#define IGFD_API __declspec(dllexport)
+#define IMGUI_IMPL_API __declspec(dllexport)
+#elif defined(IMGUI_PACK_SHARED_LIBS)
+#define IMGUI_API __declspec(dllimport)
+#define IMPLOT_API __declspec(dllimport)
+#define IGFD_API __declspec(dllimport)
+#define IMGUI_IMPL_API __declspec(dllimport)
+#else
+#define IMGUI_API
+#define IMPLOT_API
+#define IGFD_API
+#define IMGUI_IMPL_API
+#endif
+#else
+#define IMGUI_API
+#define IMPLOT_API
+#define IGFD_API
+#define IMGUI_IMPL_API
+#endif
 
 #include <memory> // smart ptr
 #include <string>

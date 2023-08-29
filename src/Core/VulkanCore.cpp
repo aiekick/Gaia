@@ -23,6 +23,7 @@ limitations under the License.
 #include <Gaia/Core/VulkanSubmitter.h>
 #include <Gaia/Resources/Texture2D.h>
 #include <Gaia/Resources/TextureCube.h>
+#include <Gaia/Shader/VulkanShader.h>
 
 #define RECORD_VM_ALLOCATION
 
@@ -72,8 +73,8 @@ limitations under the License.
 static bool sGainFocus = false;
 
 namespace GaiApi {
-uint32_t VulkanCore::sApiVersion                        = VK_API_VERSION_1_0;
-VmaAllocator VulkanCore::sAllocator                     = nullptr;
+uint32_t VulkanCore::sApiVersion = VK_API_VERSION_1_0;
+VmaAllocator VulkanCore::sAllocator = nullptr;
 std::shared_ptr<VulkanShader> VulkanCore::sVulkanShader = nullptr;
 
 void VulkanCore::sDdestroyVmaAllocator(VmaAllocator* VmaAllocatorPtr) {
@@ -82,8 +83,14 @@ void VulkanCore::sDdestroyVmaAllocator(VmaAllocator* VmaAllocatorPtr) {
     }
 }
 
-VulkanCorePtr VulkanCore::Create(VulkanWindowPtr vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion, const bool& vCreateSwapChain, const bool& vUseRTX) {
-    auto res    = std::make_shared<VulkanCore>();
+VulkanCorePtr VulkanCore::Create(VulkanWindowPtr vVulkanWindow,
+    const std::string& vAppName,
+    const int& vAppVersion,
+    const std::string& vEngineName,
+    const int& vEngineVersion,
+    const bool& vCreateSwapChain,
+    const bool& vUseRTX) {
+    auto res = std::make_shared<VulkanCore>();
     res->m_This = res;
     if (!res->Init(vVulkanWindow, vAppName, vAppVersion, vEngineName, vEngineVersion, vCreateSwapChain, vUseRTX)) {
         res.reset();
@@ -119,21 +126,29 @@ void VulkanCore::check_error(vk::Result result) {
 }
 
 // MEMBERS
-bool VulkanCore::Init(VulkanWindowPtr vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion, const bool& vCreateSwapChain, const bool& vUseRTX) {
+bool VulkanCore::Init(VulkanWindowPtr vVulkanWindow,
+    const std::string& vAppName,
+    const int& vAppVersion,
+    const std::string& vEngineName,
+    const int& vEngineVersion,
+    const bool& vCreateSwapChain,
+    const bool& vUseRTX) {
     ZoneScoped;
 
     m_CreateSwapChain = vCreateSwapChain;
 
     glfwSetWindowFocusCallback(vVulkanWindow->getWindowPtr(), window_focus_callback);
 
-    m_VulkanDevicePtr = VulkanDevice::Create(vVulkanWindow, vAppName, vAppVersion, vEngineName, vEngineVersion, vUseRTX);
+    m_VulkanDevicePtr =
+        VulkanDevice::Create(vVulkanWindow, vAppName, vAppVersion, vEngineName, vEngineVersion, vUseRTX);
     if (m_VulkanDevicePtr) {
         // Supported Features
         m_SupportedFeatures.is_RTX_Supported = m_VulkanDevicePtr->GetRTXUse();
 
         setupMemoryAllocator();
         if (m_CreateSwapChain) {
-            m_VulkanSwapChainPtr = VulkanSwapChain::Create(vVulkanWindow, m_This.lock(), std::bind(&VulkanCore::resize, this));
+            m_VulkanSwapChainPtr =
+                VulkanSwapChain::Create(vVulkanWindow, m_This.lock(), std::bind(&VulkanCore::resize, this));
         }
         setupGraphicCommandsAndSynchronization();
         setupComputeCommandsAndSynchronization();
@@ -141,16 +156,19 @@ bool VulkanCore::Init(VulkanWindowPtr vVulkanWindow, const std::string& vAppName
 
 #ifdef TRACY_ENABLE
 #ifdef ENABLE_CALIBRATED_CONTEXT
-        m_TracyContext = TracyVkContextCalibrated(getPhysicalDevice(), getDevice(), getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer(),
-                                                  vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, vkGetCalibratedTimestampsEXT);
+        m_TracyContext = TracyVkContextCalibrated(getPhysicalDevice(), getDevice(),
+            getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer(),
+            vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, vkGetCalibratedTimestampsEXT);
 #else
-        m_TracyContext = TracyVkContext(getPhysicalDevice(), getDevice(), getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer());
+        m_TracyContext = TracyVkContext(getPhysicalDevice(), getDevice(),
+            getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer());
 #endif
 
         tracy::SetThreadName("Main");
 #endif
-        m_EmptyTexture2DPtr   = Texture2D::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
-        m_EmptyTextureCubePtr = TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTexture2DPtr = Texture2D::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTextureCubePtr =
+            TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
 
         return true;
     }
@@ -190,29 +208,17 @@ void VulkanCore::Unit() {
 //// PUBLIC // QUICK GET /////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vk::RenderPass VulkanCore::getMainRenderPass() const {
-    return m_VulkanSwapChainPtr->m_RenderPass;
-}
+vk::RenderPass VulkanCore::getMainRenderPass() const { return m_VulkanSwapChainPtr->m_RenderPass; }
 
-vk::RenderPass& VulkanCore::getMainRenderPassRef() {
-    return m_VulkanSwapChainPtr->m_RenderPass;
-}
+vk::RenderPass& VulkanCore::getMainRenderPassRef() { return m_VulkanSwapChainPtr->m_RenderPass; }
 
 vk::CommandBuffer VulkanCore::getGraphicCommandBuffer() const {
     return m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex];
 }
-vk::SurfaceKHR VulkanCore::getSurface() const {
-    return m_VulkanSwapChainPtr->getSurface();
-}
-VulkanSwapChainWeak VulkanCore::getSwapchain() const {
-    return m_VulkanSwapChainPtr;
-}
-vk::Viewport VulkanCore::getViewport() const {
-    return m_VulkanSwapChainPtr->getViewport();
-}
-vk::Rect2D VulkanCore::getRenderArea() const {
-    return m_VulkanSwapChainPtr->getRenderArea();
-}
+vk::SurfaceKHR VulkanCore::getSurface() const { return m_VulkanSwapChainPtr->getSurface(); }
+VulkanSwapChainWeak VulkanCore::getSwapchain() const { return m_VulkanSwapChainPtr; }
+vk::Viewport VulkanCore::getViewport() const { return m_VulkanSwapChainPtr->getViewport(); }
+vk::Rect2D VulkanCore::getRenderArea() const { return m_VulkanSwapChainPtr->getRenderArea(); }
 std::array<vk::Semaphore, VulkanSwapChain::SWAPCHAIN_IMAGES_COUNT> VulkanCore::getPresentSemaphores() {
     return m_VulkanSwapChainPtr->m_PresentCompleteSemaphores;
 }
@@ -223,12 +229,8 @@ vk::SampleCountFlagBits VulkanCore::getSwapchainFrameBufferSampleCount() const {
     return m_VulkanSwapChainPtr->getSwapchainFrameBufferSampleCount();
 }
 
-Texture2DWeak VulkanCore::getEmptyTexture2D() const {
-    return m_EmptyTexture2DPtr;
-}
-TextureCubeWeak VulkanCore::getEmptyTextureCube() const {
-    return m_EmptyTextureCubePtr;
-}
+Texture2DWeak VulkanCore::getEmptyTexture2D() const { return m_EmptyTexture2DPtr; }
+TextureCubeWeak VulkanCore::getEmptyTextureCube() const { return m_EmptyTextureCubePtr; }
 vk::DescriptorImageInfo* VulkanCore::getEmptyTexture2DDescriptorImageInfo() const {
     return &m_EmptyTexture2DPtr->m_DescriptorImageInfo;
 }
@@ -237,49 +239,29 @@ vk::DescriptorImageInfo* VulkanCore::getEmptyTextureCubeDescriptorImageInfo() co
 }
 
 // when the NullDescriptor Feature is enabled
-vk::DescriptorBufferInfo* VulkanCore::getEmptyDescriptorBufferInfo() {
-    return &m_EmptyDescriptorBufferInfo;
-}
-vk::BufferView* VulkanCore::getEmptyBufferView() {
-    return &m_EmptyBufferView;
-}
+vk::DescriptorBufferInfo* VulkanCore::getEmptyDescriptorBufferInfo() { return &m_EmptyDescriptorBufferInfo; }
+vk::BufferView* VulkanCore::getEmptyBufferView() { return &m_EmptyBufferView; }
 
-vk::Instance VulkanCore::getInstance() const {
-    return m_VulkanDevicePtr->m_Instance;
-}
-vk::PhysicalDevice VulkanCore::getPhysicalDevice() const {
-    return m_VulkanDevicePtr->m_PhysDevice;
-}
-vk::Device VulkanCore::getDevice() const {
-    return m_VulkanDevicePtr->m_LogDevice;
-}
-VulkanDeviceWeak VulkanCore::getFrameworkDevice() {
-    return m_VulkanDevicePtr;
-}
-vk::DescriptorPool VulkanCore::getDescriptorPool() const {
-    return m_DescriptorPool;
-}
-vk::CommandBuffer VulkanCore::getComputeCommandBuffer() const {
-    return m_ComputeCommandBuffers[0];
-}
-VulkanQueue VulkanCore::getQueue(vk::QueueFlagBits vQueueType) {
-    return m_VulkanDevicePtr->getQueue(vQueueType);
-}
+vk::Instance VulkanCore::getInstance() const { return m_VulkanDevicePtr->m_Instance; }
+vk::PhysicalDevice VulkanCore::getPhysicalDevice() const { return m_VulkanDevicePtr->m_PhysDevice; }
+vk::Device VulkanCore::getDevice() const { return m_VulkanDevicePtr->m_LogDevice; }
+VulkanDeviceWeak VulkanCore::getFrameworkDevice() { return m_VulkanDevicePtr; }
+vk::DescriptorPool VulkanCore::getDescriptorPool() const { return m_DescriptorPool; }
+vk::CommandBuffer VulkanCore::getComputeCommandBuffer() const { return m_ComputeCommandBuffers[0]; }
+VulkanQueue VulkanCore::getQueue(vk::QueueFlagBits vQueueType) { return m_VulkanDevicePtr->getQueue(vQueueType); }
 #ifdef PROFILER_INCLUDE
-TracyVkCtx VulkanCore::getTracyContext() {
-    return m_TracyContext;
-}
+TracyVkCtx VulkanCore::getTracyContext() { return m_TracyContext; }
 #endif  // PROFILER_INCLUDE
 void VulkanCore::SetVulkanImGuiRenderer(VulkanImGuiRendererWeak vVulkanImGuiRendererWeak) {
     m_VulkanImGuiRendererWeak = vVulkanImGuiRendererWeak;
 }
-VulkanImGuiRendererWeak VulkanCore::GetVulkanImGuiRenderer() {
-    return m_VulkanImGuiRendererWeak;
-}
+VulkanImGuiRendererWeak VulkanCore::GetVulkanImGuiRenderer() { return m_VulkanImGuiRendererWeak; }
+
+void VulkanCore::SetCurrentFrame(const uint32_t& vCurrentFrame) { vmaSetCurrentFrameIndex(sAllocator, vCurrentFrame); }
 
 float VulkanCore::GetDeltaTime(const uint32_t& vCurrentFrame) {
     static uint32_t current_frame = 0U;
-    static float delta_time       = 0.0f;
+    static float delta_time = 0.0f;
     if (vCurrentFrame != current_frame) {
         delta_time = ct::GetTimeInterval();
     }
@@ -294,7 +276,8 @@ vk::SampleCountFlagBits VulkanCore::GetMaxUsableSampleCount() {
     VkPhysicalDeviceProperties physicalDeviceProperties;
     vkGetPhysicalDeviceProperties((VkPhysicalDevice)m_VulkanDevicePtr->m_PhysDevice, &physicalDeviceProperties);
 
-    VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+    VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts &
+                                physicalDeviceProperties.limits.framebufferDepthSampleCounts;
     if (counts & VK_SAMPLE_COUNT_64_BIT) {
         return vk::SampleCountFlagBits::e64;
     }
@@ -351,17 +334,18 @@ bool VulkanCore::frameBegin() {
     FrameMark;
 
     if (m_CreateSwapChain) {
-        if (m_VulkanDevicePtr->m_LogDevice.waitForFences(1, &m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex], VK_TRUE, UINT64_MAX) == vk::Result::eSuccess) {
-            if (m_VulkanDevicePtr->m_LogDevice.resetFences(1, &m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex]) == vk::Result::eSuccess) {
+        if (m_VulkanDevicePtr->m_LogDevice.waitForFences(1,
+                &m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex], VK_TRUE,
+                UINT64_MAX) == vk::Result::eSuccess) {
+            if (m_VulkanDevicePtr->m_LogDevice.resetFences(1,
+                    &m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex]) == vk::Result::eSuccess) {
                 // todo : reset pool instead ?
                 // m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].reset(vk::CommandBufferResetFlagBits::eReleaseResources);
 
                 m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].begin(vk::CommandBufferBeginInfo());
 
 #ifdef PROFILER_INCLUDE
-                { 
-                    TracyVkZone(getTracyContext(), getGraphicCommandBuffer(), "Record Renderer Command buffer"); 
-                }
+                { TracyVkZone(getTracyContext(), getGraphicCommandBuffer(), "Record Renderer Command buffer"); }
 #endif  // PROFILER_INCLUDE
 
                 return true;
@@ -376,9 +360,12 @@ void VulkanCore::beginMainRenderPass() {
     ZoneScoped;
 
     if (m_CreateSwapChain) {
-        m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].beginRenderPass(vk::RenderPassBeginInfo(m_VulkanSwapChainPtr->m_RenderPass, m_VulkanSwapChainPtr->m_SwapchainFrameBuffers[m_VulkanSwapChainPtr->m_FrameIndex].frameBuffer,
-                                                                                                     m_VulkanSwapChainPtr->m_RenderArea, static_cast<uint32_t>(m_VulkanSwapChainPtr->m_ClearValues.size()), m_VulkanSwapChainPtr->m_ClearValues.data()),
-                                                                             vk::SubpassContents::eInline);
+        m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].beginRenderPass(
+            vk::RenderPassBeginInfo(m_VulkanSwapChainPtr->m_RenderPass,
+                m_VulkanSwapChainPtr->m_SwapchainFrameBuffers[m_VulkanSwapChainPtr->m_FrameIndex].frameBuffer,
+                m_VulkanSwapChainPtr->m_RenderArea, static_cast<uint32_t>(m_VulkanSwapChainPtr->m_ClearValues.size()),
+                m_VulkanSwapChainPtr->m_ClearValues.data()),
+            vk::SubpassContents::eInline);
     }
 }
 
@@ -394,11 +381,8 @@ void VulkanCore::frameEnd() {
     ZoneScoped;
 
     if (m_CreateSwapChain) {
-
 #ifdef PROFILER_INCLUDE
-        { 
-            TracyVkCollect(getTracyContext(), getGraphicCommandBuffer());
-        }
+        { TracyVkCollect(getTracyContext(), getGraphicCommandBuffer()); }
 #endif  // PROFILER_INCLUDE
 
         m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].end();
@@ -411,9 +395,11 @@ void VulkanCore::frameEnd() {
             .setCommandBufferCount(1)
             .setPCommandBuffers(&m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex])
             .setSignalSemaphoreCount(1)
-            .setPSignalSemaphores(&m_VulkanSwapChainPtr->m_RenderCompleteSemaphores[m_VulkanSwapChainPtr->m_FrameIndex]);
+            .setPSignalSemaphores(
+                &m_VulkanSwapChainPtr->m_RenderCompleteSemaphores[m_VulkanSwapChainPtr->m_FrameIndex]);
 
-        VulkanSubmitter::Submit(m_This.lock(), vk::QueueFlagBits::eGraphics, submitInfo, m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex]);
+        VulkanSubmitter::Submit(m_This.lock(), vk::QueueFlagBits::eGraphics, submitInfo,
+            m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex]);
 
         /*
         std::unique_lock<std::mutex> lck(VulkanSubmitter::criticalSectionMutex, std::defer_lock);
@@ -488,7 +474,8 @@ bool VulkanCore::submitComputeCmd(vk::CommandBuffer vCmd) {
             ;
 
         if (VulkanSubmitter::Submit(m_This.lock(), vk::QueueFlagBits::eCompute, submitInfo, m_ComputeWaitFences[0])) {
-            return (m_VulkanDevicePtr->m_LogDevice.waitForFences(1, &m_ComputeWaitFences[0], VK_TRUE, UINT64_MAX) == vk::Result::eSuccess);
+            return (m_VulkanDevicePtr->m_LogDevice.waitForFences(1, &m_ComputeWaitFences[0], VK_TRUE, UINT64_MAX) ==
+                    vk::Result::eSuccess);
         }
     }
 
@@ -517,7 +504,9 @@ void VulkanCore::Present() {
     ZoneScoped;
 
     if (m_CreateSwapChain) {
-        if (m_VulkanDevicePtr->m_LogDevice.waitForFences(1, &m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex], VK_TRUE, UINT64_MAX) == vk::Result::eSuccess) {
+        if (m_VulkanDevicePtr->m_LogDevice.waitForFences(1,
+                &m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex], VK_TRUE,
+                UINT64_MAX) == vk::Result::eSuccess) {
             m_VulkanSwapChainPtr->Present();
         }
     }
@@ -537,15 +526,17 @@ void VulkanCore::setupGraphicCommandsAndSynchronization() {
     ZoneScoped;
 
     // create draw commands
-    m_CommandBuffers =
-        m_VulkanDevicePtr->m_LogDevice.allocateCommandBuffers(vk::CommandBufferAllocateInfo(m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eGraphics).cmdPools, vk::CommandBufferLevel::ePrimary, VulkanSwapChain::SWAPCHAIN_IMAGES_COUNT));
+    m_CommandBuffers = m_VulkanDevicePtr->m_LogDevice.allocateCommandBuffers(
+        vk::CommandBufferAllocateInfo(m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eGraphics).cmdPools,
+            vk::CommandBufferLevel::ePrimary, VulkanSwapChain::SWAPCHAIN_IMAGES_COUNT));
 }
 
 void VulkanCore::setupComputeCommandsAndSynchronization() {
     ZoneScoped;
 
     // create command buffer for compute operation
-    m_ComputeCommandBuffers = m_VulkanDevicePtr->m_LogDevice.allocateCommandBuffers(vk::CommandBufferAllocateInfo(m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eCompute).cmdPools, vk::CommandBufferLevel::ePrimary, 1));
+    m_ComputeCommandBuffers = m_VulkanDevicePtr->m_LogDevice.allocateCommandBuffers(vk::CommandBufferAllocateInfo(
+        m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eCompute).cmdPools, vk::CommandBufferLevel::ePrimary, 1));
     // sync objects
 
     // Semaphore used to ensures that image presentation is complete before starting to submit again
@@ -553,7 +544,8 @@ void VulkanCore::setupComputeCommandsAndSynchronization() {
     m_ComputeCompleteSemaphores[0] = m_VulkanDevicePtr->m_LogDevice.createSemaphore(vk::SemaphoreCreateInfo());
     // Fence for command buffer completion
     m_ComputeWaitFences.resize(1);
-    m_ComputeWaitFences[0] = m_VulkanDevicePtr->m_LogDevice.createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
+    m_ComputeWaitFences[0] =
+        m_VulkanDevicePtr->m_LogDevice.createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
 }
 
 void VulkanCore::setupDescriptorPool() {
@@ -561,10 +553,14 @@ void VulkanCore::setupDescriptorPool() {
 
     // Descriptor Pool
     std::vector<vk::DescriptorPoolSize> descriptorPoolSizes = {
-        vk::DescriptorPoolSize(vk::DescriptorType::eSampler, 1000), vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eSampler, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, 1000),
         // vk::DescriptorPoolSize(vk::DescriptorType::eSampledImage, 1000),
-        vk::DescriptorPoolSize(vk::DescriptorType::eStorageImage, 1000), vk::DescriptorPoolSize(vk::DescriptorType::eUniformTexelBuffer, 1000), vk::DescriptorPoolSize(vk::DescriptorType::eStorageTexelBuffer, 1000),
-        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, 1000), vk::DescriptorPoolSize(vk::DescriptorType::eStorageBuffer, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eStorageImage, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eUniformTexelBuffer, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eStorageTexelBuffer, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, 1000),
+        vk::DescriptorPoolSize(vk::DescriptorType::eStorageBuffer, 1000),
         // vk::DescriptorPoolSize(vk::DescriptorType::eUniformBufferDynamic, 1000),
         // vk::DescriptorPoolSize(vk::DescriptorType::eStorageBufferDynamic, 1000),
         // vk::DescriptorPoolSize(vk::DescriptorType::eInputAttachment, 1000)
@@ -574,21 +570,25 @@ void VulkanCore::setupDescriptorPool() {
         descriptorPoolSizes.push_back(vk::DescriptorPoolSize(vk::DescriptorType::eAccelerationStructureKHR, 1000));
     }
 
-    m_DescriptorPool = m_VulkanDevicePtr->m_LogDevice.createDescriptorPool(vk::DescriptorPoolCreateInfo(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
-                                                                                                        /*vk::DescriptorPoolCreateFlags(),*/
-                                                                                                        static_cast<uint32_t>(1000 * descriptorPoolSizes.size()), static_cast<uint32_t>(descriptorPoolSizes.size()), descriptorPoolSizes.data()));
+    m_DescriptorPool = m_VulkanDevicePtr->m_LogDevice.createDescriptorPool(
+        vk::DescriptorPoolCreateInfo(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
+            /*vk::DescriptorPoolCreateFlags(),*/
+            static_cast<uint32_t>(1000 * descriptorPoolSizes.size()), static_cast<uint32_t>(descriptorPoolSizes.size()),
+            descriptorPoolSizes.data()));
 }
 
 void VulkanCore::ResetCommandPools() {
     for (auto& queue : m_VulkanDevicePtr->m_Queues) {
-        m_VulkanDevicePtr->m_LogDevice.resetCommandPool(queue.second.cmdPools, vk::CommandPoolResetFlagBits::eReleaseResources);
+        m_VulkanDevicePtr->m_LogDevice.resetCommandPool(
+            queue.second.cmdPools, vk::CommandPoolResetFlagBits::eReleaseResources);
     }
 }
 
 void VulkanCore::destroyGraphicCommandsAndSynchronization() {
     ZoneScoped;
 
-    m_VulkanDevicePtr->m_LogDevice.freeCommandBuffers(m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eGraphics).cmdPools, m_CommandBuffers);
+    m_VulkanDevicePtr->m_LogDevice.freeCommandBuffers(
+        m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eGraphics).cmdPools, m_CommandBuffers);
     m_CommandBuffers.clear();
 
     ResetCommandPools();
@@ -619,8 +619,8 @@ void VulkanCore::setupMemoryAllocator() {
     }
 
     allocatorInfo.physicalDevice = (VkPhysicalDevice)m_VulkanDevicePtr->m_PhysDevice;
-    allocatorInfo.device         = (VkDevice)m_VulkanDevicePtr->m_LogDevice;
-    allocatorInfo.instance       = (VkInstance)m_VulkanDevicePtr->m_Instance;
+    allocatorInfo.device = (VkDevice)m_VulkanDevicePtr->m_LogDevice;
+    allocatorInfo.instance = (VkInstance)m_VulkanDevicePtr->m_Instance;
 
 #if defined(_DEBUG) && defined(RECORD_VM_ALLOCATION)
     // VmaRecordSettings vma_record_settings;

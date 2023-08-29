@@ -140,6 +140,8 @@ void VulkanWindow::setAppTitle(const std::string & vTitle) {
 		return m_Window;
 	}
 
+    void VulkanWindow::CloseWidowWhenPossible() { glfwSetWindowShouldClose(m_Window, 1); }
+
 	ct::ivec2 VulkanWindow::getFrameBufferResolution() const
 	{
 		ZoneScoped;

@@ -414,6 +414,16 @@ void FileHelper::Test_GetRelativePathToPath()
 }
 #endif
 
+std::string FileHelper::GetAppRelativeFilePathName(const std::string& vFilePathName) {
+    if (!vFilePathName.empty()) {
+        if (IsFileExist(vFilePathName)) {
+            auto file_path_name = SimplifyFilePath(vFilePathName);
+            return GetPathRelativeToApp(file_path_name);
+        }
+    }
+    return {};
+}
+
 std::string FileHelper::GetRelativePathToPath(const std::string & vFilePathName, const std::string & vRootPath)
 {
 	std::string res = vFilePathName;

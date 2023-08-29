@@ -18,7 +18,6 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <unordered_map>
-#include <vulkan/vulkan.hpp>
 #include <ctools/cTools.h>
 #include <Gaia/gaia.h>
 

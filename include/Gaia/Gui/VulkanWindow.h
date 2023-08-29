@@ -52,6 +52,8 @@ namespace GaiApi
 
 		[[nodiscard]] GLFWwindow* getWindowPtr() const;
 
+		void CloseWidowWhenPossible();
+
 	public:
 		VulkanWindow() = default; // Prevent construction
 		VulkanWindow(const VulkanWindow&) = default; // Prevent construction by copying

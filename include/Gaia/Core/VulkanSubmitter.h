@@ -17,13 +17,12 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <vulkan/vulkan.hpp>
+#include <Gaia/gaia.h>
 
 // unique_lock::lock/unlock
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include <mutex>          // std::mutex, std::unique_lock, std::defer_lock
-#include <Gaia/gaia.h>
 
 namespace GaiApi
 {

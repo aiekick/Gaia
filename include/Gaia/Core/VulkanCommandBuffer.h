@@ -17,10 +17,9 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <vulkan/vulkan.hpp>
+#include <Gaia/gaia.h>
 #include <mutex>
 #include <thread>
-#include <Gaia/gaia.h>
 
 namespace GaiApi
 {
