@@ -59,7 +59,9 @@ enum class PaneDisposal
 	TOP,
 	Count
 };
- 
+
+typedef std::string PaneCategoryName;
+
 class AbstractPane;
 typedef std::shared_ptr<AbstractPane> AbstractPanePtr;
 typedef std::weak_ptr<AbstractPane> AbstractPaneWeak;
@@ -69,14 +71,15 @@ class ProjectFile;
 class IMGUI_API AbstractPane
 {
 public:
-    std::string  m_PaneName;
-    PaneFlags    paneFlag            = 0;
-    PaneDisposal m_PaneDisposal        = PaneDisposal::CENTRAL;
-    bool         m_OpenedDefault       = false;
-    bool         m_FocusedDefault      = false;
-    bool         m_ShowPaneAtFirstCall = false;
-    bool         m_HidePaneAtFirstCall = false;
-    int32_t      m_PaneWidgetId        = 0;
+    std::string m_PaneName;
+    PaneFlags paneFlag = 0;
+    PaneDisposal m_PaneDisposal = PaneDisposal::CENTRAL;
+    bool m_OpenedDefault = false;
+    bool m_FocusedDefault = false;
+    bool m_ShowPaneAtFirstCall = false;
+    bool m_HidePaneAtFirstCall = false;
+    int32_t m_PaneWidgetId = 0;
+    PaneCategoryName m_PaneCategory;
 
 public:
     int32_t NewWidgetId() {

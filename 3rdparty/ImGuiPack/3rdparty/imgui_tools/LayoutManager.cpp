@@ -60,14 +60,17 @@ void LayoutManager::AddPane(
 		panePtr->m_PaneDisposal = vPaneDisposal;
 		panePtr->m_OpenedDefault = vIsOpenedDefault;
 		panePtr->m_FocusedDefault = vIsFocusedDefault;
-		if (vIsOpenedDefault)
-			m_Pane_Opened_Default |= panePtr->paneFlag;
-		if (vIsFocusedDefault)
-			m_Pane_Focused_Default |= panePtr->paneFlag;
-		m_PanesByDisposal[panePtr->m_PaneDisposal] = panePtr;
+        panePtr->m_PaneCategory = vCategory;
+        if (vIsOpenedDefault) {
+            m_Pane_Opened_Default |= panePtr->paneFlag;
+        }
+        if (vIsFocusedDefault) {
+            m_Pane_Focused_Default |= panePtr->paneFlag;
+        }
+        m_PanesByDisposal[panePtr->m_PaneDisposal].push_back(panePtr);
 		m_PanesByName[panePtr->m_PaneName] = panePtr;
 		m_PanesByFlag[panePtr->paneFlag] = panePtr;
-		m_PanesInDisplayOrder[vCategory].push_back(panePtr);
+        m_PanesInDisplayOrder[panePtr->m_PaneCategory].push_back(panePtr);
 	}
 }
 
@@ -78,6 +81,56 @@ void LayoutManager::SetPaneDisposalSize(const PaneDisposal& vPaneDisposal, const
 		return;
 
 	m_PaneDisposalSizes[(int)vPaneDisposal] = vSize;
+}
+
+void LayoutManager::RemovePane(const std::string& vName) {
+    if (m_PanesByName.find(vName) != m_PanesByName.end()) {
+        auto panePtr = m_PanesByName.at(vName).lock();
+        if (panePtr != nullptr) {
+            if (m_PanesByDisposal.find(panePtr->m_PaneDisposal) != m_PanesByDisposal.end()) {
+                auto& arr = m_PanesByDisposal.at(panePtr->m_PaneDisposal);
+                size_t idx = 0U;
+                std::set<size_t> indexs;
+                for (auto pane : arr) {
+                    auto ptr = pane.lock();
+                    if (ptr != nullptr && panePtr == ptr) {
+                        indexs.emplace(idx);
+					}
+                    ++idx;
+                }
+                for (auto id : indexs) {
+                    arr.erase(arr.begin() + id);
+				}
+            }
+            if (m_PanesByName.find(panePtr->m_PaneName) != m_PanesByName.end()) {
+                m_PanesByName.erase(panePtr->m_PaneName);
+            }
+            if (m_PanesByFlag.find(panePtr->paneFlag) != m_PanesByFlag.end()) {
+                m_PanesByFlag.erase(panePtr->paneFlag);
+            }
+            if (m_PanesInDisplayOrder.find(panePtr->m_PaneCategory) != m_PanesInDisplayOrder.end()) {
+                auto& arr = m_PanesInDisplayOrder.at(panePtr->m_PaneCategory);
+                size_t idx = 0U;
+                std::set<size_t> indexs;
+                for (auto pane : arr) {
+                    auto ptr = pane.lock();
+                    if (ptr != nullptr && panePtr == ptr) {
+                        indexs.emplace(idx);
+                    }
+                    ++idx;
+                }
+                for (auto id : indexs) {
+                    arr.erase(arr.begin() + id);
+                }
+            }
+            if (m_Pane_Opened_Default & panePtr->paneFlag) {
+                m_Pane_Opened_Default = m_Pane_Opened_Default & ~panePtr->paneFlag;
+            }
+            if (m_Pane_Focused_Default & panePtr->paneFlag) {
+                m_Pane_Focused_Default = m_Pane_Focused_Default & ~panePtr->paneFlag;
+            }
+		}
+	}
 }
 
 void LayoutManager::Init(const std::string& vMenuLabel, const std::string& vDefaultMenuLabel)
