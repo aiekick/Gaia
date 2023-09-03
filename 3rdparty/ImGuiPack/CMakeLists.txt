@@ -229,7 +229,11 @@ target_include_directories(${PROJECT} PRIVATE
 	${IMGUIPACK_INCLUDE_DIRS}
 )
 
-message("CTOOLS_LIBRARIES : ${CTOOLS_LIBRARIES}")
+if(USE_DEBUG_SANITIZER)
+	target_compile_options(${PROJECT} PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -static-libasan -static-libasan>)
+	target_link_options(${PROJECT} PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -static-libasan>)
+	message("Address Sanitizer enabled for projet ${PROJECT}")
+endif()
 
 target_link_libraries(${PROJECT}
 	${CTOOLS_LIBRARIES}

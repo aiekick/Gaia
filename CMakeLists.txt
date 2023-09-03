@@ -96,6 +96,12 @@ else()
 	add_library(${PROJECT} STATIC ${PROJECT_SRC_RECURSE} ${PROJECT_INC_RECURSE} ${PROJECT_CMAKE_FILES})
 endif()
 
+if(USE_DEBUG_SANITIZER)
+	target_compile_options(${PROJECT} PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -static-libasan>)
+	target_link_options(${PROJECT} PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -static-libasan>)
+	message("Address Sanitizer enabled for projet ${PROJECT}")
+endif()
+
 if (GAIA_DEBUG_PRINT)
 	add_compile_definitions(${PROJECT} PRIVATE PRINT_BLOCK_DATAS)
 endif()

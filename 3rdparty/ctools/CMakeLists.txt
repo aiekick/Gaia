@@ -122,6 +122,12 @@ include_directories(.)
 
 set_target_properties(${PROJECT} PROPERTIES LINKER_LANGUAGE CXX)
 
+if(USE_DEBUG_SANITIZER)
+	target_compile_options(${PROJECT} PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -static-libasan>)
+	target_link_options(${PROJECT} PRIVATE $<$<CONFIG:Debug>:-fsanitize=address -static-libasan>)
+	message("Address Sanitizer enabled for projet ${PROJECT}")
+endif()
+
 target_include_directories(${PROJECT} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${GLAD_INCLUDE_DIR}
