@@ -185,7 +185,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebug
     UNUSED(pLayerPrefix);
 
     LogVarLightTag(MESSAGING_TYPE_VKLAYER, "[VULKAN][%s] => %s", GetStringFromObjetType(objectType), pMessage);
-    std::cout << ("-----------") << std::endl;
+    std::cout << "-----------" << std::endl;
     return VK_FALSE;
 }
 
@@ -208,7 +208,7 @@ void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::
     assert(strlen(vLabel) > 0U);
 
     std::cout << ("-----------") << std::endl;
-    LogVarLightInfo("Vulkan %s available Extentions : [%u]", vLabel, (uint32_t)installed.size());
+    LogVarLightTag(MESSAGING_TYPE_DEBUG, "Vulkan %s available Extentions : [%u]", vLabel, (uint32_t)installed.size());
     for (const auto& i : installed) {
         bool extFound = false;
         for (const char* const& w : wanted) {
@@ -219,7 +219,7 @@ void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::
             }
         }
 
-        LogVarLightInfo("Debug : [%s] Ext %s", extFound ? "X" : " ", (const char*)i.extensionName);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, "Debug : [%s] Ext %s", extFound ? "X" : " ", (const char*)i.extensionName);
     }
 }
 
@@ -350,7 +350,7 @@ void PrintLayerStatus(const VkLayerProperties& layer_info, const bool& vWanted, 
     size_t of = vMaxLayerNameSize - strlen(layer_info.layerName);
     if (of < 255)
         spaceBuffer[of] = '\0';
-    LogVarLightInfo("Debug : [%s] Layer %s %s [%s] %s", (vWanted ? "X" : " "), layer_info.layerName, spaceBuffer, version.c_str(), layer_info.description);
+    LogVarLightTag(MESSAGING_TYPE_VKLAYER, "Debug : [%s] Layer %s %s [%s] %s", (vWanted ? "X" : " "), layer_info.layerName, spaceBuffer, version.c_str(), layer_info.description);
 }
 
 // Find available validation layers
@@ -371,7 +371,7 @@ bool CheckValidationLayerSupport() {
         maxSize = ct::maxi(maxSize, strlen(layer_info.layerName));
     }
 
-    LogVarLightInfo("Vulkan available validation layers : [%u]", layerCount);
+    LogVarLightTag(MESSAGING_TYPE_VKLAYER, "Vulkan available validation layers : [%u]", layerCount);
 
     for (const auto& layer_info : availableLayers) {
         bool layerWanted = false;
@@ -453,7 +453,7 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
         const uint32_t& major   = VK_API_VERSION_MAJOR(m_ApiVersion);
         const uint32_t& minor   = VK_API_VERSION_MINOR(m_ApiVersion);
         const uint32_t& patch   = VK_API_VERSION_PATCH(m_ApiVersion);
-        LogVarLightInfo("Vulkan api version is : %u.%u.%u.%u\n-----------", variant, major, minor, patch);
+        LogVarLightInfo("Vulkan api version is : %u.%u.%u.%u", variant, major, minor, patch);
 
         VulkanCore::sApiVersion = m_ApiVersion;
 
@@ -552,7 +552,7 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
             creat_func((VkInstance)m_Instance, &debug_report_ci, nullptr, &handle_debug_report_callback);
             m_DebugReport = vk::DebugReportCallbackEXT(handle_debug_report_callback);
         } else {
-            LogVarInfo("Debug : %s library is not there. VkDebug is not enabled", VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+            LogVarLightInfo("Debug : %s library is not there. VkDebug is not enabled", VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
         }
 #endif
 
@@ -582,7 +582,7 @@ bool VulkanDevice::CreatePhysicalDevice() {
     auto gpuid = VULKAN_GPU_ID;
 
     if (gpuid < 0 || gpuid >= physicalDevices.size()) {
-        LogVarError("GPU ID error.");
+        LogVarLightError("GPU ID error.");
         exit(EXIT_FAILURE);
     }
 
@@ -597,16 +597,17 @@ bool VulkanDevice::CreatePhysicalDevice() {
         prop2.pNext = &m_RayTracingDeviceProperties;
         vkGetPhysicalDeviceProperties2(m_PhysDevice, reinterpret_cast<VkPhysicalDeviceProperties2*>(&prop2));
 
-        LogVarLightInfo("-----------");
-        LogVarLightInfo("Ray Tracing Device Properties :");
-        LogVarLightInfo(" - Shader Group Handle Size : %u", m_RayTracingDeviceProperties.shaderGroupHandleSize);
-        LogVarLightInfo(" - Max Ray Recursion Depth : %u", m_RayTracingDeviceProperties.maxRayRecursionDepth);
-        LogVarLightInfo(" - Max Shader Group Stride : %u", m_RayTracingDeviceProperties.maxShaderGroupStride);
-        LogVarLightInfo(" - Shader Group Base Alignment : %u", m_RayTracingDeviceProperties.shaderGroupBaseAlignment);
-        LogVarLightInfo(" - Shader Group Handle Capture Replay Size : %u", m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize);
-        LogVarLightInfo(" - Max Ray Dispatch Invocation Count : %u", m_RayTracingDeviceProperties.maxRayDispatchInvocationCount);
-        LogVarLightInfo(" - Shader Group Handle Alignment : %u", m_RayTracingDeviceProperties.shaderGroupHandleAlignment);
-        LogVarLightInfo(" - Max Ray Hit Attribute Size : %u", m_RayTracingDeviceProperties.maxRayHitAttributeSize);
+        std::cout << "-----------" << std::endl;
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, "Ray Tracing Device Properties :");
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Size : %u",
+            m_RayTracingDeviceProperties.shaderGroupHandleSize);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Recursion Depth : %u", m_RayTracingDeviceProperties.maxRayRecursionDepth);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Shader Group Stride : %u", m_RayTracingDeviceProperties.maxShaderGroupStride);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Base Alignment : %u", m_RayTracingDeviceProperties.shaderGroupBaseAlignment);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Capture Replay Size : %u", m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Dispatch Invocation Count : %u", m_RayTracingDeviceProperties.maxRayDispatchInvocationCount);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Alignment : %u", m_RayTracingDeviceProperties.shaderGroupHandleAlignment);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Hit Attribute Size : %u", m_RayTracingDeviceProperties.maxRayHitAttributeSize);
 
         if (!m_RayTracingDeviceProperties.shaderGroupHandleSize || !m_RayTracingDeviceProperties.maxRayRecursionDepth || !m_RayTracingDeviceProperties.maxShaderGroupStride || !m_RayTracingDeviceProperties.shaderGroupBaseAlignment ||
             !m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize || !m_RayTracingDeviceProperties.maxRayDispatchInvocationCount || !m_RayTracingDeviceProperties.shaderGroupHandleAlignment ||

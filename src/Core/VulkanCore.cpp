@@ -121,7 +121,7 @@ void VulkanCore::check_error(vk::Result result) {
     ZoneScoped;
 
     if (result != vk::Result::eSuccess) {
-        LogVarDebugInfo("Debug : vulkan: error %s", vk::to_string(result).c_str());
+        LogVarLightError("vulkan: error %s", vk::to_string(result).c_str());
     }
 }
 
