@@ -139,10 +139,10 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/ PREFIX pack FILES ${IMGU
 ##### IMGUINODEEDITOR
 #####################################################
 
-file(GLOB_RECURSE IMGUI_IMGUINODEEDITOR_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/NodeEditor/*.h
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/NodeEditor/*.inl
-		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/NodeEditor/*.cpp)
+file(GLOB IMGUI_IMGUINODEEDITOR_SOURCES
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/*.h
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/*.inl
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/*.cpp)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/ PREFIX pack FILES ${IMGUI_IMGUINODEEDITOR_SOURCES})
 
 #####################################################
@@ -222,8 +222,8 @@ set(IMGUIPACK_INCLUDE_DIRS
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_imgradienthdr/
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_imguifiledialog/
 	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_imguicolottextedit/
-	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/NodeEditor/Source
-	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/NodeEditor/Include)
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/imgui_node_editor/
+)
 
 target_include_directories(${PROJECT} PRIVATE
 	${IMGUIPACK_INCLUDE_DIRS}

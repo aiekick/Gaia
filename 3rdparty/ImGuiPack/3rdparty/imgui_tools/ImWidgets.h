@@ -23,6 +23,10 @@
 #include <vector>
 #include <string>
 
+#ifdef USE_OPENGL
+#include <ctools/cTools.h>
+#endif
+
 #define ImWidgets_VERSION "ImWidgets v1.0"
 
 #ifndef IS_FLOAT_DIFFERENT
@@ -367,7 +371,8 @@ IMGUI_API void ImageRatio(ImTextureID vTexId, float vRatioX, float vWidth, ImVec
 
 #ifdef USE_OPENGL
 // show overlay text on mousehover // l'epaisseur du cadre vient de BorderColor.w
-IMGUI_API bool TextureOverLay(float vWidth, ct::texture* vTex, ImVec4 vBorderColor, const char* vOverlayText, ImVec4 vOverLayTextColor, ImVec4 vOverLayBgColor);
+IMGUI_API bool TextureOverLay(float vWidth, ct::texture* vTex, ImVec4 vBorderColor, const char* vOverlayText, ImVec4 vOverLayTextColor,
+                              ImVec4 vOverLayBgColor, ImVec2 vUV0 = ImVec2(0, 0), ImVec2 vUV1 = ImVec2(1, 1));
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

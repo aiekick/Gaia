@@ -3336,8 +3336,8 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
     ItemSize(size, 0.0f);
 
     // Fill horizontal space
-    // We don't support (size < 0.0f) in Selectable() because the ItemSpacing extension would make explicitly
-    // right-aligned sizes not visibly match other widgets.
+    // We don't support (size < 0.0f) in Selectable() because the ItemSpacing extension would make explicitly right-aligned sizes not visibly match
+    // other widgets.
     const bool span_all_columns = (flags & ImGuiSelectableFlags_SpanAllColumns) != 0;
     const float min_x = span_all_columns ? window->ParentWorkRect.Min.x : pos.x;
     const float max_x = span_all_columns ? window->ParentWorkRect.Max.x : window->WorkRect.Max.x;
@@ -3348,8 +3348,7 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
     const ImVec2 text_min = pos;
     const ImVec2 text_max(min_x + size.x, pos.y + size.y);
 
-    // Selectables are meant to be tightly packed together with no click-gap, so we extend their box to cover spacing
-    // between selectable.
+    // Selectables are meant to be tightly packed together with no click-gap, so we extend their box to cover spacing between selectable.
     ImRect bb(min_x, pos.y, text_max.x, text_max.y);
     if ((flags & ImGuiSelectableFlags_NoPadWithHalfSpacing) == 0) {
         const float spacing_x = span_all_columns ? 0.0f : style.ItemSpacing.x;
@@ -3363,8 +3362,7 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
     }
     // if (g.IO.KeyCtrl) { GetForegroundDrawList()->AddRect(bb.Min, bb.Max, IM_COL32(0, 255, 0, 255)); }
 
-    // Modify ClipRect for the ItemAdd(), faster than doing a PushColumnsBackground/PushTableBackground for every
-    // Selectable..
+    // Modify ClipRect for the ItemAdd(), faster than doing a PushColumnsBackground/PushTableBackground for every Selectable..
     const float backup_clip_rect_min_x = window->ClipRect.Min.x;
     const float backup_clip_rect_max_x = window->ClipRect.Max.x;
     if (span_all_columns) {
@@ -3386,8 +3384,8 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
     if (disabled_item && !disabled_global)  // Only testing this as an optimization
         BeginDisabled();
 
-    // FIXME: We can standardize the behavior of those two, we could also keep the fast path of override ClipRect + full
-    // push on render only, which would be advantageous since most selectable are not selected.
+    // FIXME: We can standardize the behavior of those two, we could also keep the fast path of override ClipRect + full push on render only,
+    // which would be advantageous since most selectable are not selected.
     if (span_all_columns && window->DC.CurrentColumns)
         PushColumnsBackground();
     else if (span_all_columns && g.CurrentTable)
@@ -3398,6 +3396,9 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
     if (flags & ImGuiSelectableFlags_NoHoldingActiveID) {
         button_flags |= ImGuiButtonFlags_NoHoldingActiveId;
     }
+    if (flags & ImGuiSelectableFlags_NoSetKeyOwner) {
+        button_flags |= ImGuiButtonFlags_NoSetKeyOwner;
+    }
     if (flags & ImGuiSelectableFlags_SelectOnClick) {
         button_flags |= ImGuiButtonFlags_PressedOnClick;
     }
@@ -3407,19 +3408,34 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
     if (flags & ImGuiSelectableFlags_AllowDoubleClick) {
         button_flags |= ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnDoubleClick;
     }
-    if (flags & ImGuiSelectableFlags_AllowItemOverlap) {
-        button_flags |= ImGuiButtonFlags_AllowItemOverlap;
+    if ((flags & ImGuiSelectableFlags_AllowOverlap) || (g.LastItemData.InFlags & ImGuiItemFlags_AllowOverlap)) {
+        button_flags |= ImGuiButtonFlags_AllowOverlap;
     }
 
     const bool was_selected = selected;
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, button_flags);
 
+    // Auto-select when moved into
+    // - This will be more fully fleshed in the range-select branch
+    // - This is not exposed as it won't nicely work with some user side handling of shift/control
+    // - We cannot do 'if (g.NavJustMovedToId != id) { selected = false; pressed = was_selected; }' for two reasons
+    //   - (1) it would require focus scope to be set, need exposing PushFocusScope() or equivalent (e.g. BeginSelection() calling PushFocusScope())
+    //   - (2) usage will fail with clipped items
+    //   The multi-select API aim to fix those issues, e.g. may be replaced with a BeginSelection() API.
+    if ((flags & ImGuiSelectableFlags_SelectOnNav) && g.NavJustMovedToId != 0 && g.NavJustMovedToFocusScopeId == g.CurrentFocusScopeId)
+        if (g.NavJustMovedToId == id)
+            selected = pressed = true;
+
+    // Update NavId when clicking or when Hovering (this doesn't happen on most widgets), so navigation can be resumed with gamepad/keyboard
+    if (pressed || (hovered && (flags & ImGuiSelectableFlags_SetNavIdOnHover))) {
+        if (!g.NavDisableMouseHover && g.NavWindow == window && g.NavLayer == window->DC.NavLayerCurrent) {
+            SetNavID(id, window->DC.NavLayerCurrent, g.CurrentFocusScopeId, WindowRectAbsToRel(window, bb));  // (bb == NavRect)
+            g.NavDisableHighlight = true;
+        }
+    }
     if (pressed)
         MarkItemEdited(id);
-
-    if (flags & ImGuiSelectableFlags_AllowItemOverlap)
-        SetItemAllowOverlap();
 
     // In this branch, Selectable() cannot toggle the selection so this will never trigger.
     if (selected != was_selected)  //-V547
@@ -3432,12 +3448,10 @@ IGFD_API bool IGFD::KeyExplorerFeature::prFlashableSelectable(
 
     // Render
     if (hovered || selected) {
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive
-                                      : hovered         ? ImGuiCol_HeaderHovered
-                                                        : ImGuiCol_Header);
+        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
         RenderFrame(bb.Min, bb.Max, col, false, 0.0f);
     }
-    // RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
+    RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
 
     if (span_all_columns && window->DC.CurrentColumns)
         PopColumnsBackground();

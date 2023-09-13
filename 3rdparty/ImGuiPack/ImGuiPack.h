@@ -69,6 +69,7 @@
 #include <3rdparty/imgui_tools/LayoutManager.h>
 #include <3rdparty/imgui_tools/ImGuiThemeHelper.h>
 #include <3rdparty/imgui_markdown/imgui_markdown.h>
+#include <3rdparty/imgui_node_editor/imgui_node_editor.h>
+#include <3rdparty/imgui_imguicolottextedit/TextEditor.h>
 #include <3rdparty/imgui_imgradienthdr/src/ImGradientHDR.h>
 #include <3rdparty/imgui_imguifiledialog/ImGuiFileDialog.h>
-#include <3rdparty/imgui_node_editor/NodeEditor/Include/imgui_node_editor.h>

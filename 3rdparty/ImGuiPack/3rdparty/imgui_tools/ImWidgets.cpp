@@ -1998,7 +1998,8 @@ void ImGui::ImageRatio(ImTextureID vTexId, float vRatioX, float vWidth, ImVec4 v
 }
 
 #ifdef USE_OPENGL
-bool ImGui::TextureOverLay(float vWidth, ct::texture* vTex, ImVec4 vBorderColor, const char* vOverlayText, ImVec4 vOverLayTextColor, ImVec4 vOverLayBgColor) {
+bool ImGui::TextureOverLay(float vWidth, ct::texture* vTex, ImVec4 vBorderColor, const char* vOverlayText, ImVec4 vOverLayTextColor,
+                           ImVec4 vOverLayBgColor, ImVec2 vUV0, ImVec2 vUV1) {
     if (vTex == nullptr)
         return false;
 
@@ -2009,9 +2010,6 @@ bool ImGui::TextureOverLay(float vWidth, ct::texture* vTex, ImVec4 vBorderColor,
     if (!window->ScrollbarY) {
         vWidth -= ImGui::GetStyle().ScrollbarSize;
     }
-
-    const ImVec2 uv0 = ImVec2(0, 0);
-    const ImVec2 uv1 = ImVec2(1, 1);
 
     ImVec2 size = ImVec2(vWidth, vWidth);
 
@@ -2042,9 +2040,10 @@ bool ImGui::TextureOverLay(float vWidth, ct::texture* vTex, ImVec4 vBorderColor,
 
     if (vBorderColor.w > 0.0f) {
         window->DrawList->AddRect(bb.Min, bb.Max, ImGui::GetColorU32(vBorderColor), 0.0f, ImDrawFlags_RoundCornersAll, vBorderColor.w);
-        window->DrawList->AddImage((ImTextureID)(size_t)vTex->glTex, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), uv0, uv1, ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
+        window->DrawList->AddImage((ImTextureID)(size_t)vTex->glTex, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), vUV0, vUV1,
+                                   ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
     } else {
-        window->DrawList->AddImage((ImTextureID)(size_t)vTex->glTex, bb.Min, bb.Max, uv0, uv1, ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
+        window->DrawList->AddImage((ImTextureID)(size_t)vTex->glTex, bb.Min, bb.Max, vUV0, vUV1, ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
     }
 
     ImVec2 center        = (bb.Max + bb.Min) * 0.5f;
@@ -2386,7 +2385,7 @@ bool ImGui::SliderScalarCompact(float width, const char* label, ImGuiDataType da
     //	format = PatchFormatStringFloatToIntStepper(format);
 
     // Tabbing or CTRL-clicking on Slider turns it into an input box
-    const bool hovered        = ItemHoverable(frame_bb, id);
+    const bool hovered = ItemHoverable(frame_bb, id, ImGuiItemFlags_None);
     bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
     if (!temp_input_is_active) {
         // Tabbing or CTRL-clicking on Slider turns it into an input box
@@ -2599,7 +2598,7 @@ bool ImGui::SliderScalar(float width, const char* label, ImGuiDataType data_type
     //	format = PatchFormatStringFloatToIntStepper(format);
 
     // Tabbing or CTRL-clicking on Slider turns it into an input box
-    const bool hovered        = ItemHoverable(frame_bb, id);
+    const bool hovered = ItemHoverable(frame_bb, id, ImGuiItemFlags_None);
     bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
     if (!temp_input_is_active) {
         // Tabbing or CTRL-clicking on Slider turns it into an input box

@@ -1405,7 +1405,7 @@ public:
 
 #pragma region FileStyle
 
-class FileInfos;
+class IGFD_API FileInfos;
 class IGFD_API FileStyle {
 public:
     typedef std::function<bool(const FileInfos&, FileStyle&)> FileStyleFunctor;
