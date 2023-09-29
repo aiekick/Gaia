@@ -1,0 +1,4 @@
+[submodule "3rdparty/ImGuiPack"]
+	path = 3rdparty/ImGuiPack
+	url = https://github.com/aiekick/ImGuiPack.git
+	branch = master
