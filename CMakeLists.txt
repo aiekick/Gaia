@@ -10,11 +10,12 @@ project(
 
 enable_language(C CXX)
 
+option(GAIA_DEBUG_PRINT "Enable debug print of Gaia" OFF) 
+
 set(GAIA_PROFILER_INCLUDE "Tracy Profiler Include file" CACHE FILEPATH "${PROFILER_INCLUDE}")
 set(GAIA_STB_IMAGE_INCLUDE "Stb Image Include file" CACHE FILEPATH "${STB_IMAGE_INCLUDE}")
 set(GAIA_STB_IMAGE_WRITE_INCLUDE "Stb Image Write Include file" CACHE FILEPATH "${STB_IMAGE_WRITE_INCLUDE}")
 set(GAIA_STB_IMAGE_RESIZE_INCLUDE "Stb Image Resize Include file" CACHE FILEPATH "${STB_IMAGE_RESIZE_INCLUDE}")
-option(GAIA_DEBUG_PRINT "Enable debug print of Gaia" OFF) 
 
 if(USE_SHARED_LIBS)
 	set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
@@ -84,13 +85,13 @@ add_definitions(-DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 ## for prevent cast issues betwwen vk:: and VK if compiling a 32 bits version
 add_definitions(-DVULKAN_HPP_TYPESAFE_CONVERSION=1) 
 
-if (BUILD_SHARED_LIBS)
+if (USE_SHARED_LIBS)
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL ON CACHE BOOL "" FORCE)
 	add_library(${PROJECT} ${PROJECT_SRC_RECURSE} ${PROJECT_INC_RECURSE} ${PROJECT_CMAKE_FILES})
 	target_compile_definitions(${PROJECT} PRIVATE VULKAN_HPP_STORAGE_SHARED_EXPORT)
 	target_compile_definitions(${PROJECT} INTERFACE BUILD_GAIA_SHARED_LIBS)
-	target_compile_definitions(${PROJECT} INTERFACE BUILD_CTOOLS_SHARED_LIBS)	
-	target_compile_definitions(${PROJECT} INTERFACE BUILD_IMGUI_PACK_SHARED_LIBS)
+	target_compile_definitions(${PROJECT} PRIVATE BUILD_CTOOLS_SHARED_LIBS)	
+	target_compile_definitions(${PROJECT} PRIVATE BUILD_IMGUI_PACK_SHARED_LIBS)
 	set_target_properties(${PROJECT} PROPERTIES	RUNTIME_OUTPUT_DIRECTORY "${FINAL_BIN_DIR}")
 	set_target_properties(${PROJECT} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 else()

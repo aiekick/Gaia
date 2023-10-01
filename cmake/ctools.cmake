@@ -8,11 +8,19 @@ include_directories(
 	${GLFW_INCLUDE_DIR}
 )
 
+if(USE_SHARED_LIBS)
+	set(USE_SHARED_LIB_CTOOLS ON CACHE BOOL "" FORCE)
+else()
+	set(USE_SHARED_LIB_CTOOLS OFF CACHE BOOL "" FORCE)
+endif()
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/ctools)
 
 if(USE_SHARED_LIBS)
+	set(USE_SHARED_LIB_CTOOLS ON CACHE BOOL "" FORCE)
 	set_target_properties(ctools PROPERTIES FOLDER Libs/Shared)
 else()
+	set(USE_SHARED_LIB_CTOOLS OFF CACHE BOOL "" FORCE)
 	set_target_properties(ctools PROPERTIES FOLDER Libs/Static)
 endif()
 
