@@ -162,5 +162,8 @@ if (TARGET SPVRemapper)
 	set_target_properties(SPVRemapper PROPERTIES FOLDER 3rdparty/Static/glslang)
 endif()
 
-set(GLSLANG_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/glslang/include)
+set(GLSLANG_INCLUDE_DIRS 
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glslang/
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glslang/glslang/include
+)
 set(GLSLANG_LIBRARIES glslang SPIRV OGLCompiler OSDependent)
