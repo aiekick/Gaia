@@ -38,7 +38,7 @@
 #pragma warning(disable : 4251)
 
 #include <string>
-#include <glslang/include/ResourceLimits.h>
+#include <glslang/Include/ResourceLimits.h>
 #include <Gaia/gaia.h>
 
 namespace glslang {
