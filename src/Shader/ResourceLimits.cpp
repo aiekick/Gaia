@@ -40,7 +40,7 @@
 #include <sstream>
 #include <cctype>
 
-#include <gaia/Shader/ResourceLimits.h>
+#include <Gaia/Shader/ResourceLimits.h>
 #include <ctools/Logger.h>
 
 namespace glslang {
