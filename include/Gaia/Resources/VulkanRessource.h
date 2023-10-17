@@ -53,6 +53,10 @@ public:
 	vk::BufferUsageFlags buffer_usage;
 	uint64_t device_address = 0U;
 	vk::BufferView bufferView = VK_NULL_HANDLE;
+
+public:
+    bool MapMemory(void* vMappedMemory);
+    void UnmapMemory();
 };
 typedef std::shared_ptr<VulkanBufferObject> VulkanBufferObjectPtr;
 

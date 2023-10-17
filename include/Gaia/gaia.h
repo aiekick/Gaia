@@ -13,6 +13,7 @@
 #if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
 #if defined(Gaia_EXPORTS)
 #define GAIA_API __declspec(dllexport)
+#define VULKAN_HPP_STORAGE_SHARED_EXPORT
 #elif defined(BUILD_GAIA_SHARED_LIBS)
 #define GAIA_API __declspec(dllimport)
 #define VULKAN_HPP_STORAGE_SHARED
@@ -69,6 +70,10 @@ typedef std::weak_ptr<FrameBuffer> FrameBufferWeak;
 class ComputeBuffer;
 typedef std::shared_ptr<ComputeBuffer> ComputeBufferPtr;
 typedef std::weak_ptr<ComputeBuffer> ComputeBufferWeak;
+
+class GpuOnlyStorageBuffer;
+typedef std::shared_ptr<GpuOnlyStorageBuffer> GpuOnlyStorageBufferPtr;
+typedef std::weak_ptr<GpuOnlyStorageBuffer> GpuOnlyStorageBufferWeak;
 
 class Texture2D;
 typedef std::shared_ptr<Texture2D> Texture2DPtr;

@@ -32,6 +32,21 @@ limitations under the License.
 #define ZoneScoped
 #endif
 
+bool VulkanBufferObject::MapMemory(void* vMappedMemory) {
+    if (alloc_meta) {
+        const auto& res = vmaMapMemory(GaiApi::VulkanCore::sAllocator, alloc_meta, &vMappedMemory);
+        GaiApi::VulkanCore::check_error(res);
+        return res == VK_SUCCESS;
+    }
+    return false;
+}
+
+void VulkanBufferObject::UnmapMemory() {
+    if (alloc_meta) {
+        vmaUnmapMemory(GaiApi::VulkanCore::sAllocator, alloc_meta);
+    }
+}
+
 namespace GaiApi {
 
 //////////////////////////////////////////////////////////////////////////////////
