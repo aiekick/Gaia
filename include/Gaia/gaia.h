@@ -13,15 +13,19 @@
 #if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
 #if defined(Gaia_EXPORTS)
 #define GAIA_API __declspec(dllexport)
+#define VULKAN_HPP_STORAGE_API __declspec(dllexport)
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT
 #elif defined(BUILD_GAIA_SHARED_LIBS)
 #define GAIA_API __declspec(dllimport)
 #define VULKAN_HPP_STORAGE_SHARED
+#define VULKAN_HPP_STORAGE_API __declspec(dllimport)
 #else
 #define GAIA_API
+#define VULKAN_HPP_STORAGE_API
 #endif
 #else
 #define GAIA_API
+#define VULKAN_HPP_STORAGE_API
 #endif
 
 #include <memory>
