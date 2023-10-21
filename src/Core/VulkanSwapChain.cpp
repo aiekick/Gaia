@@ -82,17 +82,17 @@ namespace GaiApi
 
 		glfwSetFramebufferSizeCallback(vVulkanWindow->getWindowPtr(), glfw_resize_callback);
 
-		bool res = true;
+        if (CreateSurface()){
+            if (Load()) {
+                if (CreateRenderPass()){
+                    if (CreateFrameBuffers()){
+                        return CreateSyncObjects();
+                    }
+                }
+            }
+        }
 
-		res &= CreateSurface();
-
-		res &= Load();
-
-		res &= CreateRenderPass();
-		res &= CreateFrameBuffers();
-		res &= CreateSyncObjects();
-
-		return res;
+        return false;
 	}
 
 	bool VulkanSwapChain::Reload()
@@ -169,16 +169,32 @@ namespace GaiApi
 		logDevice.waitIdle();
 		vk::SwapchainKHR oldSwapchain = m_Swapchain;
 
+        // Determine the number of VkImages to use in the swap chain.
+        // Application desires to acquire 3 images at a time for triple
+        // buffering
+        uint32_t desiredNumOfSwapchainImages = 3;
+        if (desiredNumOfSwapchainImages < surfaceCapabilities.minImageCount) {
+            desiredNumOfSwapchainImages = surfaceCapabilities.minImageCount;
+        }
+
+        // If maxImageCount is 0, we can ask for as many images as we want,
+        // otherwise
+        // we're limited to maxImageCount
+        if ((surfaceCapabilities.maxImageCount > 0) && (desiredNumOfSwapchainImages > surfaceCapabilities.maxImageCount)) {
+            // Application must settle for fewer images than desired:
+            desiredNumOfSwapchainImages = SWAPCHAIN_IMAGES_COUNT;
+        }
+
 		// Some devices can support more than 2 buffers, but during my tests they would crash on fullscreen ~ ag
 		// Tested on an NVIDIA 1050 TI and 60 Hz display (aiekick)
 		// Tested on an NVIDIA 3060 and 60 Hz display (aiekick)
 		// Tested on an NVIDIA 1080 and 165 Hz 2K display (original author)
-		uint32_t backbufferCount = ct::clamp<uint32_t>(SWAPCHAIN_IMAGES_COUNT, 2u, surfaceCapabilities.maxImageCount);
-		if (backbufferCount != SWAPCHAIN_IMAGES_COUNT)
+		//uint32_t backbufferCount = ct::clamp<uint32_t>(SWAPCHAIN_IMAGES_COUNT, 2u, surfaceCapabilities.maxImageCount);
+		if (desiredNumOfSwapchainImages != SWAPCHAIN_IMAGES_COUNT)
 		{
 			LogVarError("Cant Create swapchain. exit!");
 			CTOOL_DEBUG_BREAK;
-			exit(1);
+            return false;
 		}
 
 		CheckSurfaceFormat();
