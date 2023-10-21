@@ -181,7 +181,6 @@ namespace GaiApi
         // otherwise
         // we're limited to maxImageCount
         if ((surfaceCapabilities.maxImageCount > 0) && (desiredNumOfSwapchainImages > surfaceCapabilities.maxImageCount)) {
-            // Application must settle for fewer images than desired:
             desiredNumOfSwapchainImages = SWAPCHAIN_IMAGES_COUNT;
         }
 
