@@ -92,83 +92,49 @@ you can define VULKAN_HPP_NO_DEFAULT_DISPATCHER before you include vulkan.hpp to
 #define ZoneScoped
 #endif
 
+#define LOG_FEATURE(__FEATURE__) LogVarLightTag(MESSAGING_TYPE_DEBUG, "Debug : [%s] Feature %s", features.__FEATURE__ > 0 ? "X" : " ", #__FEATURE__)
+
 namespace GaiApi {
 static inline const char* GetStringFromObjetType(VkDebugReportObjectTypeEXT vObjectType) {
     ZoneScoped;
 
     switch (vObjectType) {
-        case VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT:
-            return "Unknow";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT:
-            return "Instance";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT:
-            return "PhysDevice";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
-            return "LogicalDevice";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT:
-            return "Queue";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT:
-            return "Semaphore";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT:
-            return "CommandBuffer";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT:
-            return "Fence";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT:
-            return "DeviceMemory";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
-            return "Buffer";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
-            return "Image";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT:
-            return "Event";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
-            return "QueryPool";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
-            return "BufferView";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT:
-            return "ImageView";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT:
-            return "ShaderModule";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT:
-            return "PipelineCache";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT:
-            return "PipelineLayout";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT:
-            return "RenderPass";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT:
-            return "Pipeline";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT:
-            return "DescriptorSetLayout";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
-            return "Sampler";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT:
-            return "DescriptorPool";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT:
-            return "DescriptorSet";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
-            return "Framebuffer";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT:
-            return "CommandPool";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT:
-            return "SurfaceKHR";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
-            return "SwapchainKHR";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT:
-            return "DebugReportCallcack";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT:
-            return "DisplayKHR";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT:
-            return "DisplayModeKHR";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT:
-            return "ValidationCache";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT:
-            return "YCBCRConversion";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT:
-            return "DescriptorUpdateTemplate";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR_EXT:
-            return "AccelerationStructure";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_MAX_ENUM_EXT:
-            return "Unknow";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT: return "Unknow";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT: return "Instance";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT: return "PhysDevice";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT: return "LogicalDevice";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT: return "Queue";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT: return "Semaphore";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT: return "CommandBuffer";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT: return "Fence";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT: return "DeviceMemory";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT: return "Buffer";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT: return "Image";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT: return "Event";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT: return "QueryPool";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT: return "BufferView";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT: return "ImageView";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT: return "ShaderModule";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT: return "PipelineCache";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT: return "PipelineLayout";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT: return "RenderPass";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT: return "Pipeline";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT: return "DescriptorSetLayout";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT: return "Sampler";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT: return "DescriptorPool";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT: return "DescriptorSet";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT: return "Framebuffer";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT: return "CommandPool";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT: return "SurfaceKHR";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT: return "SwapchainKHR";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT: return "DebugReportCallcack";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT: return "DisplayKHR";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT: return "DisplayModeKHR";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT: return "ValidationCache";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT: return "YCBCRConversion";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT: return "DescriptorUpdateTemplate";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR_EXT: return "AccelerationStructure";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_MAX_ENUM_EXT: return "Unknow";
     }
     return "";
 }
@@ -199,20 +165,20 @@ VulkanDevicePtr VulkanDevice::Create(VulkanWindowWeak vVulkanWindow, const std::
     return res;
 }
 
-void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::ExtensionProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out) {
+void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::ExtensionProperties>& installed, const std::vector<const char*>& wanted, ct::SearchableVector<const char*>& out) {
     ZoneScoped;
 
     assert(vLabel);
     assert(strlen(vLabel) > 0U);
 
     std::cout << ("-----------") << std::endl;
-    LogVarLightTag(MESSAGING_TYPE_DEBUG, "Vulkan %s available Extentions : [%u]", vLabel, (uint32_t)installed.size());
+    LogVarLightTag(MESSAGING_TYPE_DEBUG, "Vulkan %s available Extensions : [%u]", vLabel, (uint32_t)installed.size());
     for (const auto& i : installed) {
         bool extFound = false;
         for (const char* const& w : wanted) {
             if (std::string((const char*)i.extensionName).compare(w) == 0) {
                 extFound = true;
-                out.emplace_back(w);
+                out.try_add(w);
                 break;
             }
         }
@@ -256,11 +222,96 @@ uint32_t VulkanDevice::getQueueIndex(vk::PhysicalDevice& physicalDevice, vk::Que
     return 0;
 }
 
+vk::PhysicalDeviceFeatures VulkanDevice::getSupportedFeatures(vk::PhysicalDevice& physicalDevice) {
+    if (physicalDevice) {
+        auto features = physicalDevice.getFeatures();
+        std::cout << ("-----------") << std::endl;
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, "Vulkan supported Features : ");
+        LOG_FEATURE(robustBufferAccess);
+        LOG_FEATURE(fullDrawIndexUint32);
+        LOG_FEATURE(imageCubeArray);
+        LOG_FEATURE(independentBlend);
+        LOG_FEATURE(geometryShader);
+        LOG_FEATURE(tessellationShader);
+        LOG_FEATURE(sampleRateShading);
+        LOG_FEATURE(dualSrcBlend);
+        LOG_FEATURE(logicOp);
+        LOG_FEATURE(multiDrawIndirect);
+        LOG_FEATURE(drawIndirectFirstInstance);
+        LOG_FEATURE(depthClamp);
+        LOG_FEATURE(depthBiasClamp);
+        LOG_FEATURE(fillModeNonSolid);
+        LOG_FEATURE(depthBounds);
+        LOG_FEATURE(wideLines);
+        LOG_FEATURE(largePoints);
+        LOG_FEATURE(alphaToOne);
+        LOG_FEATURE(multiViewport);
+        LOG_FEATURE(samplerAnisotropy);
+        LOG_FEATURE(textureCompressionETC2);
+        LOG_FEATURE(textureCompressionASTC_LDR);
+        LOG_FEATURE(textureCompressionBC);
+        LOG_FEATURE(occlusionQueryPrecise);
+        LOG_FEATURE(pipelineStatisticsQuery);
+        LOG_FEATURE(vertexPipelineStoresAndAtomics);
+        LOG_FEATURE(fragmentStoresAndAtomics);
+        LOG_FEATURE(shaderTessellationAndGeometryPointSize);
+        LOG_FEATURE(shaderImageGatherExtended);
+        LOG_FEATURE(shaderStorageImageExtendedFormats);
+        LOG_FEATURE(shaderStorageImageMultisample);
+        LOG_FEATURE(shaderStorageImageReadWithoutFormat);
+        LOG_FEATURE(shaderStorageImageWriteWithoutFormat);
+        LOG_FEATURE(shaderUniformBufferArrayDynamicIndexing);
+        LOG_FEATURE(shaderSampledImageArrayDynamicIndexing);
+        LOG_FEATURE(shaderStorageBufferArrayDynamicIndexing);
+        LOG_FEATURE(shaderStorageImageArrayDynamicIndexing);
+        LOG_FEATURE(shaderClipDistance);
+        LOG_FEATURE(shaderCullDistance);
+        LOG_FEATURE(shaderFloat64);
+        LOG_FEATURE(shaderInt64);
+        LOG_FEATURE(shaderInt16);
+        LOG_FEATURE(shaderResourceResidency);
+        LOG_FEATURE(shaderResourceMinLod);
+        LOG_FEATURE(sparseBinding);
+        LOG_FEATURE(sparseResidencyBuffer);
+        LOG_FEATURE(sparseResidencyImage2D);
+        LOG_FEATURE(sparseResidencyImage3D);
+        LOG_FEATURE(sparseResidency2Samples);
+        LOG_FEATURE(sparseResidency4Samples);
+        LOG_FEATURE(sparseResidency8Samples);
+        LOG_FEATURE(sparseResidency16Samples);
+        LOG_FEATURE(sparseResidencyAliased);
+        LOG_FEATURE(variableMultisampleRate);
+        LOG_FEATURE(inheritedQueries);
+        return features;
+    }
+    return {};
+}
+
+vk::PhysicalDeviceFeatures2 VulkanDevice::getSupportedFeatures2(vk::PhysicalDevice& physicalDevice) {
+    if (physicalDevice) {
+        auto features = physicalDevice.getFeatures2();
+        std::cout << ("-----------") << std::endl;
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, "Vulkan supported Features 2 : ");
+        return features;
+    }
+    return {};
+}
+
+vk::PhysicalDeviceFeatures2KHR VulkanDevice::getSupportedFeatures2KHR(vk::PhysicalDevice& physicalDevice) {
+    if (physicalDevice) {
+        auto features = physicalDevice.getFeatures2KHR();
+        std::cout << ("-----------") << std::endl;
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, "Vulkan supported Features 2 KHR : ");
+        return features;
+    }
+    return {};
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //// CONSTRUCTOR /////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VulkanDevice::VulkanDevice()  = default;
+VulkanDevice::VulkanDevice() = default;
 VulkanDevice::~VulkanDevice() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,10 +362,10 @@ void VulkanDevice::BeginDebugLabel(vk::CommandBuffer* vCmd, const char* vLabel, 
 #ifdef VULKAN_DEBUG
     if (m_Debug_Utils_Supported && vCmd && vLabel) {
         markerInfo.pLabelName = vLabel;
-        markerInfo.color[0]   = vColor.x;
-        markerInfo.color[1]   = vColor.y;
-        markerInfo.color[2]   = vColor.z;
-        markerInfo.color[3]   = vColor.w;
+        markerInfo.color[0] = vColor.x;
+        markerInfo.color[1] = vColor.y;
+        markerInfo.color[2] = vColor.z;
+        markerInfo.color[3] = vColor.w;
         vCmd->beginDebugUtilsLabelEXT(markerInfo, VULKAN_HPP_DEFAULT_DISPATCHER);
     }
 #endif
@@ -332,15 +383,15 @@ void VulkanDevice::EndDebugLabel(vk::CommandBuffer* vCmd) {
 //// PRIVATE // LAYERS ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const std::vector<const char*> validationLayers = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation", "VK_LAYER_LUNARG_device_limits",   "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_image", "VK_LAYER_LUNARG_core_validation",
-                                                   "VK_LAYER_LUNARG_swapchain", "VK_LAYER_GOOGLE_unique_objects",       "VK_LAYER_LUNARG_core_validation", "VK_LAYER_KHRONOS_validation"};
+const std::vector<const char*> validationLayers = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation", "VK_LAYER_LUNARG_device_limits", "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_image", "VK_LAYER_LUNARG_core_validation",
+    "VK_LAYER_LUNARG_swapchain", "VK_LAYER_GOOGLE_unique_objects", "VK_LAYER_LUNARG_core_validation", "VK_LAYER_KHRONOS_validation"};
 
 void PrintLayerStatus(const VkLayerProperties& layer_info, const bool& vWanted, const size_t& vMaxLayerNameSize) {
     ZoneScoped;
 
-    string major   = to_string(VK_VERSION_MAJOR(layer_info.specVersion));
-    string minor   = to_string(VK_VERSION_MINOR(layer_info.specVersion));
-    string patch   = to_string(VK_VERSION_PATCH(layer_info.specVersion));
+    string major = to_string(VK_VERSION_MAJOR(layer_info.specVersion));
+    string minor = to_string(VK_VERSION_MINOR(layer_info.specVersion));
+    string patch = to_string(VK_VERSION_PATCH(layer_info.specVersion));
     string version = major + "." + minor + "." + patch;
 
     static char spaceBuffer[1024 + 1] = "";
@@ -435,7 +486,6 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
     auto vkWindowPtr = vVulkanWindow.lock();
     if (vkWindowPtr) {
-
         // todo : to refactor vk::enumerateInstanceVersion and m_ApiVersion
         m_ApiVersion = VK_MAKE_API_VERSION(0, 1, 2, 0);  // needed for RTX
         if (vk::enumerateInstanceVersion(&m_ApiVersion) != vk::Result::eSuccess) {
@@ -448,9 +498,9 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
         std::cout << ("-----------") << std::endl;
         const uint32_t& variant = VK_API_VERSION_VARIANT(m_ApiVersion);
-        const uint32_t& major   = VK_API_VERSION_MAJOR(m_ApiVersion);
-        const uint32_t& minor   = VK_API_VERSION_MINOR(m_ApiVersion);
-        const uint32_t& patch   = VK_API_VERSION_PATCH(m_ApiVersion);
+        const uint32_t& major = VK_API_VERSION_MAJOR(m_ApiVersion);
+        const uint32_t& minor = VK_API_VERSION_MINOR(m_ApiVersion);
+        const uint32_t& patch = VK_API_VERSION_PATCH(m_ApiVersion);
         LogVarLightInfo("Vulkan api version is : %u.%u.%u.%u", variant, major, minor, patch);
 
         VulkanCore::sApiVersion = m_ApiVersion;
@@ -460,7 +510,7 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 #endif
 
         auto wantedExtensions = vkWindowPtr->getVKInstanceExtensions();
-        auto wantedLayers     = std::vector<const char*>();
+        auto wantedLayers = std::vector<const char*>();
 
 #if VULKAN_DEBUG
         wantedLayers.emplace_back("VK_LAYER_KHRONOS_validation");
@@ -483,20 +533,22 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 #endif
 
         // Find the best Instance Extensions
-        auto installedExtensions            = vk::enumerateInstanceExtensionProperties();
-        std::vector<const char*> extensions = {};
+        auto installedExtensions = vk::enumerateInstanceExtensionProperties();
+        ct::SearchableVector<const char*> extensions = {};
         findBestExtensions("Instance", installedExtensions, wantedExtensions, extensions);
 
         // verification of needed extention presence
         m_Use_RTX = false;
         for (const auto& ext_ptr : extensions) {
-            if (strcmp(ext_ptr, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) == 0) {
+            if (strcmp(ext_ptr, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) == 0 &&  //
+                strcmp(ext_ptr, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) == 0 &&    //
+                strcmp(ext_ptr, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) == 0) {
                 m_Use_RTX = true;
             }
         }
 
         // find best instance Layer
-        auto installedLayers            = vk::enumerateInstanceLayerProperties();
+        auto installedLayers = vk::enumerateInstanceLayerProperties();
         std::vector<const char*> layers = {};
         findBestLayers(installedLayers, wantedLayers, layers);
 
@@ -536,14 +588,14 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
         // Setup the debug report callback
         VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
-        debug_report_ci.sType                              = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-        debug_report_ci.flags                              = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
+        debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+        debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
             //| VK_DEBUG_REPORT_DEBUG_BIT_EXT // affiche les extentions
             //| VK_DEBUG_REPORT_INFORMATION_BIT_EXT
             ;
 
         debug_report_ci.pfnCallback = debug_report;
-        debug_report_ci.pUserData   = NULL;
+        debug_report_ci.pUserData = NULL;
 
         auto creat_func = VULKAN_HPP_DEFAULT_DISPATCHER.vkCreateDebugReportCallbackEXT;
         if (creat_func) {
@@ -587,7 +639,7 @@ bool VulkanDevice::CreatePhysicalDevice() {
     m_PhysDevice = physicalDevices[gpuid];
 
     m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eGraphics, false);
-    m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex  = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eCompute, false);
+    m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eCompute, false);
     m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eTransfer, false);
 
     if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
@@ -597,8 +649,7 @@ bool VulkanDevice::CreatePhysicalDevice() {
 
         std::cout << "-----------" << std::endl;
         LogVarLightTag(MESSAGING_TYPE_DEBUG, "Ray Tracing Device Properties :");
-        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Size : %u",
-            m_RayTracingDeviceProperties.shaderGroupHandleSize);
+        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Size : %u", m_RayTracingDeviceProperties.shaderGroupHandleSize);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Recursion Depth : %u", m_RayTracingDeviceProperties.maxRayRecursionDepth);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Shader Group Stride : %u", m_RayTracingDeviceProperties.maxShaderGroupStride);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Base Alignment : %u", m_RayTracingDeviceProperties.shaderGroupBaseAlignment);
@@ -644,9 +695,13 @@ bool VulkanDevice::CreateLogicalDevice() {
         }
     }
 
+    auto features = getSupportedFeatures(m_PhysDevice);
+    auto features2 = getSupportedFeatures2(m_PhysDevice);
+    auto features2KHR = getSupportedFeatures2KHR(m_PhysDevice);
+
     // Logical VulkanCore
     std::vector<vk::ExtensionProperties> installedDeviceExtensions = m_PhysDevice.enumerateDeviceExtensionProperties();
-    std::vector<const char*> wantedDeviceExtensions                = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME};
+    std::vector<const char*> wantedDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME};
 
     if (m_ApiVersion != VK_API_VERSION_1_0) {
         wantedDeviceExtensions.emplace_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
@@ -659,81 +714,121 @@ bool VulkanDevice::CreateLogicalDevice() {
         wantedDeviceExtensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);  // VK_API_VERSION_1_2
 
         // needed by VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME
-        // not needed because in core since VK_API_VERSION_1_1
+        // not more needed because in core since VK_API_VERSION_1_1
         // wantedDeviceExtensions.push_back(VK_KHR_MAINTENANCE_3_EXTENSION_NAME);
 
         // needed by VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
-        // not needed because in core since VK_API_VERSION_1_2
+        // not more needed because in core since VK_API_VERSION_1_2
         // wantedDeviceExtensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-        // not needed because in core since VK_API_VERSION_1_2
+        // not more needed because in core since VK_API_VERSION_1_2
         // wantedDeviceExtensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
         wantedDeviceExtensions.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
 
         // needed by VK_KHR_SPIRV_1_4_EXTENSION_NAME
-        // not needed because in core since VK_API_VERSION_1_2
+        // not more needed because in core since VK_API_VERSION_1_2
         // wantedDeviceExtensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
 
         // needed by VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
-        // not needed because in core since VK_API_VERSION_1_2
+        // not more needed because in core since VK_API_VERSION_1_2
         // wantedDeviceExtensions.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
         wantedDeviceExtensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
 
         wantedDeviceExtensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
     }
 
-    std::vector<const char*> deviceExtensions = {};
+    ct::SearchableVector<const char*> deviceExtensions = {};
     findBestExtensions("Device", installedDeviceExtensions, wantedDeviceExtensions, deviceExtensions);
 
     std::cout << ("-----------") << std::endl;
     LogVarLightInfo("Device Features :");
 
     // enabled features
-    LogVarLightInfo("Feature vk 1.0 : wide Lines");
-    m_PhysDeviceFeatures.setWideLines(true);  // pour changer la taille des lignes
+    if (features.wideLines) {
+        LogVarLightInfo("Feature vk 1.0 : wide Lines");
+        m_PhysDeviceFeatures.setWideLines(true);  // pour changer la taille des lignes
+    }
 
-    LogVarLightInfo("Feature vk 1.0 : sample Rate Shading");
-    m_PhysDeviceFeatures.setSampleRateShading(true);  // pour anti aliaser les textures
+    if (features.sampleRateShading) {
+        LogVarLightInfo("Feature vk 1.0 : sample Rate Shading");
+        m_PhysDeviceFeatures.setSampleRateShading(true);  // pour anti aliaser les textures
+    }
 
-    LogVarLightInfo("Feature vk 1.0 : geometry Shader");
-    m_PhysDeviceFeatures.setGeometryShader(true);  // pour utiliser les shader de geometrie
+    if (features.geometryShader) {
+        LogVarLightInfo("Feature vk 1.0 : geometry Shader");
+        m_PhysDeviceFeatures.setGeometryShader(true);  // pour utiliser les shader de geometrie
+    }
 
-    LogVarLightInfo("Feature vk 1.0 : tessellation Shader");
-    m_PhysDeviceFeatures.setTessellationShader(true);  // pour utiliser les shaders de tesselation
+    if (features.tessellationShader) {
+        LogVarLightInfo("Feature vk 1.0 : tessellation Shader");
+        m_PhysDeviceFeatures.setTessellationShader(true);  // pour utiliser les shaders de tesselation
+    }
 
-    // for using int64_t and uint64_t in a sahder code
-    // need to add in a shader :
-    // #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
-    LogVarLightInfo("Feature vk 1.0 : int64/uint64 in a Shader");
-    m_PhysDeviceFeatures.setShaderInt64(true);
+    if (features.shaderInt64) {
+        // for using int64_t and uint64_t in a shader code
+        // need to add in a shader :
+        // #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+        LogVarLightInfo("Feature vk 1.0 : int64/uint64 in a Shader");
+        m_PhysDeviceFeatures.setShaderInt64(true);
+    }
 
     m_PhysDeviceFeatures2.setFeatures(m_PhysDeviceFeatures);
 
-    LogVarLightInfo("Feature vk 1.0 : null Descriptor");
-    m_Robustness2Feature.setNullDescriptor(true);  // null descriptor feature
-    m_PhysDeviceFeatures2.setPNext(&m_Robustness2Feature);
+    struct pNextDatas {
+        void* pNext = nullptr;
+        void* pDatas = nullptr;
+    };
+    std::vector<pNextDatas*> chains;
 
-    LogVarLightInfo("Feature vk 1.0 : Dynamic States");
-    m_DynamicStates.setExtendedDynamicState(true);
-    m_Robustness2Feature.setPNext(&m_DynamicStates);
+    if (deviceExtensions.exist(VK_EXT_ROBUSTNESS_2_EXTENSION_NAME)) {
+        LogVarLightInfo("Feature vk 1.0 : null Descriptor");
+        m_Robustness2Feature.setNullDescriptor(true);  // null descriptor feature
+        chains.push_back((pNextDatas*)&m_Robustness2Feature);
+    }
+    // m_PhysDeviceFeatures2.setPNext(&m_Robustness2Feature);
 
-    LogVarLightInfo("Feature vk 1.1 : synchronisation 2");
-    m_Synchronization2Feature.setSynchronization2(true);
-    m_DynamicStates.setPNext(&m_Synchronization2Feature);
+    if (deviceExtensions.exist(VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME)) {
+        LogVarLightInfo("Feature vk 1.0 : Dynamic States");
+        m_DynamicStates.setExtendedDynamicState(true);
+        chains.push_back((pNextDatas*)&m_DynamicStates);
+    }
+    // m_Robustness2Feature.setPNext(&m_DynamicStates);
 
-    LogVarLightInfo("Feature vk 1.2 : Buffer Device Address");
-    m_BufferDeviceAddress.setBufferDeviceAddress(true);
-    m_Synchronization2Feature.setPNext(&m_BufferDeviceAddress);
+    if (deviceExtensions.exist(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME)) {
+        LogVarLightInfo("Feature vk 1.1 : synchronisation 2");
+        m_Synchronization2Feature.setSynchronization2(true);
+        chains.push_back((pNextDatas*)&m_Synchronization2Feature);
+    }
+    // m_DynamicStates.setPNext(&m_Synchronization2Feature);
+
+    if (deviceExtensions.exist(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME)) {
+        LogVarLightInfo("Feature vk 1.2 : Buffer Device Address");
+        m_BufferDeviceAddress.setBufferDeviceAddress(true);
+        chains.push_back((pNextDatas*)&m_BufferDeviceAddress);
+    }
+    // m_Synchronization2Feature.setPNext(&m_BufferDeviceAddress);
 
     if (m_Use_RTX) {
-        LogVarLightInfo("Feature vk 1.2 : (RTX) Acceleration Structure");
-        m_AccelerationStructureFeature.setAccelerationStructure(true);
-        m_BufferDeviceAddress.setPNext(&m_AccelerationStructureFeature);
+        if (deviceExtensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME)) {
+            LogVarLightInfo("Feature vk 1.2 : (RTX) Acceleration Structure");
+            m_AccelerationStructureFeature.setAccelerationStructure(true);
+            chains.push_back((pNextDatas*)&m_AccelerationStructureFeature);
+        }
+        // m_BufferDeviceAddress.setPNext(&m_AccelerationStructureFeature);
 
-        LogVarLightInfo("Feature vk 1.2 : (RTX) Ray Tracing Pipeline");
-        m_RayTracingPipelineFeature.setRayTracingPipeline(true);
-        m_AccelerationStructureFeature.setPNext(&m_RayTracingPipelineFeature);
+        if (deviceExtensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME)) {
+            LogVarLightInfo("Feature vk 1.2 : (RTX) Ray Tracing Pipeline");
+            m_RayTracingPipelineFeature.setRayTracingPipeline(true);
+            chains.push_back((pNextDatas*)&m_RayTracingPipelineFeature);
+        }
+        // m_AccelerationStructureFeature.setPNext(&m_RayTracingPipelineFeature);
     }
 
+    pNextDatas* last_item_ptr = (pNextDatas*)&m_PhysDeviceFeatures2;
+    for (auto item_ptr : chains) {
+        last_item_ptr->pNext = item_ptr;
+        last_item_ptr = item_ptr;
+    }
+    
     std::cout << ("-----------") << std::endl;
 
     vk::DeviceCreateInfo dinfo;
@@ -748,35 +843,29 @@ bool VulkanDevice::CreateLogicalDevice() {
 
 // tracy need the (unoptimized) vk::CommandPoolCreateFlagBits::eResetCommandBuffer
 #ifdef TRACY_ENABLE
-    uint32_t familyQueueIndex                      = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
+    uint32_t familyQueueIndex = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eGraphics].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools =
-        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
 
-    familyQueueIndex                              = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
+    familyQueueIndex = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eCompute].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eCompute].cmdPools =
-        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eCompute].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
 
-    familyQueueIndex                               = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
+    familyQueueIndex = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eTransfer].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools =
-        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
 #else
-    uint32_t familyQueueIndex                      = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
+    uint32_t familyQueueIndex = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eGraphics].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools =
-        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
 
-    familyQueueIndex                              = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
+    familyQueueIndex = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eCompute].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eCompute].cmdPools =
-        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eCompute].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
 
-    familyQueueIndex                               = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
+    familyQueueIndex = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eTransfer].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools =
-        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
 #endif
 
     return true;
@@ -792,4 +881,7 @@ void VulkanDevice::DestroyLogicalDevice() {
 
     m_LogDevice.destroy();
 }
+
 }  // namespace GaiApi
+
+#undef LOG_FEATURE
