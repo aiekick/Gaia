@@ -595,13 +595,14 @@ void VulkanRessource::copy(GaiApi::VulkanCorePtr vVulkanCorePtr, vk::Buffer dst,
     VulkanCommandBuffer::flushSingleTimeCommands(vVulkanCorePtr, cmd, true, vCommandPool);
 }
 
-void VulkanRessource::upload(VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr dstHostVisiblePtr, void* src_host, size_t size_bytes, size_t dst_offset) {
+bool VulkanRessource::upload(
+    VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr dstHostVisiblePtr, void* src_host, size_t size_bytes, size_t dst_offset) {
     ZoneScoped;
 
     if (vVulkanCorePtr && dstHostVisiblePtr && src_host && size_bytes) {
         if (dstHostVisiblePtr->alloc_usage == VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY) {
             LogVarDebugInfo("Debug : upload not done because it is VMA_MEMORY_USAGE_GPU_ONLY");
-            return;
+            return false;
         }
 
         void* dst   = nullptr;
@@ -610,17 +611,19 @@ void VulkanRessource::upload(VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr
         if (result == vk::Result::eSuccess) {
             memcpy((uint8_t*)dst + dst_offset, src_host, size_bytes);
             vmaUnmapMemory(GaiApi::VulkanCore::sAllocator, dstHostVisiblePtr->alloc_meta);
+            return true;
         }
     }
+    return false;
 }
 
-void VulkanRessource::download(GaiApi::VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr srcHostVisiblePtr, void* dst_host, size_t size_bytes) {
+bool VulkanRessource::download(GaiApi::VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr srcHostVisiblePtr, void* dst_host, size_t size_bytes) {
     ZoneScoped;
 
     if (vVulkanCorePtr && srcHostVisiblePtr && dst_host && size_bytes) {
         if (srcHostVisiblePtr->alloc_usage == VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY) {
             LogVarDebugInfo("Debug : download not done because it is VMA_MEMORY_USAGE_GPU_ONLY");
-            return;
+            return false;
         }
         void* mappedData = nullptr;
         auto result      = (vk::Result)vmaMapMemory(GaiApi::VulkanCore::sAllocator, srcHostVisiblePtr->alloc_meta, &mappedData);
@@ -628,8 +631,10 @@ void VulkanRessource::download(GaiApi::VulkanCorePtr vVulkanCorePtr, VulkanBuffe
         if (result == vk::Result::eSuccess) {
             memcpy(dst_host, mappedData, size_bytes);
             vmaUnmapMemory(GaiApi::VulkanCore::sAllocator, srcHostVisiblePtr->alloc_meta);
+            return true;
         }
     }
+    return false;
 }
 
 void VulkanRessource::SetDeviceAddress(const vk::Device& vDevice, VulkanBufferObjectPtr vVulkanBufferObjectPtr) {
@@ -642,28 +647,23 @@ void VulkanRessource::SetDeviceAddress(const vk::Device& vDevice, VulkanBufferOb
 
 VulkanBufferObjectPtr VulkanRessource::createSharedBufferObject(GaiApi::VulkanCorePtr vVulkanCorePtr, const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info) {
     ZoneScoped;
-
     auto dataPtr = VulkanBufferObjectPtr(new VulkanBufferObject, [vVulkanCorePtr](VulkanBufferObject* obj) {
         vmaDestroyBuffer(GaiApi::VulkanCore::sAllocator, (VkBuffer)obj->buffer, obj->alloc_meta);
         if (obj->bufferView) {
             vVulkanCorePtr->getDevice().destroyBufferView(obj->bufferView);
         }
-        // obj->bufferInfo = vk::DescriptorBufferInfo{};
     });
     if (dataPtr) {
         dataPtr->alloc_usage  = alloc_info.usage;
         dataPtr->buffer_usage = bufferinfo.usage;
         VulkanCore::check_error(vmaCreateBuffer(GaiApi::VulkanCore::sAllocator, (VkBufferCreateInfo*)&bufferinfo, &alloc_info, (VkBuffer*)&dataPtr->buffer, &dataPtr->alloc_meta, nullptr));
-
         if (dataPtr && dataPtr->buffer) {
             SetDeviceAddress(vVulkanCorePtr->getDevice(), dataPtr);
         } else {
             dataPtr.reset();
         }
-
         return dataPtr;
     }
-
     return nullptr;
 }
 
