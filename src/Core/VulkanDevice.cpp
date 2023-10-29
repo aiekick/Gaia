@@ -165,7 +165,7 @@ VulkanDevicePtr VulkanDevice::Create(VulkanWindowWeak vVulkanWindow, const std::
     return res;
 }
 
-void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::ExtensionProperties>& installed, const std::vector<const char*>& wanted, ct::SearchableVector<const char*>& out) {
+void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::ExtensionProperties>& installed, const std::vector<const char*>& wanted, ct::SearchableVector<std::string>& out) {
     ZoneScoped;
 
     assert(vLabel);
@@ -534,18 +534,13 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
         // Find the best Instance Extensions
         auto installedExtensions = vk::enumerateInstanceExtensionProperties();
-        ct::SearchableVector<const char*> extensions = {};
+        ct::SearchableVector<std::string> extensions = {};
         findBestExtensions("Instance", installedExtensions, wantedExtensions, extensions);
 
         // verification of needed extention presence
-        m_Use_RTX = false;
-        for (const auto& ext_ptr : extensions) {
-            if (strcmp(ext_ptr, VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) == 0 &&  //
-                strcmp(ext_ptr, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) == 0 &&    //
-                strcmp(ext_ptr, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) == 0) {
-                m_Use_RTX = true;
-            }
-        }
+        m_Use_RTX = (extensions.exist(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) &&  //
+                     extensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&    //
+                     extensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME));
 
         // find best instance Layer
         auto installedLayers = vk::enumerateInstanceLayerProperties();
@@ -556,12 +551,20 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
         m_Debug_Utils_Supported = false;
         for (auto ext : extensions) {
-            if (strcmp(ext, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0) {
+            if (ext == VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
                 m_Debug_Utils_Supported = true;
+                break;
             }
         }
 
-        vk::InstanceCreateInfo instanceCreateInfo(vk::InstanceCreateFlags(), &appInfo, static_cast<uint32_t>(layers.size()), layers.data(), static_cast<uint32_t>(extensions.size()), extensions.data());
+        std::vector<const char*> charExtensions;
+        for (const auto& it : extensions) {
+            charExtensions.push_back(it.c_str());
+        }
+
+        vk::InstanceCreateInfo instanceCreateInfo(vk::InstanceCreateFlags(), &appInfo,  //
+            static_cast<uint32_t>(layers.size()), layers.data(),                        //
+            static_cast<uint32_t>(charExtensions.size()), charExtensions.data());
 
         std::vector<vk::ValidationFeatureEnableEXT> enabledFeatures;
 
@@ -736,7 +739,7 @@ bool VulkanDevice::CreateLogicalDevice() {
         wantedDeviceExtensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
     }
 
-    ct::SearchableVector<const char*> deviceExtensions = {};
+    ct::SearchableVector<std::string> deviceExtensions = {};
     findBestExtensions("Device", installedDeviceExtensions, wantedDeviceExtensions, deviceExtensions);
 
     std::cout << ("-----------") << std::endl;
@@ -773,7 +776,10 @@ bool VulkanDevice::CreateLogicalDevice() {
 
     m_PhysDeviceFeatures2.setFeatures(m_PhysDeviceFeatures);
 
+    // we reproduce the start of each feature structure
+    // for build the final chain dynamically
     struct pNextDatas {
+        vk::StructureType sType;
         void* pNext = nullptr;
         void* pDatas = nullptr;
     };
@@ -823,6 +829,7 @@ bool VulkanDevice::CreateLogicalDevice() {
         // m_AccelerationStructureFeature.setPNext(&m_RayTracingPipelineFeature);
     }
 
+    // recreate the chain
     pNextDatas* last_item_ptr = (pNextDatas*)&m_PhysDeviceFeatures2;
     for (auto item_ptr : chains) {
         last_item_ptr->pNext = item_ptr;
@@ -831,11 +838,16 @@ bool VulkanDevice::CreateLogicalDevice() {
     
     std::cout << ("-----------") << std::endl;
 
+    std::vector<const char*> charDeviceExtensions;
+    for (const auto& it : deviceExtensions) {
+        charDeviceExtensions.push_back(it.c_str());
+    }
+
     vk::DeviceCreateInfo dinfo;
     dinfo.setPNext(&m_PhysDeviceFeatures2);
     dinfo.setPQueueCreateInfos(qcinfo.data());
     dinfo.setQueueCreateInfoCount(static_cast<uint32_t>(qcinfo.size()));
-    dinfo.setPpEnabledExtensionNames(deviceExtensions.data());
+    dinfo.setPpEnabledExtensionNames(charDeviceExtensions.data());
     dinfo.setEnabledExtensionCount(static_cast<uint32_t>(deviceExtensions.size()));
     m_LogDevice = m_PhysDevice.createDevice(dinfo);
 

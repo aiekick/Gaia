@@ -74,7 +74,10 @@ namespace GaiApi
 		bool m_Debug_Utils_Supported = false;
 
 	public:
-        static void findBestExtensions(const char* vLabel, const std::vector<vk::ExtensionProperties>& installed, const std::vector<const char*>& wanted, ct::SearchableVector<const char*>& out);
+        static void findBestExtensions(const char* vLabel,
+            const std::vector<vk::ExtensionProperties>& installed,
+            const std::vector<const char*>& wanted,
+            ct::SearchableVector<std::string>& out);
 		static void findBestLayers(const std::vector<vk::LayerProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out);
 		static uint32_t getQueueIndex(vk::PhysicalDevice& physicalDevice, vk::QueueFlags flags, bool standalone);
         static vk::PhysicalDeviceFeatures getSupportedFeatures(vk::PhysicalDevice& physicalDevice);
