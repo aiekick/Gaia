@@ -33,9 +33,10 @@ limitations under the License.
 #include <Gaia/Core/vk_mem_alloc.h>
 #include <Gaia/Resources/VulkanRessource.h>
 #include <Gaia/Resources/VulkanFrameBuffer.h>
+#include <Gaia/Interfaces/OutputSizeInterface.h>
 #include <Gaia/gaia.h>
 
-class GAIA_API ComputeBuffer {
+class GAIA_API ComputeBuffer : public OutputSizeInterface {
 public:
 	static ComputeBufferPtr Create(GaiApi::VulkanCorePtr vVulkanCorePtr);
 
@@ -43,7 +44,7 @@ protected:
 	uint32_t m_BufferIdToResize = 0U;								// buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
 	bool m_IsRenderPassExternal = false;							// true if the renderpass is not created here, but come from external (inportant for not destroy him)
 	
-	bool m_MultiPassMode = false;
+	bool m_PingPongBufferMode = false;
 
 	bool m_NeedResize = false;				// will be resized if true
 	bool m_Loaded = false;					// if shader operationnel
@@ -85,7 +86,7 @@ public: // contructor
 	bool Init(
 		const ct::uvec2& vSize, 
 		const uint32_t& vCountColorBuffers,
-		const bool& vMultiPassMode,
+		const bool& vPingPongBufferMode,
 		const vk::Format& vFormat);
 	void Unit();
 
@@ -105,10 +106,11 @@ public: // contructor
 	vk::DescriptorImageInfo* GetFrontDescriptorImageInfo(const uint32_t& vBindingPoint);
 	
 	uint32_t GetBuffersCount() const;
-	bool IsMultiPassMode() const;
+	bool IsPingPongBufferMode() const;
 
-	float GetOutputRatio() const;
-	ct::fvec2 GetOutputSize() const;
+    // OutputSizeInterface
+    float GetOutputRatio() const override;
+    ct::fvec2 GetOutputSize() const override;
 
 	void Swap();
 

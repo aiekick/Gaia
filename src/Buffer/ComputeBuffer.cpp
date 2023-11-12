@@ -71,7 +71,7 @@ ComputeBuffer::~ComputeBuffer() {
 //// PUBLIC / INIT/UNIT ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool ComputeBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vMultiPassMode, const vk::Format& vFormat) {
+bool ComputeBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vPingPongBufferMode, const vk::Format& vFormat) {
     ZoneScoped;
 
     m_Loaded = false;
@@ -79,7 +79,7 @@ bool ComputeBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuff
     m_Device = m_VulkanCorePtr->getDevice();
     ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
-        m_MultiPassMode = vMultiPassMode;
+        m_PingPongBufferMode = vPingPongBufferMode;
 
         m_TemporarySize = ct::ivec2(size.x, size.y);
         m_TemporaryCountBuffer = vCountColorBuffers;
@@ -168,7 +168,7 @@ void ComputeBuffer::End(vk::CommandBuffer* /*vCmdBuffer*/) {
 
 void ComputeBuffer::Swap() {
     ZoneScoped;
-    if (m_MultiPassMode) {
+    if (m_PingPongBufferMode) {
         m_CurrentFrame = 1U - m_CurrentFrame;
     }
 }
@@ -193,9 +193,9 @@ uint32_t ComputeBuffer::GetBuffersCount() const {
     return m_CountBuffers;
 }
 
-bool ComputeBuffer::IsMultiPassMode() const {
+bool ComputeBuffer::IsPingPongBufferMode() const {
     ZoneScoped;
-    return m_MultiPassMode;
+    return m_PingPongBufferMode;
 }
 
 vk::DescriptorImageInfo* ComputeBuffer::GetFrontDescriptorImageInfo(const uint32_t& vBindingPoint) {
@@ -218,7 +218,7 @@ vk::DescriptorImageInfo* ComputeBuffer::GetBackDescriptorImageInfo(const uint32_
     ZoneScoped;
     if (vBindingPoint < m_CountBuffers) {
         uint32_t frame = m_CurrentFrame;
-        if (m_MultiPassMode)
+        if (m_PingPongBufferMode)
             frame = 1U - frame;
 
         auto& buffers = m_ComputeBuffers[(size_t)frame];
@@ -264,7 +264,7 @@ bool ComputeBuffer::CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t&
                 res &= (bufferPtr != nullptr);
             }
 
-            if (m_MultiPassMode) {
+            if (m_PingPongBufferMode) {
                 m_ComputeBuffers.emplace_back(std::vector<Texture2DPtr>{});
                 m_ComputeBuffers[1U].resize(m_CountBuffers);
                 for (auto& bufferPtr : m_ComputeBuffers[1U]) {

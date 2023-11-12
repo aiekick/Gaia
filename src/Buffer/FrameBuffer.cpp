@@ -75,7 +75,7 @@ FrameBuffer::~FrameBuffer() {
 // donc pas de code car pas de shader, pas de m_Pipelines[0], ni ressources
 // mais un command buffer, un fbo et une renderpass
 
-bool FrameBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vUseDepth, const bool& vNeedToClear, const ct::fvec4& vClearColor, const bool& vMultiPassMode, const vk::Format& vFormat,
+bool FrameBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vUseDepth, const bool& vNeedToClear, const ct::fvec4& vClearColor, const bool& vPingPongBufferMode, const vk::Format& vFormat,
                        const vk::SampleCountFlagBits& vSampleCount, const bool& vCreateRenderPass, const vk::RenderPass& vExternalRenderPass) {
     ZoneScoped;
 
@@ -84,7 +84,7 @@ bool FrameBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffer
     m_Device       = m_VulkanCorePtr->getDevice();
     ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
-        m_MultiPassMode = vMultiPassMode;
+        m_PingPongBufferMode = vPingPongBufferMode;
 
         m_CreateRenderPass = vCreateRenderPass;
 
@@ -238,7 +238,7 @@ void FrameBuffer::SetClearColorValue(const ct::fvec4& vColor) {
 
 void FrameBuffer::Swap() {
     ZoneScoped;
-    if (m_MultiPassMode) {
+    if (m_PingPongBufferMode) {
         m_CurrentFrame = 1U - m_CurrentFrame;
     }
 }
@@ -301,7 +301,7 @@ uint32_t FrameBuffer::GetBuffersCount() const {
 GaiApi::VulkanFrameBuffer* FrameBuffer::GetBackFbo() {
     ZoneScoped;
     uint32_t frame = m_CurrentFrame;
-    if (m_MultiPassMode)
+    if (m_PingPongBufferMode)
         frame = 1U - frame;
     return &m_FrameBuffers[frame];
 }
@@ -434,7 +434,7 @@ std::vector<GaiApi::VulkanFrameBufferAttachment>* FrameBuffer::GetBackBufferAtta
     if (vMaxBuffers)
         *vMaxBuffers = m_CountBuffers;
     uint32_t frame = m_CurrentFrame;
-    if (m_MultiPassMode)
+    if (m_PingPongBufferMode)
         frame = 1U - frame;
     if (m_FrameBuffers.size() > frame)
         return &m_FrameBuffers[frame].attachments;
@@ -503,9 +503,9 @@ bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize, const uint32_t& vCo
 
             res = true;
 
-            m_FrameBuffers.resize(m_MultiPassMode ? 2U : 1U);
+            m_FrameBuffers.resize(m_PingPongBufferMode ? 2U : 1U);
             res &= m_FrameBuffers[0U].Init(m_VulkanCorePtr, size, m_CountBuffers, m_RenderPass, vCreateRenderPass, vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
-            if (m_MultiPassMode) {
+            if (m_PingPongBufferMode) {
                 res &= m_FrameBuffers[1U].Init(m_VulkanCorePtr, size, m_CountBuffers, m_RenderPass, false,  // this one will re use the same Renderpass as first one
                                                vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
             }

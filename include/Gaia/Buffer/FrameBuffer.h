@@ -33,9 +33,10 @@ limitations under the License.
 #include <Gaia/Core/vk_mem_alloc.h>
 #include <Gaia/Resources/VulkanRessource.h>
 #include <Gaia/Resources/VulkanFrameBuffer.h>
+#include <Gaia/Interfaces/OutputSizeInterface.h>
 #include <Gaia/gaia.h>
 
-class GAIA_API FrameBuffer {
+class GAIA_API FrameBuffer : public OutputSizeInterface {
 public:
 	static FrameBufferPtr Create(GaiApi::VulkanCorePtr vVulkanCorePtr);
 
@@ -47,7 +48,7 @@ protected:
 	uint32_t m_BufferIdToResize = 0U;								// buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
 	bool m_IsRenderPassExternal = false;							// true if the renderpass is not created here, but come from external (inportant for not destroy him)
 	
-	bool m_MultiPassMode = false;
+	bool m_PingPongBufferMode = false;
 	bool m_CreateRenderPass = false;
 	bool m_NeedResize = false;				// will be resized if true
 	bool m_Loaded = false;					// if shader operationnel
@@ -112,7 +113,7 @@ public: // contructor
 		const bool& vUseDepth, 
 		const bool& vNeedToClear, 
 		const ct::fvec4& vClearColor,
-		const bool& vMultiPassMode,
+		const bool& vPingPongBufferMode,
 		const vk::Format& vFormat,
 		const vk::SampleCountFlagBits& vSampleCount,
 		const bool& vCreateRenderPass = true,
@@ -151,8 +152,9 @@ public: // contructor
 	vk::SampleCountFlagBits GetSampleCount() const;
 	uint32_t GetBuffersCount() const;
 
-	float GetOutputRatio() const;
-	ct::fvec2 GetOutputSize() const;
+	// OutputSizeInterface
+	float GetOutputRatio() const override;
+    ct::fvec2 GetOutputSize() const override;
 	
 	void BeginRenderPass(vk::CommandBuffer* vCmdBuffer);
 	void ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBuffer, const bool& vForce = false); // clear if clear is needed internally (set by ClearAttachments)
