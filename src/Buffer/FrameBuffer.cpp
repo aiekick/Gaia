@@ -165,13 +165,13 @@ bool FrameBuffer::ResizeIfNeeded() {
 //// PUBLIC / RENDER ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool FrameBuffer::Begin(vk::CommandBuffer* vCmdBuffer) {
+bool FrameBuffer::Begin(vk::CommandBuffer* vCmdBufferPtr) {
     ZoneScoped;
     if (m_Loaded) {
-        vCmdBuffer->setViewport(0, 1, &m_Viewport);
-        vCmdBuffer->setScissor(0, 1, &m_RenderArea);
+        vCmdBufferPtr->setViewport(0, 1, &m_Viewport);
+        vCmdBufferPtr->setScissor(0, 1, &m_RenderArea);
 
-        BeginRenderPass(vCmdBuffer);
+        BeginRenderPass(vCmdBufferPtr);
 
         return true;
     }
@@ -179,10 +179,10 @@ bool FrameBuffer::Begin(vk::CommandBuffer* vCmdBuffer) {
     return false;
 }
 
-void FrameBuffer::End(vk::CommandBuffer* vCmdBuffer) {
+void FrameBuffer::End(vk::CommandBuffer* vCmdBufferPtr) {
     ZoneScoped;
     if (m_Loaded) {
-        EndRenderPass(vCmdBuffer);
+        EndRenderPass(vCmdBufferPtr);
 
         Swap();
     }
@@ -192,22 +192,22 @@ void FrameBuffer::End(vk::CommandBuffer* vCmdBuffer) {
 //// PUBLIC / RENDER ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FrameBuffer::BeginRenderPass(vk::CommandBuffer* vCmdBuffer) {
+void FrameBuffer::BeginRenderPass(vk::CommandBuffer* vCmdBufferPtr) {
     ZoneScoped;
-    if (vCmdBuffer) {
+    if (vCmdBufferPtr) {
         auto fbo = GetFrontFbo();
 
-        vCmdBuffer->beginRenderPass(vk::RenderPassBeginInfo(m_RenderPass, fbo->framebuffer, m_RenderArea, static_cast<uint32_t>(m_ClearColorValues.size()), m_ClearColorValues.data()), vk::SubpassContents::eInline);
+        vCmdBufferPtr->beginRenderPass(vk::RenderPassBeginInfo(m_RenderPass, fbo->framebuffer, m_RenderArea, static_cast<uint32_t>(m_ClearColorValues.size()), m_ClearColorValues.data()), vk::SubpassContents::eInline);
     }
 }
 
-void FrameBuffer::ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBuffer, const bool& vForce) {
+void FrameBuffer::ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBufferPtr, const bool& vForce) {
     ZoneScoped;
     auto fbo = GetFrontFbo();
     if (/*fbo->neverCleared || */ vForce) {
         if (/*fbo->needToClear || */ vForce) {
-            if (vCmdBuffer) {
-                vCmdBuffer->clearAttachments(static_cast<uint32_t>(fbo->attachmentClears.size()), fbo->attachmentClears.data(), static_cast<uint32_t>(fbo->rectClears.size()), fbo->rectClears.data());
+            if (vCmdBufferPtr) {
+                vCmdBufferPtr->clearAttachments(static_cast<uint32_t>(fbo->attachmentClears.size()), fbo->attachmentClears.data(), static_cast<uint32_t>(fbo->rectClears.size()), fbo->rectClears.data());
             }
         }
 
@@ -215,10 +215,10 @@ void FrameBuffer::ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBuffer, const 
     }
 }
 
-void FrameBuffer::EndRenderPass(vk::CommandBuffer* vCmdBuffer) {
+void FrameBuffer::EndRenderPass(vk::CommandBuffer* vCmdBufferPtr) {
     ZoneScoped;
-    if (vCmdBuffer) {
-        vCmdBuffer->endRenderPass();
+    if (vCmdBufferPtr) {
+        vCmdBufferPtr->endRenderPass();
     }
 }
 

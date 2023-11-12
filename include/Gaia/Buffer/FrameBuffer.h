@@ -128,8 +128,8 @@ public: // contructor
 	bool ResizeIfNeeded();
 
 	// Merger for merged rendering one FBO in the merger
-	bool Begin(vk::CommandBuffer* vCmdBuffer);
-	void End(vk::CommandBuffer* vCmdBuffer);
+	bool Begin(vk::CommandBuffer* vCmdBufferPtr);
+	void End(vk::CommandBuffer* vCmdBufferPtr);
 
 	// get sampler / image / buffer
 	GaiApi::VulkanFrameBuffer* GetBackFbo();
@@ -156,9 +156,9 @@ public: // contructor
 	float GetOutputRatio() const override;
     ct::fvec2 GetOutputSize() const override;
 	
-	void BeginRenderPass(vk::CommandBuffer* vCmdBuffer);
-	void ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBuffer, const bool& vForce = false); // clear if clear is needed internally (set by ClearAttachments)
-	void EndRenderPass(vk::CommandBuffer* vCmdBuffer);
+	void BeginRenderPass(vk::CommandBuffer* vCmdBufferPtr);
+	void ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBufferPtr, const bool& vForce = false); // clear if clear is needed internally (set by ClearAttachments)
+	void EndRenderPass(vk::CommandBuffer* vCmdBufferPtr);
 
 	void ClearAttachments(); // set clear flag for clearing at next render
 	void SetClearColorValue(const ct::fvec4& vColor);

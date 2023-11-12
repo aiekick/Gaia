@@ -98,8 +98,8 @@ public: // contructor
 	bool ResizeIfNeeded();
 
 	// Merger for merged rendering one FBO in the merger
-	bool Begin(vk::CommandBuffer* vCmdBuffer);
-	void End(vk::CommandBuffer* vCmdBuffer);
+	bool Begin(vk::CommandBuffer* vCmdBufferPtr);
+	void End(vk::CommandBuffer* vCmdBufferPtr);
 
 	// get sampler / image / buffer
 	vk::DescriptorImageInfo* GetBackDescriptorImageInfo(const uint32_t& vBindingPoint);

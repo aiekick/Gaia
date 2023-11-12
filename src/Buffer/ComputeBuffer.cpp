@@ -146,7 +146,7 @@ bool ComputeBuffer::ResizeIfNeeded() {
 //// PUBLIC / RENDER ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool ComputeBuffer::Begin(vk::CommandBuffer* /*vCmdBuffer*/) {
+bool ComputeBuffer::Begin(vk::CommandBuffer* /*vCmdBufferPtr*/) {
     ZoneScoped;
     if (m_Loaded) {
         return true;
@@ -155,7 +155,7 @@ bool ComputeBuffer::Begin(vk::CommandBuffer* /*vCmdBuffer*/) {
     return false;
 }
 
-void ComputeBuffer::End(vk::CommandBuffer* /*vCmdBuffer*/) {
+void ComputeBuffer::End(vk::CommandBuffer* /*vCmdBufferPtr*/) {
     ZoneScoped;
     if (m_Loaded) {
         Swap();
