@@ -77,18 +77,18 @@ struct GAIA_API ImGui_ImplVulkan_InitInfo {
 #ifdef ENABLE_AIEKICK_CODE
     GaiApi::VulkanCorePtr            vulkanCorePtr = nullptr;
 #endif
-    VkInstance                      Instance;
-    VkPhysicalDevice                PhysicalDevice;
-    VkDevice                        Device;
+    vk::Instance                      Instance;
+    vk::PhysicalDevice PhysicalDevice;
+    vk::Device Device;
     uint32_t                        QueueFamily;
-    VkQueue                         Queue;
-    VkPipelineCache                 PipelineCache;
-    VkDescriptorPool                DescriptorPool;
+    vk::Queue Queue;
+    vk::PipelineCache PipelineCache;
+    vk::DescriptorPool DescriptorPool;
     uint32_t                        Subpass;
     uint32_t                        MinImageCount;          // >= 2
     uint32_t                        ImageCount;             // >= MinImageCount
-    VkSampleCountFlagBits           MSAASamples;            // >= VK_SAMPLE_COUNT_1_BIT
-    const VkAllocationCallbacks* Allocator;
+    VkSampleCountFlagBits MSAASamples;                    // >= VK_SAMPLE_COUNT_1_BIT
+    const vk::AllocationCallbacks* Allocator;
     void                            (*CheckVkResultFn)(VkResult err);
 };
 

@@ -6,3 +6,7 @@
 	path = 3rdparty/ctools
 	url = https://github.com/aiekick/cTools.git
 	branch = master
+[submodule "3rdparty/VulkanHeaders"]
+	path = 3rdparty/VulkanHeaders
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+	branch = main

@@ -19,6 +19,7 @@ limitations under the License.
 
 #include <Gaia/Core/VulkanCore.h>
 
+#include <Gaia/gaia.h>
 #include <ctools/Logger.h>
 #include <Gaia/Core/VulkanSubmitter.h>
 #include <Gaia/Resources/Texture2D.h>
@@ -57,7 +58,10 @@ limitations under the License.
 // #ifdef RECORD_VM_ALLOCATION
 // #define VMA_RECORDING_ENABLED 1
 // #endif
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include <Gaia/Core/vk_mem_alloc.h>
+
 
 #ifndef ZoneScoped
 #define ZoneScoped
@@ -274,7 +278,7 @@ float VulkanCore::GetDeltaTime(const uint32_t& vCurrentFrame) {
 
 vk::SampleCountFlagBits VulkanCore::GetMaxUsableSampleCount() {
     VkPhysicalDeviceProperties physicalDeviceProperties;
-    vkGetPhysicalDeviceProperties((VkPhysicalDevice)m_VulkanDevicePtr->m_PhysDevice, &physicalDeviceProperties);
+    VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceProperties((VkPhysicalDevice)m_VulkanDevicePtr->m_PhysDevice, &physicalDeviceProperties);
 
     VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts &
                                 physicalDeviceProperties.limits.framebufferDepthSampleCounts;
@@ -613,6 +617,10 @@ void VulkanCore::setupMemoryAllocator() {
 
     VmaAllocatorCreateInfo allocatorInfo = {};
     allocatorInfo.flags |= VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+
+    m_VmaVulkanFunctions.vkGetInstanceProcAddr = VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr;
+    m_VmaVulkanFunctions.vkGetDeviceProcAddr = VULKAN_HPP_DEFAULT_DISPATCHER.vkGetDeviceProcAddr;
+    allocatorInfo.pVulkanFunctions = &m_VmaVulkanFunctions;
 
     if (m_VulkanDevicePtr->GetRTXUse()) {
         allocatorInfo.flags |= VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;  // VK_API_VERSION_1_2

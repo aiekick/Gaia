@@ -18,7 +18,6 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <Gaia/gaia.h>
-#include <Gaia/Core/vk_mem_alloc.h>
 
 #include <ctools/cTools.h>
 

@@ -28,6 +28,14 @@
 #define VULKAN_HPP_STORAGE_API
 #endif
 
+#define VULKAN
+#define VK_NO_PROTOTYPES
+#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
+#define VULKAN_HPP_TYPESAFE_CONVERSION
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
+#include <Gaia/Core/vk_mem_alloc.h>
+
 #include <memory>
 #include <ctools/cTools.h>
 #include <vulkan/vulkan.hpp>

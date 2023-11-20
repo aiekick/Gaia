@@ -18,7 +18,6 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <Gaia/gaia.h>
-#include <Gaia/Core/vk_mem_alloc.h>
 #include <glm/glm.hpp>
 
 #include <ctools/cTools.h>
@@ -87,6 +86,8 @@ protected:
     vk::PipelineCache m_PipelineCache = nullptr;
     bool m_CreateSwapChain = false;
 
+    VmaVulkanFunctions m_VmaVulkanFunctions;
+
 protected:  // extentions
     struct SupportedFeatures {
         bool is_RTX_Supported = false;
@@ -107,7 +108,6 @@ public:  // get / set
     vk::PhysicalDevice getPhysicalDevice() const;
     vk::Device getDevice() const;
     VulkanDeviceWeak getFrameworkDevice();
-    vk::DispatchLoaderDynamic GetDynamicLoader() const;
     vk::DescriptorPool getDescriptorPool() const;
     vk::RenderPass& getMainRenderPassRef();
     vk::RenderPass getMainRenderPass() const;

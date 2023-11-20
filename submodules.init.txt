@@ -3,5 +3,6 @@ git submodule add --force -b "master" https://github.com/glfw/glfw.git 3rdparty/
 git submodule add --force -b "master" https://github.com/aiekick/cTools.git 3rdparty/ctools
 git submodule add --force -b "master" https://github.com/aiekick/ImGuiPack.git 3rdparty/ImGuiPack
 git submodule add --force -b "master" https://github.com/g-truc/glm.git 3rdparty/glm
+git submodule add --force -b "main" https://github.com/KhronosGroup/Vulkan-Headers.git 3rdparty/VulkanHeaders
 
 

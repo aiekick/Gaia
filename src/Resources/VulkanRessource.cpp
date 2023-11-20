@@ -443,9 +443,10 @@ void VulkanRessource::GenerateMipmaps(GaiApi::VulkanCorePtr vVulkanCorePtr, vk::
             blit.dstSubresource.baseArrayLayer = 0;
             blit.dstSubresource.layerCount     = 1;
 
-            vkCmdBlitImage((VkCommandBuffer)commandBuffer, (VkImage)image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, (VkImage)image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
+            VULKAN_HPP_DEFAULT_DISPATCHER.vkCmdBlitImage((VkCommandBuffer)commandBuffer, (VkImage)image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                (VkImage)image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
 
-            barrier.oldLayout     = vk::ImageLayout::eTransferSrcOptimal;
+            barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
             barrier.newLayout     = vk::ImageLayout::eShaderReadOnlyOptimal;
             barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
             barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;

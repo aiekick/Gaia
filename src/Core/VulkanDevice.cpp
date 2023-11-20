@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#include <vulkan/vulkan.hpp>
+#include <Gaia/gaia.h>
 
 /*
     ==== ABOUT DYNAMIC DISPATCHER ====
@@ -82,7 +82,6 @@ you can define VULKAN_HPP_NO_DEFAULT_DISPATCHER before you include vulkan.hpp to
 #include <Gaia/Gui/VulkanWindow.h>
 #include <Gaia/Core/VulkanCore.h>
 #include <ctools/Logger.h>
-#include <Gaia/gaia.h>
 
 #ifdef PROFILER_INCLUDE
 #include <vulkan/vulkan.hpp>
@@ -321,9 +320,7 @@ VulkanDevice::~VulkanDevice() = default;
 bool VulkanDevice::Init(VulkanWindowWeak vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion, const bool& vUseRTX) {
     ZoneScoped;
 
-    vk::DynamicLoader dl;
-    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-    VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
+    VULKAN_HPP_DEFAULT_DISPATCHER.init();
 
     bool res = true;
 
@@ -340,7 +337,6 @@ bool VulkanDevice::Init(VulkanWindowWeak vVulkanWindow, const std::string& vAppN
 
 void VulkanDevice::Unit() {
     ZoneScoped;
-
     DestroyLogicalDevice();
     DestroyPhysicalDevice();
     DestroyVulkanInstance();
@@ -348,13 +344,11 @@ void VulkanDevice::Unit() {
 
 VulkanQueue VulkanDevice::getQueue(vk::QueueFlagBits vQueueType) {
     ZoneScoped;
-
     return m_Queues[vQueueType];
 }
 
 void VulkanDevice::WaitIdle() {
     ZoneScoped;
-
     m_LogDevice.waitIdle();
 }
 
@@ -410,10 +404,10 @@ bool CheckValidationLayerSupport() {
 
     // Query validation layers currently isntalled
     uint32_t layerCount;
-    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+    VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
     std::vector<VkLayerProperties> availableLayers(layerCount);
-    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+    VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
     size_t maxSize = 0U;
     for (const auto& layer_info : availableLayers) {
@@ -486,132 +480,123 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
     auto vkWindowPtr = vVulkanWindow.lock();
     if (vkWindowPtr) {
-        // todo : to refactor vk::enumerateInstanceVersion and m_ApiVersion
-        m_ApiVersion = VK_MAKE_API_VERSION(0, 1, 2, 0);  // needed for RTX
-        if (vk::enumerateInstanceVersion(&m_ApiVersion) != vk::Result::eSuccess) {
-            m_ApiVersion = VK_MAKE_API_VERSION(0, 1, 1, 0);
-            SetUseRTX(false);
-            if (vk::enumerateInstanceVersion(&m_ApiVersion) != vk::Result::eSuccess) {
-                m_ApiVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
-            }
-        }
+        if (vk::enumerateInstanceVersion(&m_ApiVersion) == vk::Result::eSuccess) {
+            std::cout << ("-----------") << std::endl;
+            const uint32_t& variant = VK_API_VERSION_VARIANT(m_ApiVersion);
+            const uint32_t& major = VK_API_VERSION_MAJOR(m_ApiVersion);
+            const uint32_t& minor = VK_API_VERSION_MINOR(m_ApiVersion);
+            const uint32_t& patch = VK_API_VERSION_PATCH(m_ApiVersion);
+            LogVarLightInfo("Vulkan host version is : %u.%u.%u.%u", variant, major, minor, patch);
 
-        std::cout << ("-----------") << std::endl;
-        const uint32_t& variant = VK_API_VERSION_VARIANT(m_ApiVersion);
-        const uint32_t& major = VK_API_VERSION_MAJOR(m_ApiVersion);
-        const uint32_t& minor = VK_API_VERSION_MINOR(m_ApiVersion);
-        const uint32_t& patch = VK_API_VERSION_PATCH(m_ApiVersion);
-        LogVarLightInfo("Vulkan api version is : %u.%u.%u.%u", variant, major, minor, patch);
-
-        VulkanCore::sApiVersion = m_ApiVersion;
+            VulkanCore::sApiVersion = m_ApiVersion;
 
 #ifdef _DEBUG
-        CheckValidationLayerSupport();
+            CheckValidationLayerSupport();
 #endif
 
-        auto wantedExtensions = vkWindowPtr->getVKInstanceExtensions();
-        auto wantedLayers = std::vector<const char*>();
+            auto wantedExtensions = vkWindowPtr->getVKInstanceExtensions();
+            auto wantedLayers = std::vector<const char*>();
 
 #if VULKAN_DEBUG
-        wantedLayers.emplace_back("VK_LAYER_KHRONOS_validation");
-        wantedLayers.emplace_back("VK_LAYER_LUNARG_core_validation");
-        // wantedLayers.emplace_back("VK_LAYER_LUNARG_monitor");
-        // wantedLayers.emplace_back("VK_LAYER_LUNARG_api_dump");
-        // wantedLayers.emplace_back("VK_LAYER_LUNARG_device_simulation");
-        // wantedLayers.emplace_back("VK_LAYER_LUNARG_screenshot");
+            wantedLayers.emplace_back("VK_LAYER_KHRONOS_validation");
+            wantedLayers.emplace_back("VK_LAYER_LUNARG_core_validation");
+            // wantedLayers.emplace_back("VK_LAYER_LUNARG_monitor");
+            // wantedLayers.emplace_back("VK_LAYER_LUNARG_api_dump");
+            // wantedLayers.emplace_back("VK_LAYER_LUNARG_device_simulation");
+            // wantedLayers.emplace_back("VK_LAYER_LUNARG_screenshot");
 
-        wantedExtensions.emplace_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-        wantedExtensions.emplace_back(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME);
+            wantedExtensions.emplace_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+            wantedExtensions.emplace_back(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME);
 #endif
-        // for RTX
-        if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
-            wantedExtensions.emplace_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-        }
+            // for RTX
+            if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
+                wantedExtensions.emplace_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+            }
 
 #if ENABLE_CALIBRATED_CONTEXT
-        wantedExtensions.emplace_back(VK_EXT_CALIBRATED_TIMESTAMPS_EXTENSION_NAME);
+            wantedExtensions.emplace_back(VK_EXT_CALIBRATED_TIMESTAMPS_EXTENSION_NAME);
 #endif
 
-        // Find the best Instance Extensions
-        auto installedExtensions = vk::enumerateInstanceExtensionProperties();
-        ct::SearchableVector<std::string> extensions = {};
-        findBestExtensions("Instance", installedExtensions, wantedExtensions, extensions);
+            // Find the best Instance Extensions
+            auto installedExtensions = vk::enumerateInstanceExtensionProperties();
+            ct::SearchableVector<std::string> extensions = {};
+            findBestExtensions("Instance", installedExtensions, wantedExtensions, extensions);
 
-        // verification of needed extention presence
-        m_Use_RTX = (extensions.exist(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) &&  //
-                     extensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&    //
-                     extensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME));
+            // verification of needed extention presence
+            m_Use_RTX = (extensions.exist(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) &&  //
+                         extensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&    //
+                         extensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME));
 
-        // find best instance Layer
-        auto installedLayers = vk::enumerateInstanceLayerProperties();
-        std::vector<const char*> layers = {};
-        findBestLayers(installedLayers, wantedLayers, layers);
+            // find best instance Layer
+            auto installedLayers = vk::enumerateInstanceLayerProperties();
+            std::vector<const char*> layers = {};
+            findBestLayers(installedLayers, wantedLayers, layers);
 
-        vk::ApplicationInfo appInfo(vAppName.c_str(), vAppVersion, vEngineName.c_str(), vEngineVersion, m_ApiVersion);
+            vk::ApplicationInfo appInfo(vAppName.c_str(), vAppVersion, vEngineName.c_str(), vEngineVersion, m_ApiVersion);
 
-        m_Debug_Utils_Supported = false;
-        for (auto ext : extensions) {
-            if (ext == VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
-                m_Debug_Utils_Supported = true;
-                break;
+            m_Debug_Utils_Supported = false;
+            for (auto ext : extensions) {
+                if (ext == VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
+                    m_Debug_Utils_Supported = true;
+                    break;
+                }
             }
-        }
 
-        std::vector<const char*> charExtensions;
-        for (const auto& it : extensions) {
-            charExtensions.push_back(it.c_str());
-        }
+            std::vector<const char*> charExtensions;
+            for (const auto& it : extensions) {
+                charExtensions.push_back(it.c_str());
+            }
 
-        vk::InstanceCreateInfo instanceCreateInfo(vk::InstanceCreateFlags(), &appInfo,  //
-            static_cast<uint32_t>(layers.size()), layers.data(),                        //
-            static_cast<uint32_t>(charExtensions.size()), charExtensions.data());
+            vk::InstanceCreateInfo instanceCreateInfo(vk::InstanceCreateFlags(), &appInfo,  //
+                static_cast<uint32_t>(layers.size()), layers.data(),                        //
+                static_cast<uint32_t>(charExtensions.size()), charExtensions.data());
 
-        std::vector<vk::ValidationFeatureEnableEXT> enabledFeatures;
+            std::vector<vk::ValidationFeatureEnableEXT> enabledFeatures;
 
 #if VULKAN_DEBUG_SYNCHRONIZATION_FEATURES
-        enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eSynchronizationValidation);
+            enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eSynchronizationValidation);
 #endif
 
 #if VULKAN_DEBUG_FEATURES
-        enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eBestPractices);
-        enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eGpuAssisted);
-        enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eGpuAssistedReserveBindingSlot);
+            enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eBestPractices);
+            enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eGpuAssisted);
+            enabledFeatures.emplace_back(vk::ValidationFeatureEnableEXT::eGpuAssistedReserveBindingSlot);
 #endif
 
-        vk::ValidationFeaturesEXT validationFeatures{uint32_t(enabledFeatures.size()), enabledFeatures.data()};
+            vk::ValidationFeaturesEXT validationFeatures{uint32_t(enabledFeatures.size()), enabledFeatures.data()};
 
-        vk::StructureChain<vk::InstanceCreateInfo, vk::ValidationFeaturesEXT> chain = {instanceCreateInfo, validationFeatures};
+            vk::StructureChain<vk::InstanceCreateInfo, vk::ValidationFeaturesEXT> chain = {instanceCreateInfo, validationFeatures};
 
-        m_Instance = vk::createInstance(chain.get<vk::InstanceCreateInfo>());
+            m_Instance = vk::createInstance(chain.get<vk::InstanceCreateInfo>());
 
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(m_Instance, vkGetInstanceProcAddr);
+            VULKAN_HPP_DEFAULT_DISPATCHER.init(m_Instance);
 
 #if VULKAN_DEBUG
-        VkDebugReportCallbackEXT handle_debug_report_callback;
+            VkDebugReportCallbackEXT handle_debug_report_callback;
 
-        // Setup the debug report callback
-        VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
-        debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-        debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
-            //| VK_DEBUG_REPORT_DEBUG_BIT_EXT // affiche les extentions
-            //| VK_DEBUG_REPORT_INFORMATION_BIT_EXT
-            ;
+            // Setup the debug report callback
+            VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
+            debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+            debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
+                //| VK_DEBUG_REPORT_DEBUG_BIT_EXT // affiche les extentions
+                //| VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+                ;
 
-        debug_report_ci.pfnCallback = debug_report;
-        debug_report_ci.pUserData = NULL;
+            debug_report_ci.pfnCallback = debug_report;
+            debug_report_ci.pUserData = NULL;
 
-        auto creat_func = VULKAN_HPP_DEFAULT_DISPATCHER.vkCreateDebugReportCallbackEXT;
-        if (creat_func) {
-            creat_func((VkInstance)m_Instance, &debug_report_ci, nullptr, &handle_debug_report_callback);
-            m_DebugReport = vk::DebugReportCallbackEXT(handle_debug_report_callback);
-        } else {
-            LogVarLightInfo("Debug : %s library is not there. VkDebug is not enabled", VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-        }
+            auto creat_func = VULKAN_HPP_DEFAULT_DISPATCHER.vkCreateDebugReportCallbackEXT;
+            if (creat_func) {
+                creat_func((VkInstance)m_Instance, &debug_report_ci, nullptr, &handle_debug_report_callback);
+                m_DebugReport = vk::DebugReportCallbackEXT(handle_debug_report_callback);
+            } else {
+                LogVarLightInfo("Debug : %s library is not there. VkDebug is not enabled", VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+            }
 #endif
 
-        return true;
+            return true;
+        }
     }
-
     return false;
 }
 
@@ -648,7 +633,7 @@ bool VulkanDevice::CreatePhysicalDevice() {
     if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
         VkPhysicalDeviceProperties2 prop2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
         prop2.pNext = &m_RayTracingDeviceProperties;
-        vkGetPhysicalDeviceProperties2(m_PhysDevice, reinterpret_cast<VkPhysicalDeviceProperties2*>(&prop2));
+        VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceProperties2(m_PhysDevice, reinterpret_cast<VkPhysicalDeviceProperties2*>(&prop2));
 
         std::cout << "-----------" << std::endl;
         LogVarLightTag(MESSAGING_TYPE_DEBUG, "Ray Tracing Device Properties :");
