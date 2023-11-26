@@ -325,6 +325,7 @@ bool VulkanDevice::Init(VulkanWindowWeak vVulkanWindow, const std::string& vAppN
     bool res = true;
 
     // tofix : trouver un moyen de tester le support du RTX avant son init
+    //         voir un moyen que chaque plugin soit chargé avant et disent ce dont il a besoin
 
     SetUseRTX(vUseRTX);
 
@@ -509,7 +510,7 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
             wantedExtensions.emplace_back(VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME);
 #endif
             // for RTX
-            if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
+            if (m_Use_RTX) {
                 wantedExtensions.emplace_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
             }
 
@@ -519,13 +520,11 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
 
             // Find the best Instance Extensions
             auto installedExtensions = vk::enumerateInstanceExtensionProperties();
-            ct::SearchableVector<std::string> extensions = {};
-            findBestExtensions("Instance", installedExtensions, wantedExtensions, extensions);
+            ct::SearchableVector<std::string> instanceExtensions = {};
+            findBestExtensions("Instance", installedExtensions, wantedExtensions, instanceExtensions);
 
-            // verification of needed extention presence
-            m_Use_RTX = (extensions.exist(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) &&  //
-                         extensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&    //
-                         extensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME));
+            // verification of needed instance extention presence
+            m_Use_RTX = instanceExtensions.exist(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
             // find best instance Layer
             auto installedLayers = vk::enumerateInstanceLayerProperties();
@@ -535,7 +534,7 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
             vk::ApplicationInfo appInfo(vAppName.c_str(), vAppVersion, vEngineName.c_str(), vEngineVersion, m_ApiVersion);
 
             m_Debug_Utils_Supported = false;
-            for (auto ext : extensions) {
+            for (auto ext : instanceExtensions) {
                 if (ext == VK_EXT_DEBUG_UTILS_EXTENSION_NAME) {
                     m_Debug_Utils_Supported = true;
                     break;
@@ -543,7 +542,7 @@ bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const st
             }
 
             std::vector<const char*> charExtensions;
-            for (const auto& it : extensions) {
+            for (const auto& it : instanceExtensions) {
                 charExtensions.push_back(it.c_str());
             }
 
@@ -630,7 +629,7 @@ bool VulkanDevice::CreatePhysicalDevice() {
     m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eCompute, false);
     m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eTransfer, false);
 
-    if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
+    if (m_Use_RTX) {
         VkPhysicalDeviceProperties2 prop2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
         prop2.pNext = &m_RayTracingDeviceProperties;
         VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceProperties2(m_PhysDevice, reinterpret_cast<VkPhysicalDeviceProperties2*>(&prop2));
@@ -696,7 +695,7 @@ bool VulkanDevice::CreateLogicalDevice() {
     }
 
     // RTX
-    if (m_Use_RTX && m_ApiVersion != VK_API_VERSION_1_0 && m_ApiVersion != VK_API_VERSION_1_1) {
+    if (m_Use_RTX) {
         // not needed because in core since VK_API_VERSION_1_2
         // WARNING, if i disable it, the devieadress is not loaded by the dispatcher for the moment
         wantedDeviceExtensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);  // VK_API_VERSION_1_2
@@ -726,6 +725,10 @@ bool VulkanDevice::CreateLogicalDevice() {
 
     ct::SearchableVector<std::string> deviceExtensions = {};
     findBestExtensions("Device", installedDeviceExtensions, wantedDeviceExtensions, deviceExtensions);
+
+    m_Use_RTX = (deviceExtensions.exist(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) &&  //
+                 deviceExtensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&    //
+                 deviceExtensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME));
 
     std::cout << ("-----------") << std::endl;
     LogVarLightInfo("Device Features :");
