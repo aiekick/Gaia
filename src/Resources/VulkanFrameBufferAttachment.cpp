@@ -193,4 +193,17 @@ void VulkanFrameBufferAttachment::Unit() {
     m_VulkanCorePtr->getDevice().destroyImageView(attachmentView);
     m_VulkanCorePtr->getDevice().destroySampler(attachmentSampler);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///// MIP MAPPING /////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool VulkanFrameBufferAttachment::UpdateMipMapping() {
+    if (m_VulkanCorePtr != nullptr && attachmentPtr != nullptr) {
+        VulkanRessource::GenerateMipmaps(m_VulkanCorePtr, attachmentPtr->image, format, width, height, mipLevelCount);
+        return true;
+    }
+    return false;
+}
+
 }  // namespace GaiApi

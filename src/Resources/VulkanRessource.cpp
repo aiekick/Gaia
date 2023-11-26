@@ -397,6 +397,7 @@ void VulkanRessource::GenerateMipmaps(GaiApi::VulkanCorePtr vVulkanCorePtr, vk::
     ZoneScoped;
 
     if (mipLevels > 1) {
+        vVulkanCorePtr->getDevice().waitIdle();
         auto physDevice = vVulkanCorePtr->getPhysicalDevice();
 
         // Check if image format supports linear blitting

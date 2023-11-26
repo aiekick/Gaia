@@ -465,6 +465,25 @@ DescriptorImageInfoVector* FrameBuffer::GetBackDescriptorImageInfos(fvec2Vector*
     return &m_BackDescriptors;
 }
 
+bool FrameBuffer::UpdateMipMapping(const uint32_t& vBindingPoint) {
+    uint32_t maxBuffers = 0U;
+    auto fbos = GetBackBufferAttachments(&maxBuffers);
+    if (fbos) {
+        uint32_t m_PreviewBufferId = vBindingPoint;
+        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
+        if (att->sampleCount != vk::SampleCountFlagBits::e1) {
+            if (m_PreviewBufferId + maxBuffers < fbos->size()) {
+                att = &fbos->at(m_PreviewBufferId + maxBuffers);
+            }
+        }
+        if (att->sampleCount == vk::SampleCountFlagBits::e1) {
+            return att->UpdateMipMapping();
+        }
+    }
+    return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// PRIVATE / FRAMEBUFFER /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

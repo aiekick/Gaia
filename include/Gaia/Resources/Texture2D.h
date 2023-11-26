@@ -42,7 +42,8 @@ public:
 	std::shared_ptr<VulkanImageObject> m_Texture2D = nullptr;
 	vk::ImageView m_TextureView = {};
 	vk::Sampler m_Sampler = {};
-	vk::DescriptorImageInfo m_DescriptorImageInfo = {};
+    vk::DescriptorImageInfo m_DescriptorImageInfo = {};
+    vk::Format m_ImageFormat = vk::Format::eR8G8B8A8Unorm;
 	uint32_t m_MipLevelCount = 1u;
 	uint32_t m_Width = 0u;
 	uint32_t m_Height = 0u;
@@ -55,16 +56,18 @@ private:
 public:
 	Texture2D(GaiApi::VulkanCorePtr vVulkanCorePtr);
 	~Texture2D();
+
 	bool LoadFile(const std::string& vFilePathName, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm, const uint32_t& vMipLevelCount = 1u, const uint32_t& vMaxHeight = 0U);
 	bool LoadMemory(uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm, const uint32_t& vMipLevelCount = 1u);
 	bool LoadEmptyTexture(const ct::uvec2& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
 	bool LoadEmptyImage(const ct::uvec2& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
 	void Destroy();
 
-public:
 	bool SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
 	bool SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
 	bool SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const int& vQualityFrom0To100, const ct::uvec2& vNewSize);
 	bool SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
 	bool SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
+
+	bool UpdateMipMapping();
 };

@@ -112,6 +112,8 @@ public: // contructor
     float GetOutputRatio() const override;
     ct::fvec2 GetOutputSize() const override;
 
+	bool UpdateMipMapping(const uint32_t& vBindingPoint);
+
 	void Swap();
 
 protected:

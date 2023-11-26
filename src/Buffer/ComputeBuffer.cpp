@@ -234,6 +234,16 @@ vk::DescriptorImageInfo* ComputeBuffer::GetBackDescriptorImageInfo(const uint32_
     return nullptr;
 }
 
+bool ComputeBuffer::UpdateMipMapping(const uint32_t& vBindingPoint) {
+    if (vBindingPoint < m_CountBuffers) {
+        auto& buffers = m_ComputeBuffers[(size_t)m_CurrentFrame];
+        if (vBindingPoint < buffers.size()) {
+            return buffers[(size_t)vBindingPoint]->UpdateMipMapping();
+        }
+    }
+    return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// PRIVATE / FRAMEBUFFER /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

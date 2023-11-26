@@ -48,5 +48,7 @@ public:
     bool InitColor2D(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, bool vNeedToClear, vk::SampleCountFlagBits vSampleCount);
     bool InitDepth(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount);
     void Unit();
+
+    bool UpdateMipMapping();
 };
 }  // namespace GaiApi

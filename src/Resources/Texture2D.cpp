@@ -249,6 +249,7 @@ Texture2DPtr Texture2D::CreateEmptyImage(GaiApi::VulkanCorePtr vVulkanCorePtr, c
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Texture2D::Texture2D(GaiApi::VulkanCorePtr vVulkanCorePtr)
 	: m_VulkanCorePtr(vVulkanCorePtr)
 {
@@ -337,6 +338,8 @@ bool Texture2D::LoadMemory(
 
 		m_Texture2D = VulkanRessource::createTextureImage2D(m_VulkanCorePtr, m_Width, m_Height, m_MipLevelCount, vFormat, buffer);
 
+		m_ImageFormat = vFormat;
+
 		vk::ImageViewCreateInfo imViewInfo = {};
 		imViewInfo.flags = vk::ImageViewCreateFlags();
 		imViewInfo.image = m_Texture2D->image;
@@ -388,6 +391,8 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 
 	uint32_t channels = 0;
 	uint32_t elem_size = 0;
+
+    m_ImageFormat = vFormat;
 
 	switch (vFormat)
 	{
@@ -486,6 +491,8 @@ bool Texture2D::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat
 	m_Loaded = false;
 
 	Destroy();
+
+    m_ImageFormat = vFormat;
 
 	m_Texture2D = VulkanRessource::createComputeTarget2D(m_VulkanCorePtr, vSize.x, vSize.y, 1U, vFormat, vk::SampleCountFlagBits::e1);
 
@@ -1068,4 +1075,16 @@ bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, 
 #endif // STB_IMAGE_INCLUDE
 
 	return res;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///// MIP MAPPING /////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool Texture2D::UpdateMipMapping() {
+    if (m_VulkanCorePtr != nullptr && m_Texture2D != nullptr) {
+        VulkanRessource::GenerateMipmaps(m_VulkanCorePtr, m_Texture2D->image, m_ImageFormat, m_Width, m_Height, m_MipLevelCount);
+        return true;
+    }
+    return false;
 }

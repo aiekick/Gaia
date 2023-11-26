@@ -161,7 +161,9 @@ public: // contructor
 	void EndRenderPass(vk::CommandBuffer* vCmdBufferPtr);
 
 	void ClearAttachments(); // set clear flag for clearing at next render
-	void SetClearColorValue(const ct::fvec4& vColor);
+    void SetClearColorValue(const ct::fvec4& vColor);
+
+    bool UpdateMipMapping(const uint32_t& vBindingPoint);
 	
 	void Swap();
 
