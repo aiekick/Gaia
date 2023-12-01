@@ -44,11 +44,11 @@ using namespace GaiApi;
 //// PUBLIC / STATIC ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ComputeBufferPtr ComputeBuffer::Create(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+ComputeBufferPtr ComputeBuffer::Create(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
-    if (!vVulkanCorePtr)
+    if (vVulkanCore.expired())
         return nullptr;
-    auto res = std::make_shared<ComputeBuffer>(vVulkanCorePtr);
+    auto res = std::make_shared<ComputeBuffer>(vVulkanCore);
 
     return res;
 }
@@ -57,9 +57,9 @@ ComputeBufferPtr ComputeBuffer::Create(GaiApi::VulkanCorePtr vVulkanCorePtr) {
 //// PUBLIC / CTOR/DTOR ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ComputeBuffer::ComputeBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+ComputeBuffer::ComputeBuffer(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
-    m_VulkanCorePtr = vVulkanCorePtr;
+    m_VulkanCore = vVulkanCore;
 }
 
 ComputeBuffer::~ComputeBuffer() {
@@ -76,23 +76,26 @@ bool ComputeBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuff
 
     m_Loaded = false;
 
-    m_Device = m_VulkanCorePtr->getDevice();
-    ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
-    if (!size.emptyOR()) {
-        m_PingPongBufferMode = vPingPongBufferMode;
+    auto corePtr = m_VulkanCore.lock();
+    if (corePtr != nullptr) {
+        m_Device = corePtr->getDevice();
+        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        if (!size.emptyOR()) {
+            m_PingPongBufferMode = vPingPongBufferMode;
 
-        m_TemporarySize = ct::ivec2(size.x, size.y);
-        m_TemporaryCountBuffer = vCountColorBuffers;
+            m_TemporarySize = ct::ivec2(size.x, size.y);
+            m_TemporaryCountBuffer = vCountColorBuffers;
 
-        m_Queue = m_VulkanCorePtr->getQueue(vk::QueueFlagBits::eGraphics);
+            m_Queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
-        m_OutputSize = ct::uvec3(size.x, size.y, 0);
-        m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_OutputSize = ct::uvec3(size.x, size.y, 0);
+            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
-        m_Format = vFormat;
+            m_Format = vFormat;
 
-        if (CreateComputeBuffers(vSize, vCountColorBuffers, m_Format)) {
-            m_Loaded = true;
+            if (CreateComputeBuffers(vSize, vCountColorBuffers, m_Format)) {
+                m_Loaded = true;
+            }
         }
     }
 
@@ -270,7 +273,7 @@ bool ComputeBuffer::CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t&
             m_ComputeBuffers.emplace_back(std::vector<Texture2DPtr>{});
             m_ComputeBuffers[0U].resize(m_CountBuffers);
             for (auto& bufferPtr : m_ComputeBuffers[0U]) {
-                bufferPtr = Texture2D::CreateEmptyImage(m_VulkanCorePtr, size, vFormat);
+                bufferPtr = Texture2D::CreateEmptyImage(m_VulkanCore, size, vFormat);
                 res &= (bufferPtr != nullptr);
             }
 
@@ -278,7 +281,7 @@ bool ComputeBuffer::CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t&
                 m_ComputeBuffers.emplace_back(std::vector<Texture2DPtr>{});
                 m_ComputeBuffers[1U].resize(m_CountBuffers);
                 for (auto& bufferPtr : m_ComputeBuffers[1U]) {
-                    bufferPtr = Texture2D::CreateEmptyImage(m_VulkanCorePtr, size, vFormat);
+                    bufferPtr = Texture2D::CreateEmptyImage(m_VulkanCore, size, vFormat);
                     res &= (bufferPtr != nullptr);
                 }
             }

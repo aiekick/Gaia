@@ -45,7 +45,7 @@ namespace GaiApi
 	}
 
 	bool VulkanFrameBuffer::Init(
-		GaiApi::VulkanCorePtr vVulkanCorePtr,
+		GaiApi::VulkanCoreWeak vVulkanCore,
 		ct::uvec2 vSize,
 		uint32_t vCountColorBuffers,
 		vk::RenderPass& vRenderPass,
@@ -60,7 +60,7 @@ namespace GaiApi
 
 		bool res = false;
 
-		m_VulkanCorePtr = vVulkanCorePtr;
+		m_VulkanCore = vVulkanCore;
 		needToClear = vNeedToClear;
 
 		if (vCountColorBuffers > 0 && vCountColorBuffers <= 8)
@@ -74,7 +74,9 @@ namespace GaiApi
 				clearColorValues.clear();
 				rectClears.clear();
 
-				auto logDevice = m_VulkanCorePtr->getDevice();
+                auto corePtr = m_VulkanCore.lock();
+                assert(corePtr != nullptr);
+				auto logDevice = corePtr->getDevice();
 
 				vk::RenderPass renderPass;
 
@@ -104,7 +106,7 @@ namespace GaiApi
 
 				for (uint32_t j = 0; j < vCountColorBuffers; j++)
 				{
-					if (attachments[attIndex].InitColor2D(m_VulkanCorePtr, size, format, 1U, vNeedToClear, sampleCount))
+					if (attachments[attIndex].InitColor2D(m_VulkanCore, size, format, 1U, vNeedToClear, sampleCount))
 					{
 						attachmentViews.push_back(attachments[attIndex].attachmentView);
 						attachmentDescriptions.push_back(attachments[attIndex].attachmentDescription);
@@ -130,7 +132,7 @@ namespace GaiApi
 				{
 					for (uint32_t j = 0; j < vCountColorBuffers; j++)
 					{
-						if (attachments[attIndex].InitColor2D(m_VulkanCorePtr, size, format, 1U, vNeedToClear, vk::SampleCountFlagBits::e1))
+						if (attachments[attIndex].InitColor2D(m_VulkanCore, size, format, 1U, vNeedToClear, vk::SampleCountFlagBits::e1))
 						{
 							attachmentViews.push_back(attachments[attIndex].attachmentView);
 							attachmentDescriptions.push_back(attachments[attIndex].attachmentDescription);
@@ -156,7 +158,7 @@ namespace GaiApi
 					depthAttIndex = attIndex;
 
 					// the depth must have the same sampleCount as color, if not the app will crash
-					if (attachments[attIndex].InitDepth(m_VulkanCorePtr, size, vk::Format::eD32SfloatS8Uint, sampleCount))
+					if (attachments[attIndex].InitDepth(m_VulkanCore, size, vk::Format::eD32SfloatS8Uint, sampleCount))
 					{
 						attachmentViews.push_back(attachments[attIndex].attachmentView);
 						attachmentDescriptions.push_back(attachments[attIndex].attachmentDescription);
@@ -313,18 +315,16 @@ namespace GaiApi
 		return res;
 	}
 
-	void VulkanFrameBuffer::Unit()
-	{
-		ZoneScoped;
+	void VulkanFrameBuffer::Unit() {
+        ZoneScoped;
 
-		attachmentViews.clear();
-		attachments.clear();
+        attachmentViews.clear();
+        attachments.clear();
 
-		if (m_VulkanCorePtr)
-		{
-			auto logDevice = m_VulkanCorePtr->getDevice();
-			logDevice.destroyFramebuffer(framebuffer);
-		}
+        auto corePtr = m_VulkanCore.lock();
+        assert(corePtr != nullptr);
+        auto logDevice = corePtr->getDevice();
+        logDevice.destroyFramebuffer(framebuffer);
 	}
 
 	VulkanFrameBufferAttachment* VulkanFrameBuffer::GetDepthAttachment()

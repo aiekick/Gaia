@@ -38,7 +38,7 @@ limitations under the License.
 
 class GAIA_API FrameBuffer : public OutputSizeInterface {
 public:
-	static FrameBufferPtr Create(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	static FrameBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
 
 private:
 	bool m_NeedNewUBOUpload = true;			// true for first render
@@ -71,7 +71,7 @@ protected:
 	fvec2Vector m_DescriptorSizes;
 
 	// vulkan creation
-	GaiApi::VulkanCorePtr m_VulkanCorePtr = nullptr;	// vulkan core
+	GaiApi::VulkanCoreWeak m_VulkanCore;	// vulkan core
 	GaiApi::VulkanQueue m_Queue;					// queue
 	vk::Device m_Device;						// device copy
 
@@ -103,7 +103,7 @@ protected:
 	std::vector<vk::ClearValue> m_ClearColorValues;
 
 public: // contructor
-	FrameBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	FrameBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
 	virtual ~FrameBuffer();
 
 	// init/unit

@@ -49,12 +49,12 @@ public:
     void SetCustomBufferInfo(vk::DescriptorBufferInfo* vBufferObjectInfo);
 
 	// upload to gpu memory
-	void Upload(GaiApi::VulkanCorePtr vVulkanCorePtr, bool vOnlyIfDirty);
+	void Upload(GaiApi::VulkanCoreWeak vVulkanCore, bool vOnlyIfDirty);
 
 	// create/destory ubo
-	bool CreateUBO(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	bool CreateUBO(GaiApi::VulkanCoreWeak vVulkanCore);
 	void DestroyUBO();
-	bool RecreateUBO(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	bool RecreateUBO(GaiApi::VulkanCoreWeak vVulkanCore);
 
 	// add size to uniform block, return startOffset
     bool RegisterByteSize(const std::string& vKey, uint32_t vSizeInBytes, uint32_t* vStartOffset = 0);

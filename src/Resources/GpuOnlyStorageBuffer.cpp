@@ -1,18 +1,12 @@
 #include <Gaia/Resources/GpuOnlyStorageBuffer.h>
 
-GpuOnlyStorageBufferPtr GpuOnlyStorageBuffer::Create(GaiApi::VulkanCorePtr vVulkanCorePtr)
+GpuOnlyStorageBufferPtr GpuOnlyStorageBuffer::Create(GaiApi::VulkanCoreWeak vVulkanCore)
 {
-	if (vVulkanCorePtr)
-	{
-		auto res = std::make_shared<GpuOnlyStorageBuffer>(vVulkanCorePtr);
-		return res;
-	}
-
-	return nullptr;
+    return std::make_shared<GpuOnlyStorageBuffer>(vVulkanCore);
 }
 
-GpuOnlyStorageBuffer::GpuOnlyStorageBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr)
-	: m_VulkanCorePtr(vVulkanCorePtr)
+GpuOnlyStorageBuffer::GpuOnlyStorageBuffer(GaiApi::VulkanCoreWeak vVulkanCore)
+	: m_VulkanCore(vVulkanCore)
 {
 
 }
@@ -41,16 +35,17 @@ bool GpuOnlyStorageBuffer::CreateBuffer(
 		storageBufferInfo.size = sizeInBytes;
 		storageBufferInfo.sharingMode = vk::SharingMode::eExclusive;
 		storageAllocInfo.usage = vVmaMemoryUsage;
-
+		
 		if (vVmaMemoryUsage == VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_TO_CPU)
 		{
 			storageBufferInfo.usage = vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc | vBufferUsageFlags;
-			m_BufferObjectPtr = GaiApi::VulkanRessource::createSharedBufferObject(m_VulkanCorePtr, storageBufferInfo, storageAllocInfo);
+            m_BufferObjectPtr = GaiApi::VulkanRessource::createSharedBufferObject(m_VulkanCore, storageBufferInfo, storageAllocInfo, "GpuOnlyStorageBuffer");
 		}
 		else if (vVmaMemoryUsage == VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY)
 		{
 			storageBufferInfo.usage = vk::BufferUsageFlagBits::eStorageBuffer | vBufferUsageFlags;
-			m_BufferObjectPtr = GaiApi::VulkanRessource::createSharedBufferObject(m_VulkanCorePtr, storageBufferInfo, storageAllocInfo);
+            m_BufferObjectPtr =
+                GaiApi::VulkanRessource::createSharedBufferObject(m_VulkanCore, storageBufferInfo, storageAllocInfo, "GpuOnlyStorageBuffer");
 		}
 
 		if (m_BufferObjectPtr &&

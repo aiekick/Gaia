@@ -38,15 +38,15 @@ public:
     vk::SampleCountFlagBits sampleCount              = vk::SampleCountFlagBits::e1;
 
 private:
-    GaiApi::VulkanCorePtr m_VulkanCorePtr = nullptr;
+    GaiApi::VulkanCoreWeak m_VulkanCore;
 
 public:
     VulkanFrameBufferAttachment() = default;
     ~VulkanFrameBufferAttachment();
 
 public:
-    bool InitColor2D(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, bool vNeedToClear, vk::SampleCountFlagBits vSampleCount);
-    bool InitDepth(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount);
+    bool InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, bool vNeedToClear, vk::SampleCountFlagBits vSampleCount);
+    bool InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount);
     void Unit();
 
     bool UpdateMipMapping();

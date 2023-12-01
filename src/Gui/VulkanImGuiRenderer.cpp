@@ -509,11 +509,12 @@ void ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer comm
         size_t vertex_size = draw_data->TotalVtxCount * sizeof(ImDrawVert);
         size_t index_size = draw_data->TotalIdxCount * sizeof(ImDrawIdx);
         if (!rb->vertexBufferPtr || (rb->vertexBufferPtr && !rb->vertexBufferPtr->buffer) || rb->VertexBufferSize < vertex_size) {
-            rb->vertexBufferPtr = GaiApi::VulkanRessource::createEmptyVertexBufferObject(v->vulkanCorePtr, vertex_size);
+            rb->vertexBufferPtr = GaiApi::VulkanRessource::createEmptyVertexBufferObject(v->vulkanCore, vertex_size, false, false, false, "ImGuiRenderer");
             rb->VertexBufferSize = vertex_size;
         }
         if (!rb->indexBufferPtr || (rb->indexBufferPtr && !rb->indexBufferPtr->buffer) || rb->IndexBufferSize < index_size) {
-            rb->indexBufferPtr = GaiApi::VulkanRessource::createEmptyIndexBufferObject(v->vulkanCorePtr, index_size);
+            rb->indexBufferPtr =
+                GaiApi::VulkanRessource::createEmptyIndexBufferObject(v->vulkanCore, index_size, false, false, false, "ImGuiRenderer");
             rb->IndexBufferSize = index_size;
         }
 
@@ -1861,7 +1862,7 @@ bool VulkanImGuiRenderer::Init(GaiApi::VulkanCoreWeak vVulkanCore, GaiApi::Vulka
             (void*)m_Info.Instance);
 
 #ifdef ENABLE_AIEKICK_CODE
-        m_Info.vulkanCorePtr = corePtr;
+        m_Info.vulkanCore = m_VulkanCore;
 #endif
         IM_ASSERT(m_Info.Instance != VK_NULL_HANDLE);
         IM_ASSERT(m_Info.PhysicalDevice != VK_NULL_HANDLE);

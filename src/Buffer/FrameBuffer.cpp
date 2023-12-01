@@ -44,11 +44,11 @@ using namespace GaiApi;
 //// PUBLIC / STATIC ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FrameBufferPtr FrameBuffer::Create(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+FrameBufferPtr FrameBuffer::Create(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
-    if (!vVulkanCorePtr)
+    if (vVulkanCore.expired())
         return nullptr;
-    auto res = std::make_shared<FrameBuffer>(vVulkanCorePtr);
+    auto res = std::make_shared<FrameBuffer>(vVulkanCore);
 
     return res;
 }
@@ -57,9 +57,9 @@ FrameBufferPtr FrameBuffer::Create(GaiApi::VulkanCorePtr vVulkanCorePtr) {
 //// PUBLIC / CTOR/DTOR ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FrameBuffer::FrameBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+FrameBuffer::FrameBuffer(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
-    m_VulkanCorePtr = vVulkanCorePtr;
+    m_VulkanCore = vVulkanCore;
 }
 
 FrameBuffer::~FrameBuffer() {
@@ -81,34 +81,38 @@ bool FrameBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffer
 
     m_Loaded = false;
 
-    m_Device       = m_VulkanCorePtr->getDevice();
-    ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
-    if (!size.emptyOR()) {
-        m_PingPongBufferMode = vPingPongBufferMode;
+    auto corePtr = m_VulkanCore.lock();
+    if (corePtr != nullptr) {
+        m_Device = corePtr->getDevice();
+        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        if (!size.emptyOR()) {
+            m_PingPongBufferMode = vPingPongBufferMode;
 
-        m_CreateRenderPass = vCreateRenderPass;
+            m_CreateRenderPass = vCreateRenderPass;
 
-        SetRenderPass(vExternalRenderPass);  // can only be set if m_CreateRenderPass is false
+            SetRenderPass(vExternalRenderPass);  // can only be set if m_CreateRenderPass is false
 
-        m_TemporarySize        = ct::ivec2(size.x, size.y);
-        m_TemporaryCountBuffer = vCountColorBuffers;
+            m_TemporarySize = ct::ivec2(size.x, size.y);
+            m_TemporaryCountBuffer = vCountColorBuffers;
 
-        m_Queue = m_VulkanCorePtr->getQueue(vk::QueueFlagBits::eGraphics);
+            m_Queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
-        m_RenderArea  = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_OutputSize.x, m_OutputSize.y));
-        m_Viewport    = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_OutputSize.x), static_cast<float>(m_OutputSize.y), 0, 1.0f);
-        m_OutputSize  = ct::uvec3(size.x, size.y, 0);
-        m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_RenderArea = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_OutputSize.x, m_OutputSize.y));
+            m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_OutputSize.x), static_cast<float>(m_OutputSize.y), 0, 1.0f);
+            m_OutputSize = ct::uvec3(size.x, size.y, 0);
+            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
-        m_UseDepth    = vUseDepth;
-        m_NeedToClear = vNeedToClear;
-        m_ClearColor  = vClearColor;
-        m_SampleCount = vSampleCount;
-        m_PixelFormat = vFormat;
+            m_UseDepth = vUseDepth;
+            m_NeedToClear = vNeedToClear;
+            m_ClearColor = vClearColor;
+            m_SampleCount = vSampleCount;
+            m_PixelFormat = vFormat;
 
-        if (CreateFrameBuffers(vSize, vCountColorBuffers, m_UseDepth, m_NeedToClear, m_ClearColor, m_PixelFormat, m_SampleCount, m_CreateRenderPass)) {
-            // renderpass est créé dans createFrameBuffers
-            m_Loaded = true;
+            if (CreateFrameBuffers(
+                    vSize, vCountColorBuffers, m_UseDepth, m_NeedToClear, m_ClearColor, m_PixelFormat, m_SampleCount, m_CreateRenderPass)) {
+                // renderpass est créé dans createFrameBuffers
+                m_Loaded = true;
+            }
         }
     }
 
@@ -523,9 +527,9 @@ bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize, const uint32_t& vCo
             res = true;
 
             m_FrameBuffers.resize(m_PingPongBufferMode ? 2U : 1U);
-            res &= m_FrameBuffers[0U].Init(m_VulkanCorePtr, size, m_CountBuffers, m_RenderPass, vCreateRenderPass, vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
+            res &= m_FrameBuffers[0U].Init(m_VulkanCore, size, m_CountBuffers, m_RenderPass, vCreateRenderPass, vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
             if (m_PingPongBufferMode) {
-                res &= m_FrameBuffers[1U].Init(m_VulkanCorePtr, size, m_CountBuffers, m_RenderPass, false,  // this one will re use the same Renderpass as first one
+                res &= m_FrameBuffers[1U].Init(m_VulkanCore, size, m_CountBuffers, m_RenderPass, false,  // this one will re use the same Renderpass as first one
                                                vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
             }
 

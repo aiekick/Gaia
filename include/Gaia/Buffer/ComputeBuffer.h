@@ -38,7 +38,7 @@ limitations under the License.
 
 class GAIA_API ComputeBuffer : public OutputSizeInterface {
 public:
-	static ComputeBufferPtr Create(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	static ComputeBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
 
 protected:
 	uint32_t m_BufferIdToResize = 0U;								// buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
@@ -59,7 +59,7 @@ protected:
 	uint32_t m_CurrentFrame = 0U;
 
 	// vulkan creation
-	GaiApi::VulkanCorePtr m_VulkanCorePtr = nullptr;	// vulkan core
+	GaiApi::VulkanCoreWeak m_VulkanCore;	// vulkan core
 	GaiApi::VulkanQueue m_Queue;					// queue
 	vk::Device m_Device;						// device copy
 
@@ -79,7 +79,7 @@ protected:
 	float m_OutputRatio = 1.0f;
 
 public: // contructor
-	ComputeBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	ComputeBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
 	virtual ~ComputeBuffer();
 
 	// init/unit

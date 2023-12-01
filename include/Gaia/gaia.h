@@ -34,6 +34,12 @@
 #define VULKAN_HPP_TYPESAFE_CONVERSION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
+#ifdef _DEBUG
+#define VMA_DEBUG_LOG_FORMAT(format, ...) do { \
+    printf((format), __VA_ARGS__); \
+    printf("\n"); \
+} while(false)
+#endif
 #include <Gaia/Core/vk_mem_alloc.h>
 
 #include <memory>

@@ -55,17 +55,17 @@ void UniformBlockStd140::SetCustomBufferInfo(vk::DescriptorBufferInfo* vBufferOb
     }
 }
 
-void UniformBlockStd140::Upload(GaiApi::VulkanCorePtr vVulkanCorePtr, bool vOnlyIfDirty) {
+void UniformBlockStd140::Upload(GaiApi::VulkanCoreWeak vVulkanCore, bool vOnlyIfDirty) {
     ZoneScoped;
     if (!vOnlyIfDirty || (vOnlyIfDirty && isDirty)) {
         if (bufferObjectPtr && !customBufferInfo) {
-            VulkanRessource::upload(vVulkanCorePtr, bufferObjectPtr, datas.data(), datas.size());
+            VulkanRessource::upload(vVulkanCore, bufferObjectPtr, datas.data(), datas.size());
         }
         isDirty = false;
     }
 }
 
-bool UniformBlockStd140::CreateUBO(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+bool UniformBlockStd140::CreateUBO(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
     if (customBufferInfo) {
         if (!descriptorBufferInfo.buffer)  // si le buffer est vide alors on va l'init avec un buffer de taille 1
@@ -81,7 +81,7 @@ bool UniformBlockStd140::CreateUBO(GaiApi::VulkanCorePtr vVulkanCorePtr) {
         }
     }
     if (!datas.empty()) {
-        bufferObjectPtr = VulkanRessource::createUniformBufferObject(vVulkanCorePtr, datas.size());
+        bufferObjectPtr = VulkanRessource::createUniformBufferObject(vVulkanCore, datas.size(), "UniformBlockStd140");
         if (bufferObjectPtr) {
             descriptorBufferInfo.buffer = bufferObjectPtr->buffer;
             descriptorBufferInfo.range  = datas.size();
@@ -99,13 +99,13 @@ void UniformBlockStd140::DestroyUBO() {
     bufferObjectPtr.reset();
 }
 
-bool UniformBlockStd140::RecreateUBO(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+bool UniformBlockStd140::RecreateUBO(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
     bool res = false;
     if (!customBufferInfo) {
         if (bufferObjectPtr) {
             DestroyUBO();
-            CreateUBO(vVulkanCorePtr);
+            CreateUBO(vVulkanCore);
 
             res = true;
         }

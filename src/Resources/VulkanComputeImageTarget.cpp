@@ -20,7 +20,7 @@ VulkanComputeImageTarget::~VulkanComputeImageTarget() {
 }
 
 bool VulkanComputeImageTarget::InitTarget2D(  //
-    GaiApi::VulkanCorePtr vVulkanCorePtr,     //
+    GaiApi::VulkanCoreWeak vVulkanCore,     //
     ct::uvec2 vSize,                          //
     vk::Format vFormat,                       //
     uint32_t vMipLevelCount,                  //
@@ -29,7 +29,7 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
 
     bool res = false;
 
-    m_VulkanCorePtr = vVulkanCorePtr;
+    m_VulkanCore = vVulkanCore;
 
     ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
@@ -40,7 +40,10 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
         ratio         = (float)height / (float)width;
         sampleCount   = vSampleCount;
 
-        target = VulkanRessource::createComputeTarget2D(m_VulkanCorePtr, width, height, mipLevelCount, format, sampleCount);
+        target = VulkanRessource::createComputeTarget2D(m_VulkanCore, width, height, mipLevelCount, format, sampleCount, "VulkanComputeImageTarget");
+
+        auto corePtr = m_VulkanCore.lock();
+        assert(corePtr != nullptr);
 
         vk::ImageViewCreateInfo imViewInfo = {};
         imViewInfo.flags                   = vk::ImageViewCreateFlags();
@@ -49,7 +52,7 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
         imViewInfo.format                  = format;
         imViewInfo.components              = vk::ComponentMapping();
         imViewInfo.subresourceRange        = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, mipLevelCount, 0, 1);
-        targetView                         = m_VulkanCorePtr->getDevice().createImageView(imViewInfo);
+        targetView                         = corePtr->getDevice().createImageView(imViewInfo);
 
         vk::SamplerCreateInfo samplerInfo = {};
         samplerInfo.flags                 = vk::SamplerCreateFlags();
@@ -59,7 +62,7 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
         samplerInfo.addressModeU          = vk::SamplerAddressMode::eClampToEdge;  // U
         samplerInfo.addressModeV          = vk::SamplerAddressMode::eClampToEdge;  // V
         samplerInfo.addressModeW          = vk::SamplerAddressMode::eClampToEdge;  // W
-        targetSampler                     = m_VulkanCorePtr->getDevice().createSampler(samplerInfo);
+        targetSampler                     = corePtr->getDevice().createSampler(samplerInfo);
 
         targetDescriptorInfo.sampler     = targetSampler;
         targetDescriptorInfo.imageView   = targetView;
@@ -76,12 +79,11 @@ void VulkanComputeImageTarget::Unit() {
 
     target.reset();
 
-    if (m_VulkanCorePtr) {
-        m_VulkanCorePtr->getDevice().destroyImageView(targetView);
-        m_VulkanCorePtr->getDevice().destroySampler(targetSampler);
-    } else {
-        CTOOL_DEBUG_BREAK;
-    }
+    auto corePtr = m_VulkanCore.lock();
+    assert(corePtr != nullptr);
+
+    corePtr->getDevice().destroyImageView(targetView);
+    corePtr->getDevice().destroySampler(targetSampler);
 }
 
 }  // namespace GaiApi

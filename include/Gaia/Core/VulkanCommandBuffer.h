@@ -27,9 +27,9 @@ namespace GaiApi
 	class GAIA_API VulkanCommandBuffer
 	{
 	public:
-		static vk::CommandBuffer beginSingleTimeCommands(GaiApi::VulkanCorePtr vVulkanCorePtr, bool begin, vk::CommandPool* vCommandPool = 0);
-		static void flushSingleTimeCommands(GaiApi::VulkanCorePtr vVulkanCorePtr, vk::CommandBuffer& cmd, bool end, vk::CommandPool* vCommandPool = 0);
-		static VulkanCommandBuffer CreateCommandBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr, vk::QueueFlagBits vQueueType, vk::CommandPool* vCommandPool = 0);
+		static vk::CommandBuffer beginSingleTimeCommands(GaiApi::VulkanCoreWeak vVulkanCore, bool begin, vk::CommandPool* vCommandPool = 0);
+		static void flushSingleTimeCommands(GaiApi::VulkanCoreWeak vVulkanCore, vk::CommandBuffer& cmd, bool end, vk::CommandPool* vCommandPool = 0);
+		static VulkanCommandBuffer CreateCommandBuffer(GaiApi::VulkanCoreWeak vVulkanCore, vk::QueueFlagBits vQueueType, vk::CommandPool* vCommandPool = 0);
 		static std::mutex VulkanCommandBuffer_Mutex;
 
 	public:
@@ -42,7 +42,7 @@ namespace GaiApi
 		vk::CommandPool commandpool;
 
 	private:
-		VulkanCorePtr m_VulkanCorePtr = nullptr;
+		VulkanCoreWeak m_VulkanCore;
 
 	public:
 		void DestroyCommandBuffer();

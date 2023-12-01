@@ -32,18 +32,19 @@ namespace GaiApi
 	GAIA_API std::mutex VulkanSubmitter::criticalSectionMutex;
 
 	bool VulkanSubmitter::Submit(
-		GaiApi::VulkanCorePtr vVulkanCorePtr,
+		GaiApi::VulkanCoreWeak vVulkanCore,
 		vk::QueueFlagBits vQueueType,
 		vk::SubmitInfo vSubmitInfo,
 		vk::Fence vWaitFence)
 	{
 		ZoneScoped;
 
-		if (vVulkanCorePtr)
+        auto corePtr = vVulkanCore.lock();
+        if (corePtr != nullptr)
 		{
 			std::unique_lock<std::mutex> lck(VulkanSubmitter::criticalSectionMutex, std::defer_lock);
 			lck.lock();
-			auto result = vVulkanCorePtr->getQueue(vQueueType).vkQueue.submit(1, &vSubmitInfo, vWaitFence);
+			auto result = corePtr->getQueue(vQueueType).vkQueue.submit(1, &vSubmitInfo, vWaitFence);
 			if (result == vk::Result::eErrorDeviceLost)
 			{
 				// driver lost, we'll crash in this case:

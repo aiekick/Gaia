@@ -67,63 +67,75 @@ public:
     }
 
 public:  // image
-    static void copy(VulkanCorePtr vVulkanCorePtr,
+    static void copy(VulkanCoreWeak vVulkanCore,
         vk::Image dst,
         vk::Buffer src,
         const vk::BufferImageCopy& region,
         vk::ImageLayout layout = vk::ImageLayout::eTransferDstOptimal);
-    static void copy(VulkanCorePtr vVulkanCorePtr,
+    static void copy(VulkanCoreWeak vVulkanCore,
         vk::Image dst,
         vk::Buffer src,
         const std::vector<vk::BufferImageCopy>& regions,
         vk::ImageLayout layout = vk::ImageLayout::eTransferDstOptimal);
-    static void copy(VulkanCorePtr vVulkanCorePtr,
+    static void copy(VulkanCoreWeak vVulkanCore,
         vk::Buffer dst,
         vk::Image src,
         const vk::BufferImageCopy& region,
         vk::ImageLayout layout = vk::ImageLayout::eTransferSrcOptimal);
-    static void copy(VulkanCorePtr vVulkanCorePtr,
+    static void copy(VulkanCoreWeak vVulkanCore,
         vk::Buffer dst,
         vk::Image src,
         const std::vector<vk::BufferImageCopy>& regions,
         vk::ImageLayout layout = vk::ImageLayout::eTransferSrcOptimal);
 
     static VulkanImageObjectPtr createSharedImageObject(
-        VulkanCorePtr vVulkanCorePtr, const vk::ImageCreateInfo& image_info, const VmaAllocationCreateInfo& alloc_info);
-    static VulkanImageObjectPtr createTextureImage2D(
-        VulkanCorePtr vVulkanCorePtr, uint32_t width, uint32_t height, uint32_t mipLevelCount, vk::Format format, void* hostdata_ptr);
-    static VulkanImageObjectPtr createTextureImageCube(VulkanCorePtr vVulkanCorePtr,
+        VulkanCoreWeak vVulkanCore, const vk::ImageCreateInfo& image_info, const VmaAllocationCreateInfo& alloc_info, const char* vDebugLabel);
+    static VulkanImageObjectPtr createTextureImage2D(VulkanCoreWeak vVulkanCore,
         uint32_t width,
         uint32_t height,
         uint32_t mipLevelCount,
         vk::Format format,
-        std::array<std::vector<uint8_t>, 6U> hostdatas);
-    static VulkanImageObjectPtr createColorAttachment2D(VulkanCorePtr vVulkanCorePtr,
+        void* hostdata_ptr,
+        const char* vDebugLabel);
+    static VulkanImageObjectPtr createTextureImageCube(VulkanCoreWeak vVulkanCore,
         uint32_t width,
         uint32_t height,
         uint32_t mipLevelCount,
         vk::Format format,
-        vk::SampleCountFlagBits vSampleCount);
-    static VulkanImageObjectPtr createComputeTarget2D(VulkanCorePtr vVulkanCorePtr,
+        std::array<std::vector<uint8_t>, 6U> hostdatas,
+        const char* vDebugLabel);
+    static VulkanImageObjectPtr createColorAttachment2D(VulkanCoreWeak vVulkanCore,
         uint32_t width,
         uint32_t height,
         uint32_t mipLevelCount,
         vk::Format format,
-        vk::SampleCountFlagBits vSampleCount);
-    static VulkanImageObjectPtr createDepthAttachment(
-        VulkanCorePtr vVulkanCorePtr, uint32_t width, uint32_t height, vk::Format format, vk::SampleCountFlagBits vSampleCount);
+        vk::SampleCountFlagBits vSampleCount,
+        const char* vDebugLabel);
+    static VulkanImageObjectPtr createComputeTarget2D(VulkanCoreWeak vVulkanCore,
+        uint32_t width,
+        uint32_t height,
+        uint32_t mipLevelCount,
+        vk::Format format,
+        vk::SampleCountFlagBits vSampleCount,
+        const char* vDebugLabel);
+    static VulkanImageObjectPtr createDepthAttachment(VulkanCoreWeak vVulkanCore,
+        uint32_t width,
+        uint32_t height,
+        vk::Format format,
+        vk::SampleCountFlagBits vSampleCount,
+        const char* vDebugLabel);
 
     static void GenerateMipmaps(
-        VulkanCorePtr vVulkanCorePtr, vk::Image image, vk::Format imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+        VulkanCoreWeak vVulkanCore, vk::Image image, vk::Format imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
-    static void transitionImageLayout(VulkanCorePtr vVulkanCorePtr,
+    static void transitionImageLayout(VulkanCoreWeak vVulkanCore,
         vk::Image image,
         vk::Format format,
         uint32_t mipLevel,
         vk::ImageLayout oldLayout,
         vk::ImageLayout newLayout,
         uint32_t layersCount = 1U);
-    static void transitionImageLayout(VulkanCorePtr vVulkanCorePtr,
+    static void transitionImageLayout(VulkanCoreWeak vVulkanCore,
         vk::Image image,
         vk::Format format,
         vk::ImageLayout oldLayout,
@@ -132,7 +144,7 @@ public:  // image
 
     static bool hasStencilComponent(vk::Format format);
 
-    static void getDatasFromTextureImage2D(VulkanCorePtr vVulkanCorePtr,
+    static void getDatasFromTextureImage2D(VulkanCoreWeak vVulkanCore,
         uint32_t width,
         uint32_t height,
         vk::Format format,
@@ -141,55 +153,57 @@ public:  // image
         uint32_t* vSize);
 
 public:  // buffers
-    static void copy(VulkanCorePtr vVulkanCorePtr, vk::Buffer dst, vk::Buffer src, const vk::BufferCopy& region, vk::CommandPool* vCommandPool = 0);
+    static void copy(VulkanCoreWeak vVulkanCore, vk::Buffer dst, vk::Buffer src, const vk::BufferCopy& region, vk::CommandPool* vCommandPool = 0);
     static void copy(
-        VulkanCorePtr vVulkanCorePtr, vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool* vCommandPool = 0);
-    static bool upload(
-        VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr dstHostVisiblePtr, void* src_host, size_t size_bytes, size_t dst_offset = 0);
-    static bool download(GaiApi::VulkanCorePtr vVulkanCorePtr, VulkanBufferObjectPtr srcHostVisiblePtr, void* dst_host, size_t size_bytes);
+        VulkanCoreWeak vVulkanCore, vk::Buffer dst, vk::Buffer src, const std::vector<vk::BufferCopy>& regions, vk::CommandPool* vCommandPool = 0);
+    static bool upload(VulkanCoreWeak vVulkanCore, VulkanBufferObjectPtr dstHostVisiblePtr, void* src_host, size_t size_bytes, size_t dst_offset = 0);
+    static bool download(GaiApi::VulkanCoreWeak vVulkanCore, VulkanBufferObjectPtr srcHostVisiblePtr, void* dst_host, size_t size_bytes);
 
     // will set deveic adress of buffer in vVulkanBufferObjectPtr
     static void SetDeviceAddress(const vk::Device& vDevice, VulkanBufferObjectPtr vVulkanBufferObjectPtr);
     static VulkanBufferObjectPtr createSharedBufferObject(
-        VulkanCorePtr vVulkanCorePtr, const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info);
-    static VulkanBufferObjectPtr createUniformBufferObject(VulkanCorePtr vVulkanCorePtr, uint64_t vSize);
-    static VulkanBufferObjectPtr createStagingBufferObject(VulkanCorePtr vVulkanCorePtr, uint64_t vSize);
+        VulkanCoreWeak vVulkanCore, const vk::BufferCreateInfo& bufferinfo, const VmaAllocationCreateInfo& alloc_info, const char* vDebugLabel);
+    static VulkanBufferObjectPtr createUniformBufferObject(VulkanCoreWeak vVulkanCore, uint64_t vSize, const char* vDebugLabel);
+    static VulkanBufferObjectPtr createStagingBufferObject(VulkanCoreWeak vVulkanCore, uint64_t vSize, const char* vDebugLabel);
     static VulkanBufferObjectPtr createStorageBufferObject(
-        VulkanCorePtr vVulkanCorePtr, uint64_t vSize, vk::BufferUsageFlags vBufferUsageFlags, VmaMemoryUsage vMemoryUsage);
-    static VulkanBufferObjectPtr createStorageBufferObject(VulkanCorePtr vVulkanCorePtr, uint64_t vSize, VmaMemoryUsage vMemoryUsage);
-    static VulkanBufferObjectPtr createGPUOnlyStorageBufferObject(VulkanCorePtr vVulkanCorePtr, void* vData, uint64_t vSize);
-    static VulkanBufferObjectPtr createBiDirectionalStorageBufferObject(GaiApi::VulkanCorePtr vVulkanCorePtr, void* vData, uint64_t vSize);
+        VulkanCoreWeak vVulkanCore, uint64_t vSize, vk::BufferUsageFlags vBufferUsageFlags, VmaMemoryUsage vMemoryUsage, const char* vDebugLabel);
+    static VulkanBufferObjectPtr createStorageBufferObject(
+        VulkanCoreWeak vVulkanCore, uint64_t vSize, VmaMemoryUsage vMemoryUsage, const char* vDebugLabel);
+    static VulkanBufferObjectPtr createGPUOnlyStorageBufferObject(VulkanCoreWeak vVulkanCore, void* vData, uint64_t vSize, const char* vDebugLabel);
+    static VulkanBufferObjectPtr createBiDirectionalStorageBufferObject(
+        GaiApi::VulkanCoreWeak vVulkanCore, void* vData, uint64_t vSize, const char* vDebugLabel);
     static VulkanBufferObjectPtr createTexelBuffer(
-        GaiApi::VulkanCorePtr vVulkanCorePtr, vk::Format vFormat, uint64_t vDataSize, void* vDataPtr = nullptr);
+        GaiApi::VulkanCoreWeak vVulkanCore, vk::Format vFormat, uint64_t vDataSize, void* vDataPtr, const char* vDebugLabel);
 
     template <class T>
     static VulkanBufferObjectPtr createVertexBufferObject(
-        VulkanCorePtr vVulkanCorePtr, const std::vector<T>& data, bool vUseSSBO = false, bool vUseTransformFeedback = false, bool vUseRTX = false);
+        VulkanCoreWeak vVulkanCore, const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX, const char* vDebugLabel);
     static VulkanBufferObjectPtr createEmptyVertexBufferObject(
-        VulkanCorePtr vVulkanCorePtr, const size_t& vByteSize, bool vUseSSBO = false, bool vUseTransformFeedback = false, bool vUseRTX = false);
+        VulkanCoreWeak vVulkanCore, const size_t& vByteSize, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX, const char* vDebugLabel);
     template <class T>
     static VulkanBufferObjectPtr createIndexBufferObject(
-        VulkanCorePtr vVulkanCorePtr, const std::vector<T>& data, bool vUseSSBO = false, bool vUseTransformFeedback = false, bool vUseRTX = false);
+        VulkanCoreWeak vVulkanCore, const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX, const char* vDebugLabel);
     static VulkanBufferObjectPtr createEmptyIndexBufferObject(
-        VulkanCorePtr vVulkanCorePtr, const size_t& vByteSize, bool vUseSSBO = false, bool vUseTransformFeedback = false, bool vUseRTX = false);
+        VulkanCoreWeak vVulkanCore, const size_t& vByteSize, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX, const char* vDebugLabel);
 
 public:  // RTX Accel Structure
     // will set deveic adress of buffer in vVulkanBufferObjectPtr
     static void SetDeviceAddress(const vk::Device& vDevice, VulkanAccelStructObjectPtr vVulkanAccelStructObjectPtr);
-    static VulkanAccelStructObjectPtr createAccelStructureBufferObject(VulkanCorePtr vVulkanCorePtr, uint64_t vSize, VmaMemoryUsage vMemoryUsage);
+    static VulkanAccelStructObjectPtr createAccelStructureBufferObject(
+        VulkanCoreWeak vVulkanCore, uint64_t vSize, VmaMemoryUsage vMemoryUsage, const char* vDebugLabel);
 };
 
 template <class T>
 VulkanBufferObjectPtr VulkanRessource::createVertexBufferObject(
-    VulkanCorePtr vVulkanCorePtr, const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX) {
+    VulkanCoreWeak vVulkanCore, const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX, const char* vDebugLabel) {
     vk::BufferCreateInfo stagingBufferInfo = {};
     VmaAllocationCreateInfo stagingAllocInfo = {};
     stagingBufferInfo.size = data.size() * sizeof(T);
     stagingBufferInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
     stagingAllocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
-    auto stagebufferPtr = createSharedBufferObject(vVulkanCorePtr, stagingBufferInfo, stagingAllocInfo);
+    auto stagebufferPtr = createSharedBufferObject(vVulkanCore, stagingBufferInfo, stagingAllocInfo, vDebugLabel);
     if (stagebufferPtr) {
-        upload(vVulkanCorePtr, stagebufferPtr, (void*)data.data(), stagingBufferInfo.size);
+        upload(vVulkanCore, stagebufferPtr, (void*)data.data(), stagingBufferInfo.size);
 
         vk::BufferCreateInfo vboInfo = {};
         VmaAllocationCreateInfo vboAllocInfo = {};
@@ -206,11 +220,11 @@ VulkanBufferObjectPtr VulkanRessource::createVertexBufferObject(
                             vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eShaderDeviceAddress;
 
         vboAllocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
-        auto vboPtr = createSharedBufferObject(vVulkanCorePtr, vboInfo, vboAllocInfo);
+        auto vboPtr = createSharedBufferObject(vVulkanCore, vboInfo, vboAllocInfo, vDebugLabel);
         if (vboPtr) {
             vk::BufferCopy region = {};
             region.size = stagingBufferInfo.size;
-            copy(vVulkanCorePtr, vboPtr->buffer, stagebufferPtr->buffer, region);
+            copy(vVulkanCore, vboPtr->buffer, stagebufferPtr->buffer, region);
             return vboPtr;
         }
     }
@@ -220,15 +234,15 @@ VulkanBufferObjectPtr VulkanRessource::createVertexBufferObject(
 
 template <class T>
 VulkanBufferObjectPtr VulkanRessource::createIndexBufferObject(
-    VulkanCorePtr vVulkanCorePtr, const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX) {
+    VulkanCoreWeak vVulkanCore, const std::vector<T>& data, bool vUseSSBO, bool vUseTransformFeedback, bool vUseRTX, const char* vDebugLabel) {
     vk::BufferCreateInfo stagingBufferInfo = {};
     VmaAllocationCreateInfo stagingAllocInfo = {};
     stagingBufferInfo.size = data.size() * sizeof(T);
     stagingBufferInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
     stagingAllocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
-    auto stagebufferPtr = createSharedBufferObject(vVulkanCorePtr, stagingBufferInfo, stagingAllocInfo);
+    auto stagebufferPtr = createSharedBufferObject(vVulkanCore, stagingBufferInfo, stagingAllocInfo, vDebugLabel);
     if (stagebufferPtr) {
-        upload(vVulkanCorePtr, stagebufferPtr, (void*)data.data(), stagingBufferInfo.size);
+        upload(vVulkanCore, stagebufferPtr, (void*)data.data(), stagingBufferInfo.size);
 
         vk::BufferCreateInfo vboInfo = {};
         VmaAllocationCreateInfo vboAllocInfo = {};
@@ -249,11 +263,11 @@ VulkanBufferObjectPtr VulkanRessource::createIndexBufferObject(
                             vk::BufferUsageFlagBits::eShaderDeviceAddress;
 
         vboAllocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
-        auto vboPtr = createSharedBufferObject(vVulkanCorePtr, vboInfo, vboAllocInfo);
+        auto vboPtr = createSharedBufferObject(vVulkanCore, vboInfo, vboAllocInfo, vDebugLabel);
         if (vboPtr) {
             vk::BufferCopy region = {};
             region.size = stagingBufferInfo.size;
-            copy(vVulkanCorePtr, vboPtr->buffer, stagebufferPtr->buffer, region);
+            copy(vVulkanCore, vboPtr->buffer, stagebufferPtr->buffer, region);
 
             return vboPtr;
         }

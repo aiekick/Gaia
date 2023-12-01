@@ -44,7 +44,7 @@ namespace GaiApi
 		uint32_t depthAttIndex = 0U;
 
 	private:
-		VulkanCorePtr m_VulkanCorePtr = nullptr;
+		VulkanCoreWeak m_VulkanCore;
 
 	public:
 		VulkanFrameBuffer();
@@ -52,7 +52,7 @@ namespace GaiApi
 
 	public:
 		bool Init(
-			GaiApi::VulkanCorePtr vVulkanCorePtr,
+			GaiApi::VulkanCoreWeak vVulkanCore,
 			ct::uvec2 vSize,
 			uint32_t vCount,
 			vk::RenderPass& vRenderPass,

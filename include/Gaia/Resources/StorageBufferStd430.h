@@ -74,12 +74,12 @@ public:
     void SetCustomBufferInfo(vk::DescriptorBufferInfo* vBufferObjectInfo);
 
 	// upload to gpu memory
-	void Upload(GaiApi::VulkanCorePtr vVulkanCorePtr, bool vOnlyIfDirty);
+	void Upload(GaiApi::VulkanCoreWeak vVulkanCore, bool vOnlyIfDirty);
 
 	// create/destory ubo
-	bool CreateSBO(GaiApi::VulkanCorePtr vVulkanCorePtr, VmaMemoryUsage vVmaMemoryUsage);
+	bool CreateSBO(GaiApi::VulkanCoreWeak vVulkanCore, VmaMemoryUsage vVmaMemoryUsage);
 	void DestroySBO();
-	bool RecreateSBO(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	bool RecreateSBO(GaiApi::VulkanCoreWeak vVulkanCore);
 
 	// add size to uniform block, return startOffset
 	bool RegisterByteSize(const std::string& vKey, uint32_t vSizeInBytes, uint32_t* vStartOffset = 0);

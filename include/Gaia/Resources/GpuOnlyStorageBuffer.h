@@ -25,16 +25,16 @@ limitations under the License.
 
 class GAIA_API GpuOnlyStorageBuffer {
 public:
-    static GpuOnlyStorageBufferPtr Create(GaiApi::VulkanCorePtr vVulkanCorePtr);
+    static GpuOnlyStorageBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
 
 private:
-    GaiApi::VulkanCorePtr m_VulkanCorePtr = nullptr;
+    GaiApi::VulkanCoreWeak m_VulkanCore;
     VulkanBufferObjectPtr m_BufferObjectPtr = nullptr;
     vk::DescriptorBufferInfo m_DescriptorBufferInfo = {VK_NULL_HANDLE, 0, VK_WHOLE_SIZE};
     uint32_t m_BufferSize = 0U;
 
 public:
-    GpuOnlyStorageBuffer(GaiApi::VulkanCorePtr vVulkanCorePtr);
+    GpuOnlyStorageBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
     ~GpuOnlyStorageBuffer();
     bool CreateBuffer(const uint32_t& vDatasSizeInBytes, const uint32_t& vDatasCount, const VmaMemoryUsage& vVmaMemoryUsage = VMA_MEMORY_USAGE_GPU_ONLY, const vk::BufferUsageFlags& vBufferUsageFlags = (vk::BufferUsageFlags)0);
 

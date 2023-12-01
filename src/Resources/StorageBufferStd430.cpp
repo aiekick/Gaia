@@ -80,14 +80,14 @@ bool StorageBufferStd430::IsOk() {
     return firstUploadWasDone;
 }
 
-void StorageBufferStd430::Upload(GaiApi::VulkanCorePtr vVulkanCorePtr, bool vOnlyIfDirty) {
+void StorageBufferStd430::Upload(GaiApi::VulkanCoreWeak vVulkanCore, bool vOnlyIfDirty) {
     ZoneScoped;
-    if (vVulkanCorePtr) {
-        RecreateSBO(vVulkanCorePtr);
+    if (!vVulkanCore.expired()) {
+        RecreateSBO(vVulkanCore);
 
         if (!vOnlyIfDirty || (vOnlyIfDirty && isDirty)) {
             if (bufferObjectPtr && !customBufferInfo) {
-                VulkanRessource::upload(vVulkanCorePtr, bufferObjectPtr, datas.data(), datas.size());
+                VulkanRessource::upload(vVulkanCore, bufferObjectPtr, datas.data(), datas.size());
 
                 firstUploadWasDone = true;
                 isDirty            = false;
@@ -96,7 +96,7 @@ void StorageBufferStd430::Upload(GaiApi::VulkanCorePtr vVulkanCorePtr, bool vOnl
     }
 }
 
-bool StorageBufferStd430::CreateSBO(GaiApi::VulkanCorePtr vVulkanCorePtr, VmaMemoryUsage vVmaMemoryUsage) {
+bool StorageBufferStd430::CreateSBO(GaiApi::VulkanCoreWeak vVulkanCore, VmaMemoryUsage vVmaMemoryUsage) {
     ZoneScoped;
     if (customBufferInfo) {
         if (!descriptorBufferInfo.buffer)  // si le buffer est vide alors on va l'init avec un buffer de taille 1
@@ -114,13 +114,13 @@ bool StorageBufferStd430::CreateSBO(GaiApi::VulkanCorePtr vVulkanCorePtr, VmaMem
     if (!datas.empty()) {
         needRecreation = false;
 
-        bufferObjectPtr = VulkanRessource::createStorageBufferObject(vVulkanCorePtr, datas.size(), vVmaMemoryUsage);
+        bufferObjectPtr = VulkanRessource::createStorageBufferObject(vVulkanCore, datas.size(), vVmaMemoryUsage, "StorageBufferStd430");
         if (bufferObjectPtr && bufferObjectPtr->buffer) {
             descriptorBufferInfo.buffer = bufferObjectPtr->buffer;
             descriptorBufferInfo.range  = datas.size();
             descriptorBufferInfo.offset = 0;
 
-            Upload(vVulkanCorePtr, false);
+            Upload(vVulkanCore, false);
 
             return true;
         } else {
@@ -138,14 +138,14 @@ void StorageBufferStd430::DestroySBO() {
     descriptorBufferInfo = vk::DescriptorBufferInfo{VK_NULL_HANDLE, 0, VK_WHOLE_SIZE};
 }
 
-bool StorageBufferStd430::RecreateSBO(GaiApi::VulkanCorePtr vVulkanCorePtr) {
+bool StorageBufferStd430::RecreateSBO(GaiApi::VulkanCoreWeak vVulkanCore) {
     ZoneScoped;
     if (needRecreation) {
         if (!customBufferInfo) {
-            if (vVulkanCorePtr && bufferObjectPtr) {
+            if (!vVulkanCore.expired() && bufferObjectPtr) {
                 VmaMemoryUsage usage = bufferObjectPtr->alloc_usage;
                 DestroySBO();
-                CreateSBO(vVulkanCorePtr, usage);
+                CreateSBO(vVulkanCore, usage);
 
                 isDirty = true;
 

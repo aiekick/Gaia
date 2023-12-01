@@ -22,14 +22,14 @@ namespace GaiApi
         vk::SampleCountFlagBits sampleCount;
 
     private:
-        VulkanCorePtr m_VulkanCorePtr = nullptr;
+        VulkanCoreWeak m_VulkanCore;
 
 	public:
 		VulkanComputeImageTarget() = default;
 		~VulkanComputeImageTarget();
 
 	public:
-        bool InitTarget2D(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, vk::SampleCountFlagBits vSampleCount);
+        bool InitTarget2D(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, vk::SampleCountFlagBits vSampleCount);
 		void Unit();
 	};
 }

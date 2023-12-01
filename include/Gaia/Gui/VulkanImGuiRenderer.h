@@ -75,7 +75,7 @@ limitations under the License.
 // [Please zero-clear before use!]
 struct GAIA_API ImGui_ImplVulkan_InitInfo {
 #ifdef ENABLE_AIEKICK_CODE
-    GaiApi::VulkanCorePtr            vulkanCorePtr = nullptr;
+    GaiApi::VulkanCoreWeak vulkanCore;
 #endif
     vk::Instance                      Instance;
     vk::PhysicalDevice PhysicalDevice;

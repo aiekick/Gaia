@@ -29,13 +29,13 @@ class GAIA_API TextureCube
 public:
 	//static bool loadPNG(const std::string& inFile, std::vector<uint8_t>& outBuffer, uint32_t& outWidth, uint32_t& outHeight);
 	static bool loadImage(const std::string& inFile, std::vector<uint8_t>& outBuffer, uint32_t& outWidth, uint32_t& outHeight, uint32_t& outChannels);
-	//static vk::DescriptorImageInfo GetImageInfoFromMemory(GaiApi::VulkanCorePtr vVulkanCorePtr, std::array<uint8_t*, 6U> vBuffers, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
+	//static vk::DescriptorImageInfo GetImageInfoFromMemory(GaiApi::VulkanCoreWeak vVulkanCore, std::array<uint8_t*, 6U> vBuffers, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
 
 public:
-	static TextureCubePtr CreateFromFiles(GaiApi::VulkanCorePtr vVulkanCorePtr, std::array<std::string, 6U> vFilePathNames);
-	//static TextureCubePtr CreateFromMemory(GaiApi::VulkanCorePtr vVulkanCorePtr, std::array<uint8_t*, 6U> vBuffers, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
-	static TextureCubePtr CreateEmptyTexture(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat);
-	//static TextureCubePtr CreateEmptyImage(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat);
+	static TextureCubePtr CreateFromFiles(GaiApi::VulkanCoreWeak vVulkanCore, std::array<std::string, 6U> vFilePathNames);
+	//static TextureCubePtr CreateFromMemory(GaiApi::VulkanCoreWeak vVulkanCore, std::array<uint8_t*, 6U> vBuffers, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
+	static TextureCubePtr CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat);
+	//static TextureCubePtr CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat);
 
 public:
 	std::array<VulkanImageObjectPtr, 6U> m_FaceTextures;
@@ -50,10 +50,10 @@ public:
 	bool m_Loaded = false;
 
 private:
-	GaiApi::VulkanCorePtr m_VulkanCorePtr = nullptr;
+	GaiApi::VulkanCoreWeak m_VulkanCore;
 
 public:
-	TextureCube(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	TextureCube(GaiApi::VulkanCoreWeak vVulkanCore);
 	~TextureCube();
 	bool LoadFiles(const std::array<std::string, 6U>& vFilePathName, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm, const uint32_t& vMipLevelCount = 1u);
 	bool LoadMemories(const std::array<std::vector<uint8_t>, 6U>& buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm, const uint32_t& vMipLevelCount = 1u);

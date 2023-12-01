@@ -30,13 +30,13 @@ public:
 	//static bool loadPNG(const std::string& inFile, std::vector<uint8_t>& outBuffer, uint32_t& outWidth, uint32_t& outHeight);
 	static bool loadImage(const std::string& inFile, std::vector<uint8_t>& outBuffer, uint32_t& outWidth, uint32_t& outHeight, uint32_t& outChannels);
 	static bool loadImageWithMaxH(const std::string& inFile, const uint32_t& maxHeight, uint32_t& outWidth, std::vector<uint8_t>& outBuffer);
-	//static vk::DescriptorImageInfo GetImageInfoFromMemory(GaiApi::VulkanCorePtr vVulkanCorePtr, uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
+	//static vk::DescriptorImageInfo GetImageInfoFromMemory(GaiApi::VulkanCoreWeak vVulkanCore, uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
 
 public:
-	static Texture2DPtr CreateFromFile(GaiApi::VulkanCorePtr vVulkanCorePtr, std::string vFilePathName, const uint32_t& vMaxHeight = 0U);
-	static Texture2DPtr CreateFromMemory(GaiApi::VulkanCorePtr vVulkanCorePtr, uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
-	static Texture2DPtr CreateEmptyTexture(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat);
-	static Texture2DPtr CreateEmptyImage(GaiApi::VulkanCorePtr vVulkanCorePtr, ct::uvec2 vSize, vk::Format vFormat);
+	static Texture2DPtr CreateFromFile(GaiApi::VulkanCoreWeak vVulkanCore, std::string vFilePathName, const uint32_t& vMaxHeight = 0U);
+	static Texture2DPtr CreateFromMemory(GaiApi::VulkanCoreWeak vVulkanCore, uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
+	static Texture2DPtr CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat);
+	static Texture2DPtr CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat);
 
 public:
 	std::shared_ptr<VulkanImageObject> m_Texture2D = nullptr;
@@ -51,10 +51,10 @@ public:
 	bool m_Loaded = false;
 
 private:
-	GaiApi::VulkanCorePtr m_VulkanCorePtr = nullptr;
+	GaiApi::VulkanCoreWeak m_VulkanCore;
 
 public:
-	Texture2D(GaiApi::VulkanCorePtr vVulkanCorePtr);
+	Texture2D(GaiApi::VulkanCoreWeak vVulkanCore);
 	~Texture2D();
 
 	bool LoadFile(const std::string& vFilePathName, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm, const uint32_t& vMipLevelCount = 1u, const uint32_t& vMaxHeight = 0U);

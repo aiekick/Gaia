@@ -37,6 +37,6 @@ namespace GaiApi
 		~VulkanSubmitter() = default;
 
 	public:
-		static bool Submit(GaiApi::VulkanCorePtr vVulkanCorePtr, vk::QueueFlagBits vQueueType, vk::SubmitInfo vSubmitInfo, vk::Fence vWaitFence);
+		static bool Submit(GaiApi::VulkanCoreWeak vVulkanCore, vk::QueueFlagBits vQueueType, vk::SubmitInfo vSubmitInfo, vk::Fence vWaitFence);
 	};
 }
