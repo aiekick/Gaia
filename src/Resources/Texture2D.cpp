@@ -119,7 +119,9 @@ bool Texture2D::loadImageWithMaxH(const std::string& inFile, const uint32_t& max
 				auto size = (size_t)outWidth * (size_t)newHeight * 4U;
 				outBuffer.resize(size);
 				memcpy(outBuffer.data(), resizedData, size);
-			}
+            }
+
+            SAFE_DELETE_ARRAY(resizedData);
 		}
 		else
 		{
