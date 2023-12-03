@@ -33,6 +33,8 @@ else()
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF CACHE BOOL "")
 endif()
 
+set(GAIA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include PARENT_SCOPE)
+
 include(cmake/vulkanheaders.cmake)
 include(cmake/glfw.cmake)
 include(cmake/glslang.cmake)
@@ -154,7 +156,6 @@ set_target_properties(${PROJECT} PROPERTIES	OUTPUT_NAME "${${PROJECT}_Output_Nam
 
 set_target_properties(glfw PROPERTIES OUTPUT_NAME "glfw3$<$<CONFIG:Debug>:d>")
 
-set(GAIA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include PARENT_SCOPE)
 set(GAIA_INCLUDE_DIRS 
 	${GLFW_INCLUDE_DIR} 
 	${TRACY_INCLUDE_DIR} 

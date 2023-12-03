@@ -26,6 +26,8 @@ limitations under the License.
 #include <Gaia/Resources/TextureCube.h>
 #include <Gaia/Shader/VulkanShader.h>
 
+#include <ImGuiPack.h>
+
 #define RECORD_VM_ALLOCATION
 
 #define GLFW_INCLUDE_VULKAN
@@ -179,10 +181,11 @@ bool VulkanCore::Init(VulkanWindowPtr vVulkanWindow,
         tracy::SetThreadName("Main");
 #endif
         m_EmptyTexture2DPtr = Texture2D::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
-        m_EmptyTextureCubePtr =
-            TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTextureCubePtr = TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
 
-        return true;
+        if (iagp::InAppGpuProfiler::Instance()->addContext(this, getPhysicalDevice(), getDevice(), 1000)) {
+            return true;
+        }
     }
 
     return false;
@@ -192,6 +195,8 @@ void VulkanCore::Unit() {
     ZoneScoped;
 
     m_VulkanDevicePtr->WaitIdle();
+    
+    iagp::InAppGpuProfiler::Instance()->Destroy();
 
     m_EmptyTexture2DPtr.reset();
     m_EmptyTextureCubePtr.reset();
@@ -360,6 +365,8 @@ bool VulkanCore::frameBegin() {
                 { TracyVkZone(getTracyContext(), getGraphicCommandBuffer(), "Record Renderer Command buffer"); }
 #endif  // PROFILER_INCLUDE
 
+                AIGPNewFrame(getGraphicCommandBuffer(), this, "GPU Frame", "GPU Frame");
+
                 return true;
             }
         }
@@ -396,6 +403,8 @@ void VulkanCore::frameEnd() {
 #ifdef PROFILER_INCLUDE
         { TracyVkCollect(getTracyContext(), getGraphicCommandBuffer()); }
 #endif  // PROFILER_INCLUDE
+
+        AIGPCollect(getGraphicCommandBuffer());  // collect all measure queries out of Main Frame
 
         m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].end();
 
