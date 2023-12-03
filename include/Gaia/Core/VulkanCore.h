@@ -25,6 +25,7 @@ limitations under the License.
 #include <Gaia/Gui/VulkanWindow.h>
 #include <Gaia/Core/VulkanSwapChain.h>
 #include <Gaia/Core/VulkanDevice.h>
+#include <Gaia/Gui/VulkanProfiler.h>
 
 #include <string>
 #include <functional>
@@ -53,7 +54,7 @@ class GAIA_API VulkanCore {
 public:
     static VmaAllocator sAllocator;
     static VulkanShaderPtr sVulkanShader;
-    static VulkanCorePtr Create(VulkanWindowPtr vVulkanWindow,
+    static VulkanCorePtr Create(VulkanWindowWeak vVulkanWindow,
         const std::string& vAppName,
         const int& vAppVersion,
         const std::string& vEngineName,
@@ -86,6 +87,8 @@ protected:
     vk::PipelineCache m_PipelineCache = nullptr;
     bool m_CreateSwapChain = false;
 
+    vkProfilerPtr m_vkProfilerPtr = nullptr;
+
     VmaVulkanFunctions m_VmaVulkanFunctions;
 
 protected:  // extentions
@@ -94,7 +97,7 @@ protected:  // extentions
     } m_SupportedFeatures;
 
 public:
-    bool Init(VulkanWindowPtr vVulkanWindow,
+    bool Init(VulkanWindowWeak vVulkanWindow,
         const std::string& vAppName,
         const int& vAppVersion,
         const std::string& vEngineName,
@@ -120,6 +123,9 @@ public:  // get / set
     vk::Viewport getViewport() const;
     vk::Rect2D getRenderArea() const;
     VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
+    vkProfilerWeak getVkProfiler() {
+        return m_vkProfilerPtr;
+    }
 #ifdef PROFILER_INCLUDE
     TracyVkCtx getTracyContext();
 #endif  // PROFILER_INCLUDE
@@ -150,30 +156,28 @@ public:  // get / set
 
 public:
     void setupMemoryAllocator();
-
-public:
     void resize();
 
-public:  // graphic
+    // graphic
     bool frameBegin();
     void beginMainRenderPass();
     void endMainRenderPass();
     void frameEnd();
 
-public:  // compute
+    // compute
     bool resetComputeFence();
     bool computeBegin();
     bool computeEnd();
     bool submitComputeCmd(vk::CommandBuffer vCmd);
 
-public:  // KHR
+    // KHR
     bool AcquireNextImage(VulkanWindowPtr vVulkanWindow);
     void Present();
     uint32_t getSwapchainFrameBuffers() const;
     bool justGainFocus();
     ct::frect* getDisplayRect();
 
-public:  // reset
+    // reset
     void ResetCommandPools();
 
 protected:
@@ -184,6 +188,10 @@ protected:
     void destroyComputeCommandsAndSynchronization();
 
     void setupDescriptorPool();
+    void destroyDescriptorPool();
+
+    void setupProfiler();
+    void destroyProfiler();
 
 public:
     VulkanCore() = default;                                      // Prevent construction

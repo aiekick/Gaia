@@ -25,6 +25,7 @@ limitations under the License.
 #include <Gaia/Resources/Texture2D.h>
 #include <Gaia/Resources/TextureCube.h>
 #include <Gaia/Shader/VulkanShader.h>
+#include <Gaia/Gui/VulkanProfiler.h>
 
 #include <ImGuiPack.h>
 
@@ -97,7 +98,7 @@ void VulkanCore::sDdestroyVmaAllocator(VmaAllocator* VmaAllocatorPtr) {
     }
 }
 
-VulkanCorePtr VulkanCore::Create(VulkanWindowPtr vVulkanWindow,
+VulkanCorePtr VulkanCore::Create(VulkanWindowWeak vVulkanWindow,
     const std::string& vAppName,
     const int& vAppVersion,
     const std::string& vEngineName,
@@ -140,7 +141,7 @@ void VulkanCore::check_error(vk::Result result) {
 }
 
 // MEMBERS
-bool VulkanCore::Init(VulkanWindowPtr vVulkanWindow,
+bool VulkanCore::Init(VulkanWindowWeak vVulkanWindow,
     const std::string& vAppName,
     const int& vAppVersion,
     const std::string& vEngineName,
@@ -151,41 +152,30 @@ bool VulkanCore::Init(VulkanWindowPtr vVulkanWindow,
 
     m_CreateSwapChain = vCreateSwapChain;
 
-    glfwSetWindowFocusCallback(vVulkanWindow->getWindowPtr(), window_focus_callback);
+    auto winPtr = vVulkanWindow.lock();
+    assert(winPtr != nullptr);
 
-    m_VulkanDevicePtr =
-        VulkanDevice::Create(vVulkanWindow, vAppName, vAppVersion, vEngineName, vEngineVersion, vUseRTX);
+    glfwSetWindowFocusCallback(winPtr->getWindowPtr(), window_focus_callback);
+
+    m_VulkanDevicePtr = VulkanDevice::Create(vVulkanWindow, vAppName, vAppVersion, vEngineName, vEngineVersion, vUseRTX);
     if (m_VulkanDevicePtr) {
         // Supported Features
         m_SupportedFeatures.is_RTX_Supported = m_VulkanDevicePtr->GetRTXUse();
 
         setupMemoryAllocator();
+
         if (m_CreateSwapChain) {
-            m_VulkanSwapChainPtr =
-                VulkanSwapChain::Create(vVulkanWindow, m_This.lock(), std::bind(&VulkanCore::resize, this));
+            m_VulkanSwapChainPtr = VulkanSwapChain::Create(vVulkanWindow, m_This.lock(), std::bind(&VulkanCore::resize, this));
         }
         setupGraphicCommandsAndSynchronization();
         setupComputeCommandsAndSynchronization();
         setupDescriptorPool();
+        setupProfiler();
 
-#ifdef TRACY_ENABLE
-#ifdef ENABLE_CALIBRATED_CONTEXT
-        m_TracyContext = TracyVkContextCalibrated(getPhysicalDevice(), getDevice(),
-            getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer(),
-            vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, vkGetCalibratedTimestampsEXT);
-#else
-        m_TracyContext = TracyVkContext(getPhysicalDevice(), getDevice(),
-            getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer());
-#endif
-
-        tracy::SetThreadName("Main");
-#endif
         m_EmptyTexture2DPtr = Texture2D::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
         m_EmptyTextureCubePtr = TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
 
-        if (iagp::InAppGpuProfiler::Instance()->addContext(this, getPhysicalDevice(), getDevice(), 1000)) {
-            return true;
-        }
+        return true;
     }
 
     return false;
@@ -195,18 +185,13 @@ void VulkanCore::Unit() {
     ZoneScoped;
 
     m_VulkanDevicePtr->WaitIdle();
-    
-    iagp::InAppGpuProfiler::Instance()->Destroy();
 
     m_EmptyTexture2DPtr.reset();
     m_EmptyTextureCubePtr.reset();
+    
+    destroyProfiler();
 
-#ifdef PROFILER_INCLUDE
-    TracyVkDestroy(m_TracyContext);
-#endif  // PROFILER_INCLUDE
-
-    m_VulkanDevicePtr->m_LogDevice.destroyDescriptorPool(m_DescriptorPool);
-
+    destroyDescriptorPool();
     destroyComputeCommandsAndSynchronization();
     destroyGraphicCommandsAndSynchronization();
 
@@ -365,8 +350,6 @@ bool VulkanCore::frameBegin() {
                 { TracyVkZone(getTracyContext(), getGraphicCommandBuffer(), "Record Renderer Command buffer"); }
 #endif  // PROFILER_INCLUDE
 
-                AIGPNewFrame(getGraphicCommandBuffer(), this, "GPU Frame", "GPU Frame");
-
                 return true;
             }
         }
@@ -404,8 +387,6 @@ void VulkanCore::frameEnd() {
         { TracyVkCollect(getTracyContext(), getGraphicCommandBuffer()); }
 #endif  // PROFILER_INCLUDE
 
-        AIGPCollect(getGraphicCommandBuffer());  // collect all measure queries out of Main Frame
-
         m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].end();
 
         vk::SubmitInfo submitInfo;
@@ -421,19 +402,6 @@ void VulkanCore::frameEnd() {
 
         VulkanSubmitter::Submit(m_This.lock(), vk::QueueFlagBits::eGraphics, submitInfo,
             m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex]);
-
-        /*
-        std::unique_lock<std::mutex> lck(VulkanSubmitter::criticalSectionMutex, std::defer_lock);
-        lck.lock();
-        auto result = getQueue(vk::QueueFlagBits::eGraphics).vkQueue.submit(1, &submitInfo,
-            m_VulkanSwapChainPtr->m_WaitFences[m_VulkanSwapChainPtr->m_FrameIndex]);
-        if (result == vk::Result::eErrorDeviceLost)
-        {
-            // driver lost, we'll crash in this case:
-            LogVarDebugInfo("Debug : Driver Lost after submit");
-        }
-        lck.unlock();
-        */
     }
 }
 
@@ -545,8 +513,6 @@ uint32_t VulkanCore::getSwapchainFrameBuffers() const {
 
 void VulkanCore::setupGraphicCommandsAndSynchronization() {
     ZoneScoped;
-
-    // create draw commands
     m_CommandBuffers = m_VulkanDevicePtr->m_LogDevice.allocateCommandBuffers(
         vk::CommandBufferAllocateInfo(m_VulkanDevicePtr->getQueue(vk::QueueFlagBits::eGraphics).cmdPools,
             vk::CommandBufferLevel::ePrimary, VulkanSwapChain::SWAPCHAIN_IMAGES_COUNT));
@@ -598,11 +564,40 @@ void VulkanCore::setupDescriptorPool() {
             descriptorPoolSizes.data()));
 }
 
+void VulkanCore::destroyDescriptorPool() {
+    m_VulkanDevicePtr->m_LogDevice.destroyDescriptorPool(m_DescriptorPool);
+}
+
 void VulkanCore::ResetCommandPools() {
     for (auto& queue : m_VulkanDevicePtr->m_Queues) {
         m_VulkanDevicePtr->m_LogDevice.resetCommandPool(
             queue.second.cmdPools, vk::CommandPoolResetFlagBits::eReleaseResources);
     }
+}
+
+void VulkanCore::setupProfiler() {
+    m_vkProfilerPtr = vkProfiler::create(m_This, 1024U);
+
+#ifdef PROFILER_INCLUDE
+#ifdef TRACY_ENABLE
+#ifdef ENABLE_CALIBRATED_CONTEXT
+    m_TracyContext = TracyVkContextCalibrated(getPhysicalDevice(), getDevice(), getQueue(vk::QueueFlagBits::eGraphics).vkQueue,
+        getGraphicCommandBuffer(), vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, vkGetCalibratedTimestampsEXT);
+#else
+    m_TracyContext = TracyVkContext(getPhysicalDevice(), getDevice(), getQueue(vk::QueueFlagBits::eGraphics).vkQueue, getGraphicCommandBuffer());
+#endif
+
+    tracy::SetThreadName("Main");
+#endif
+#endif  // PROFILER_INCLUDE
+}
+
+void VulkanCore::destroyProfiler() {
+#ifdef PROFILER_INCLUDE
+    TracyVkDestroy(m_TracyContext);
+#endif  // PROFILER_INCLUDE
+
+    m_vkProfilerPtr.reset();
 }
 
 void VulkanCore::destroyGraphicCommandsAndSynchronization() {

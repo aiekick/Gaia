@@ -55,7 +55,7 @@ namespace GaiApi
 		g_SwapChainResizeHeight = h;
 	}
 
-	VulkanSwapChainPtr VulkanSwapChain::Create(VulkanWindowPtr vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc)
+	VulkanSwapChainPtr VulkanSwapChain::Create(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc)
 	{
 		auto res = std::make_shared<VulkanSwapChain>();
 		if (!res->Init(vVulkanWindow, vVulkanCore, vResizeFunc))
@@ -69,7 +69,7 @@ namespace GaiApi
 	//// INIT //////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	bool VulkanSwapChain::Init(VulkanWindowPtr vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc)
+	bool VulkanSwapChain::Init(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc)
 	{
 		ZoneScoped;
 
@@ -77,10 +77,13 @@ namespace GaiApi
 
 		m_ResizeFunction = vResizeFunc;
 
-		m_VulkanWindowPtr = vVulkanWindow;
+		m_VulkanWindow = vVulkanWindow;
 		m_VulkanCore = vVulkanCore;
 
-		glfwSetFramebufferSizeCallback(vVulkanWindow->getWindowPtr(), glfw_resize_callback);
+        auto winPtr = vVulkanWindow.lock();
+        assert(winPtr != nullptr);
+
+		glfwSetFramebufferSizeCallback(winPtr->getWindowPtr(), glfw_resize_callback);
 
         if (CreateSurface()){
             if (Load()) {
@@ -124,7 +127,10 @@ namespace GaiApi
             auto logDevice = corePtr->getDevice();
             auto graphicQueue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
-            auto size = m_VulkanWindowPtr->getFrameBufferResolution();
+            auto winPtr = m_VulkanWindow.lock();
+            assert(winPtr != nullptr);
+
+            auto size = winPtr->getFrameBufferResolution();
             m_DisplayRect = ct::frect(0, 0, (float)size.x, (float)size.y);
 
             // Setup viewports, Vsync
@@ -250,7 +256,10 @@ namespace GaiApi
             auto queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
             // Surface
-            m_Surface = m_VulkanWindowPtr->createSurface(corePtr->getInstance());
+            auto winPtr = m_VulkanWindow.lock();
+            assert(winPtr != nullptr);
+
+            m_Surface = winPtr->createSurface(corePtr->getInstance());
 
             if (!physDevice.getSurfaceSupportKHR(queue.familyQueueIndex, m_Surface)) {
                 // Check if queueFamily supports this surface

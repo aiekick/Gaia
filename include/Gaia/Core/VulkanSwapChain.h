@@ -63,7 +63,7 @@ namespace GaiApi
 		};
 
 	public:
-		static VulkanSwapChainPtr Create(VulkanWindowPtr vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
+        static VulkanSwapChainPtr Create(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
 
 	private:
 		std::function<void()> m_ResizeFunction = nullptr;
@@ -100,7 +100,7 @@ namespace GaiApi
 #endif
 
 	private:
-		VulkanWindowPtr m_VulkanWindowPtr = nullptr;
+        VulkanWindowWeak m_VulkanWindow;
 		VulkanCoreWeak m_VulkanCore;
         FrameBufferPtr m_FrameBufferPtr = nullptr;
 
@@ -109,7 +109,7 @@ namespace GaiApi
 		~VulkanSwapChain() = default;
 
 	public:
-		bool Init(VulkanWindowPtr vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
+        bool Init(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
 		bool Load();
 		bool Reload();
 		void Unit();
