@@ -345,7 +345,7 @@ bool VulkanCore::frameBegin() {
                 // m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].reset(vk::CommandBufferResetFlagBits::eReleaseResources);
 
                 m_CommandBuffers[m_VulkanSwapChainPtr->m_FrameIndex].begin(vk::CommandBufferBeginInfo());
-
+        
 #ifdef PROFILER_INCLUDE
                 { TracyVkZone(getTracyContext(), getGraphicCommandBuffer(), "Record Renderer Command buffer"); }
 #endif  // PROFILER_INCLUDE

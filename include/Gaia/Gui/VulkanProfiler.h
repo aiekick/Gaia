@@ -30,12 +30,12 @@ limitations under the License.
 #include <Gaia/gaia.h>
 #include <ImGuiPack.h>
 
-#define vkProfScoped(commandBuffer, section, fmt, ...)                                                       \
-    auto __vkProf__ScopedSubZone = vkprof::vkScopedZone(commandBuffer, false, nullptr, nullptr, section, fmt, ##__VA_ARGS__); \
+#define vkProfScoped(vulkanCore, commandBuffer, section, fmt, ...)                                                                        \
+    auto __vkProf__ScopedSubZone = GaiApi::vkScopedZone(vulkanCore, commandBuffer, false, nullptr, nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedSubZone
 
-#define vkProfScopedPtr(commandBuffer, ptr, section, fmt, ...)                                           \
-    auto __vkProf__ScopedSubZone = vkprof::vkScopedZone(commandBuffer, false, nullptr, ptr, section, fmt, ##__VA_ARGS__); \
+#define vkProfScopedPtr(vulkanCore, commandBuffer, ptr, section, fmt, ...)                                                            \
+    auto __vkProf__ScopedSubZone = GaiApi::vkScopedZone(vulkanCore, commandBuffer, false, nullptr, ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedSubZone
 
 #ifndef vkProf_RECURSIVE_LEVELS_COUNT
@@ -199,15 +199,14 @@ private:
 class GAIA_API vkScopedZone {
 public:
     vkProfQueryZonePtr queryPtr = nullptr;
-    VkCommandBuffer commandBuffer = nullptr;
+    VkCommandBuffer commandBuffer = {};
     vkProfiler* profilerPtr = nullptr;
 
 public:
     vkScopedZone(                     //
-        vkProfiler* vProfilerPtr,
+        VulkanCoreWeak vVulkanCore,   //
         const VkCommandBuffer& vCmd,  //
         const bool& vIsRoot,          //
-        void* vThreadPtr,             //
         const void* vPtr,             //
         const std::string& vSection,  //
         const char* fmt,              //
@@ -278,6 +277,8 @@ public:
     const bool& isActive();
     bool& isPausedRef();
     const bool& isPaused();
+
+    const bool canRecordTimeStamp();
     
     vkProfQueryZonePtr GetQueryZoneForName(const void* vPtr, const std::string& vName, const std::string& vSection = "", const bool& vIsRoot = false);
 
