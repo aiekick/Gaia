@@ -713,6 +713,8 @@ void vkProfiler::Unit() {
     assert(corePtr != nullptr);
     corePtr->getDevice().waitIdle();
     corePtr->getDevice().destroyQueryPool(m_QueryPool);
+    corePtr->getDevice().destroyFence(m_FrameFences[0]);
+    corePtr->getDevice().destroyFence(m_FrameFences[1]);
 }
 
 void vkProfiler::Clear() {
