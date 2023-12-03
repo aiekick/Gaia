@@ -248,8 +248,8 @@ private:
     size_t m_QueryCount = 0U;
     bool m_IsActive = false;
     bool m_IsPaused = false;
-    vk::CommandBuffer m_FrameCommandBuffer = {};
-    std::array<vk::Fence, 1> m_vkProfilerFrameFence = {};
+    std::array<vk::CommandBuffer, 2> m_FrameCommandBuffers = {};
+    std::array<vk::Fence, 2> m_FrameFences = {};
 
     std::stack<vkProfQueryZoneWeak> m_QueryStack;
 
@@ -287,8 +287,8 @@ public:
     void BeginFrame(const char* vLabel);
     void EndFrame();
 
-    void beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, ...);
-    void endZone(const VkCommandBuffer& vCm);
+    bool beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, ...);
+    bool endZone(const VkCommandBuffer& vCm);
 
 private:
     void m_SetQueryZoneForDepth(vkProfQueryZonePtr vQueryZone, uint32_t vDepth);

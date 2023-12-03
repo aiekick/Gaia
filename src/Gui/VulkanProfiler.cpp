@@ -692,6 +692,15 @@ bool vkProfiler::Init(VulkanCoreWeak vVulkanCore, const uint32_t& vMaxQueryCount
         poolInfos.queryCount = (uint32_t)m_QueryCount;
     }
 
+    m_FrameFences[0] = corePtr->getDevice().createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
+    m_FrameFences[1] = corePtr->getDevice().createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
+    auto vkDevicePtr = corePtr->getFrameworkDevice().lock();
+    assert(vkDevicePtr != nullptr);
+    auto cmdPools = vkDevicePtr->getQueue(vk::QueueFlagBits::eGraphics).cmdPools;
+    auto cmds = corePtr->getDevice().allocateCommandBuffers(vk::CommandBufferAllocateInfo(cmdPools, vk::CommandBufferLevel::ePrimary, 2));
+    m_FrameCommandBuffers[0] = cmds[0];
+    m_FrameCommandBuffers[1] = cmds[1];
+
     m_QueryTail = 0U;
     m_QueryHead = 0U;
 
@@ -718,7 +727,7 @@ void vkProfiler::Collect() {
         return;
     }
     
-    // the query zoen stack must be empty
+    // the query zone stack must be empty
     // else we have an error, some missing endZone
     assert(m_QueryStack.empty());
 
@@ -732,6 +741,8 @@ void vkProfiler::Collect() {
             VK_QUERY_RESULT_64_BIT /* | VK_QUERY_RESULT_WAIT_BIT*/) == VK_NOT_READY) {
         return;
     }
+
+    corePtr->getDevice().resetQueryPool(m_QueryPool, 0U, (uint32_t)m_QueryCount);
 
     for (size_t id = 0; id < m_TimeStampMeasures.size(); ++id) {
         auto query_it = m_QueryIDToZone.find((uint32_t)id);
@@ -751,10 +762,6 @@ void vkProfiler::Collect() {
             }
         }
     }
-
-#ifdef vkProf_DEBUG_MODE_LOGGING
-    vkProf_DEBUG_MODE_LOGGING("------ End Frame -----");
-#endif
 }
 
 bool& vkProfiler::isActiveRef() {
@@ -883,7 +890,6 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
     }
 
     if (vkProfQueryZone::sCurrentDepth == 0) {  // root zone
-        printf("------ Start Frame -----\n");
         m_DepthToLastZone.clear();
         if (m_RootZone == nullptr) {
             res = vkProfQueryZone::create(m_Context, vPtr, vName, vSection, vIsRoot);
@@ -895,9 +901,6 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
                 m_QueryIDToZone[res->ids[0]] = res;
                 m_QueryIDToZone[res->ids[1]] = res;
                 m_RootZone = res;
-#ifdef vkProf_DEBUG_MODE_LOGGING
-                // vkProf_DEBUG_MODE_LOGGING("Profile : add zone %s at puDepth %u", vName.c_str(), vkScopedZone::sCurrentDepth);
-#endif
             }
         } else {
             res = m_RootZone;
@@ -926,9 +929,6 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
                     m_QueryIDToZone[res->ids[1]] = res;
                     root->zonesDico[vPtr][key_str] = res;
                     root->zonesOrdered.push_back(res);
-#ifdef vkProf_DEBUG_MODE_LOGGING
-                    // vkProf_DEBUG_MODE_LOGGING("Profile : add zone %s at puDepth %u", vName.c_str(), vkProfQueryZone::sCurrentDepth);
-#endif
                 } else {
                     DEBUG_BREAK;
                 }
@@ -973,25 +973,39 @@ void vkProfiler::EndMarkTime(const VkCommandBuffer& vCmd, vkProfQueryZoneWeak vQ
 }
 
 void vkProfiler::BeginFrame(const char* vLabel) {
-    auto corePtr = m_VulkanCore.lock();
-    assert(corePtr != nullptr);
-    corePtr->getDevice().resetFences(m_vkProfilerFrameFence);
-    m_FrameCommandBuffer.begin(vk::CommandBufferBeginInfo());
-    // do write time stamp
+    if (isActive()) {
+        auto corePtr = m_VulkanCore.lock();
+        assert(corePtr != nullptr);
+        corePtr->getDevice().resetFences(m_FrameFences);
+        m_FrameCommandBuffers[0].begin(vk::CommandBufferBeginInfo());
+        beginZone(m_FrameCommandBuffers[0], true, nullptr, vLabel, "%s", vLabel);
+        m_FrameCommandBuffers[0].end();
+        auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &m_FrameCommandBuffers[0], 0, nullptr);
+        if (GaiApi::VulkanSubmitter::Submit(m_VulkanCore, vk::QueueFlagBits::eGraphics, submitInfos, m_FrameFences[0])) {
+            corePtr->getDevice().waitForFences(1, &m_FrameFences[0], VK_TRUE, UINT64_MAX);
+        }
+    }
 }
 
 void vkProfiler::EndFrame() {
-    auto corePtr = m_VulkanCore.lock();
-    assert(corePtr != nullptr);
-    // do write time stamp
-    corePtr->getDevice().resetQueryPool(m_QueryPool, 0U, (uint32_t)m_QueryCount);
-    m_FrameCommandBuffer.end();
-    auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &m_FrameCommandBuffer, 0, nullptr);
-    GaiApi::VulkanSubmitter::Submit(m_VulkanCore, vk::QueueFlagBits::eGraphics, submitInfos, m_vkProfilerFrameFence[0]);
+    if (isActive()) {
+        auto corePtr = m_VulkanCore.lock();
+        assert(corePtr != nullptr);
+        if (isActive() && !m_QueryStack.empty()) {
+            m_FrameCommandBuffers[1].begin(vk::CommandBufferBeginInfo());
+            if (endZone(m_FrameCommandBuffers[1])) {
+                m_FrameCommandBuffers[1].end();
+                auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &m_FrameCommandBuffers[1], 0, nullptr);
+                if (GaiApi::VulkanSubmitter::Submit(m_VulkanCore, vk::QueueFlagBits::eGraphics, submitInfos, m_FrameFences[1])) {
+                    corePtr->getDevice().waitForFences(1, &m_FrameFences[1], VK_TRUE, UINT64_MAX);
+                }
+            }
+        }
+    }
 }
 
-void vkProfiler::beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, ...) {
-   if (isActive()) {
+bool vkProfiler::beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, ...) {
+    if (isActive()) {
         va_list args;
         va_start(args, fmt);
         static char TempBuffer[256];
@@ -1004,16 +1018,19 @@ void vkProfiler::beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, con
                 m_QueryStack.push(queryZonePtr);
                 BeginMarkTime(vCmd, queryZonePtr);
                 vkProfQueryZone::sCurrentDepth++;
+                return true;
             }
         }
     }
+    return false;
 }
 
-void vkProfiler::endZone(const VkCommandBuffer& vCmd) {
-    if (isActive()) {
+bool vkProfiler::endZone(const VkCommandBuffer& vCmd) {
+    if (isActive() && !m_QueryStack.empty()) {
         auto queryZone = m_QueryStack.top();
         m_QueryStack.pop();
         auto queryPtr = queryZone.lock();
+        assert(queryPtr != nullptr);
         assert(queryPtr != nullptr);
 #ifdef vkProf_DEBUG_MODE_LOGGING
         if (queryPtr->depth > 0) {
@@ -1027,9 +1044,10 @@ void vkProfiler::endZone(const VkCommandBuffer& vCmd) {
         EndMarkTime(vCmd, queryPtr);
         ++queryPtr->current_count;
         --vkProfQueryZone::sCurrentDepth;
+        return true;
     }
+    return false;
 }
-
 
 void vkProfiler::DrawDetails(ImGuiWindowFlags vFlags) {
     if (m_ShowDetails) {

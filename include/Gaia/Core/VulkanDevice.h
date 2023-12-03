@@ -55,6 +55,7 @@ namespace GaiApi
 		vk::DebugReportCallbackEXT m_DebugReport;
 		vk::PhysicalDeviceRobustness2FeaturesEXT m_Robustness2Feature;
 		vk::PhysicalDeviceSynchronization2FeaturesKHR m_Synchronization2Feature;
+        vk::PhysicalDeviceHostQueryResetFeatures m_HostQueryResetFeature;
 		vk::PhysicalDeviceAccelerationStructureFeaturesKHR m_AccelerationStructureFeature;
 		vk::PhysicalDeviceRayTracingPipelineFeaturesKHR m_RayTracingPipelineFeature;
 		vk::PhysicalDeviceRayTracingPipelinePropertiesKHR m_RayTracingDeviceProperties;

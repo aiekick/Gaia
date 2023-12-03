@@ -688,7 +688,12 @@ bool VulkanDevice::CreateLogicalDevice() {
 
     // Logical VulkanCore
     std::vector<vk::ExtensionProperties> installedDeviceExtensions = m_PhysDevice.enumerateDeviceExtensionProperties();
-    std::vector<const char*> wantedDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME};
+    std::vector<const char*> wantedDeviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,               //
+        VK_EXT_ROBUSTNESS_2_EXTENSION_NAME,            //
+        VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,  //
+        VK_EXT_HOST_QUERY_RESET_EXTENSION_NAME         // for vkProfiler
+    };
 
     if (m_ApiVersion != VK_API_VERSION_1_0) {
         wantedDeviceExtensions.emplace_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
@@ -778,28 +783,30 @@ bool VulkanDevice::CreateLogicalDevice() {
         m_Robustness2Feature.setNullDescriptor(true);  // null descriptor feature
         chains.push_back((pNextDatas*)&m_Robustness2Feature);
     }
-    // m_PhysDeviceFeatures2.setPNext(&m_Robustness2Feature);
 
     if (deviceExtensions.exist(VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME)) {
         LogVarLightInfo("Feature vk 1.0 : Dynamic States");
         m_DynamicStates.setExtendedDynamicState(true);
         chains.push_back((pNextDatas*)&m_DynamicStates);
     }
-    // m_Robustness2Feature.setPNext(&m_DynamicStates);
 
     if (deviceExtensions.exist(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME)) {
         LogVarLightInfo("Feature vk 1.1 : synchronisation 2");
         m_Synchronization2Feature.setSynchronization2(true);
         chains.push_back((pNextDatas*)&m_Synchronization2Feature);
     }
-    // m_DynamicStates.setPNext(&m_Synchronization2Feature);
 
     if (deviceExtensions.exist(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME)) {
         LogVarLightInfo("Feature vk 1.2 : Buffer Device Address");
         m_BufferDeviceAddress.setBufferDeviceAddress(true);
         chains.push_back((pNextDatas*)&m_BufferDeviceAddress);
     }
-    // m_Synchronization2Feature.setPNext(&m_BufferDeviceAddress);
+
+    if (deviceExtensions.exist(VK_EXT_HOST_QUERY_RESET_EXTENSION_NAME)) {
+        LogVarLightInfo("Feature vk 1.2 : Host QUery Reset");
+        m_HostQueryResetFeature.setHostQueryReset(true);
+        chains.push_back((pNextDatas*)&m_HostQueryResetFeature);
+    }
 
     if (m_Use_RTX) {
         if (deviceExtensions.exist(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME)) {
@@ -807,14 +814,13 @@ bool VulkanDevice::CreateLogicalDevice() {
             m_AccelerationStructureFeature.setAccelerationStructure(true);
             chains.push_back((pNextDatas*)&m_AccelerationStructureFeature);
         }
-        // m_BufferDeviceAddress.setPNext(&m_AccelerationStructureFeature);
 
         if (deviceExtensions.exist(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME)) {
             LogVarLightInfo("Feature vk 1.2 : (RTX) Ray Tracing Pipeline");
             m_RayTracingPipelineFeature.setRayTracingPipeline(true);
             chains.push_back((pNextDatas*)&m_RayTracingPipelineFeature);
         }
-        // m_AccelerationStructureFeature.setPNext(&m_RayTracingPipelineFeature);
+
     }
 
     // recreate the chain
