@@ -608,59 +608,6 @@ bool vkProfQueryZone::m_DrawCircularFlameGraph(
 }
 
 ////////////////////////////////////////////////////////////
-/////////////////////// SCOPED ZONE ////////////////////////
-////////////////////////////////////////////////////////////
-
-vkScopedZone::vkScopedZone(       //
-    VulkanCoreWeak vVulkanCore,   //
-    const VkCommandBuffer& vCmd,  //
-    const bool& vIsRoot,          //
-    const void* vPtr,             //
-    const std::string& vSection,  //
-    const char* fmt,              //
-    ...) {                        //
-    auto corePtr = vVulkanCore.lock();
-    assert(corePtr != nullptr);
-    profilerPtr = corePtr->getVkProfiler().lock().get();
-    assert(profilerPtr != nullptr);
-    if (profilerPtr->canRecordTimeStamp()) {
-        va_list args;
-        va_start(args, fmt);
-        static char TempBuffer[256];
-        const int w = vsnprintf(TempBuffer, 256, fmt, args);
-        va_end(args);
-        if (w) {
-            const auto& label = std::string(TempBuffer, (size_t)w);
-            queryPtr = profilerPtr->GetQueryZoneForName(vPtr, label, vSection, vIsRoot);
-            if (queryPtr != nullptr) {
-                commandBuffer = vCmd;
-                profilerPtr->BeginMarkTime(vCmd, queryPtr);
-                vkProfQueryZone::sCurrentDepth++;
-            }
-        }
-    }
-}
-
-vkScopedZone::~vkScopedZone() {
-    assert(profilerPtr != nullptr);
-    if (profilerPtr->canRecordTimeStamp()) {
-        assert(queryPtr != nullptr);
-#ifdef vkProf_DEBUG_MODE_LOGGING
-        if (queryPtr->depth > 0) {
-            vkProf_DEBUG_MODE_LOGGING("%*s end : [%u:%u] (depth:%u)",  //
-                (queryPtr->depth - 1U), "", queryPtr->ids[0], queryPtr->ids[1], queryPtr->depth);
-        } else {
-            vkProf_DEBUG_MODE_LOGGING("end : [%u:%u] (depth:%u)",  //
-                queryPtr->ids[0], queryPtr->ids[1], 0);
-        }
-#endif
-        profilerPtr->EndMarkTime(commandBuffer, queryPtr);
-        ++queryPtr->current_count;
-        --vkProfQueryZone::sCurrentDepth;
-    }
-}
-
-////////////////////////////////////////////////////////////
 /////////////////////// 3D PROFILER ////////////////////////
 ////////////////////////////////////////////////////////////
 
@@ -728,7 +675,7 @@ void vkProfiler::Clear() {
 }
 
 void vkProfiler::Collect() {
-    if (canRecordTimeStamp()) {
+    if (m_IsActive && !m_IsPaused) {
         // the query zone stack must be empty
         // else we have an error, some missing endZone
         assert(m_QueryStack.empty());
@@ -783,8 +730,15 @@ const bool& vkProfiler::isPaused() {
     return m_IsPaused;
 }
 
-const bool vkProfiler::canRecordTimeStamp() {
-    return m_IsActive && !m_IsPaused;
+const bool vkProfiler::canRecordTimeStamp(const bool& isRoot) {
+    if (m_IsActive && !m_IsPaused) {
+        if (!isRoot) {
+            return (vkProfQueryZone::sCurrentDepth > 0);  // child is authorized only if there a root frame
+        } else {
+            return true; // root frame is already authorized
+        }
+    }
+    return false;
 }
 
 void vkProfiler::DrawFlamGraph(const char* vLabel, bool* pOpen, ImGuiWindowFlags vFlags) {
@@ -899,7 +853,7 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
     if (vkProfQueryZone::sCurrentDepth == 0) {  // root zone
         m_DepthToLastZone.clear();
         if (m_RootZone == nullptr) {
-            res = vkProfQueryZone::create(m_Context, vPtr, vName, vSection, vIsRoot);
+            res = vkProfQueryZone::create(m_ThreadPtr, vPtr, vName, vSection, vIsRoot);
             if (res != nullptr) {
                 res->ids[0] = m_GetNextQueryId();
                 res->ids[1] = m_GetNextQueryId();
@@ -924,7 +878,7 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
                 found = (ptr_iter->second.find(key_str) != ptr_iter->second.end());  // not found
             }
             if (!found) {  // not found
-                res = vkProfQueryZone::create(m_Context, vPtr, vName, vSection, vIsRoot);
+                res = vkProfQueryZone::create(m_ThreadPtr, vPtr, vName, vSection, vIsRoot);
                 if (res != nullptr) {
                         res->ids[0] = m_GetNextQueryId();
                         res->ids[1] = m_GetNextQueryId();
@@ -980,24 +934,25 @@ void vkProfiler::EndMarkTime(const VkCommandBuffer& vCmd, vkProfQueryZoneWeak vQ
 }
 
 void vkProfiler::BeginFrame(const char* vLabel) {
-    if (canRecordTimeStamp()) {
+    if (canRecordTimeStamp(true)) {
         auto corePtr = m_VulkanCore.lock();
         assert(corePtr != nullptr);
         corePtr->getDevice().resetFences(m_FrameFences);
         m_FrameCommandBuffers[0].begin(vk::CommandBufferBeginInfo());
-        beginZone(m_FrameCommandBuffers[0], true, nullptr, "", "%s", vLabel);
-        m_FrameCommandBuffers[0].end();
-        auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &m_FrameCommandBuffers[0], 0, nullptr);
-        if (GaiApi::VulkanSubmitter::Submit(m_VulkanCore, vk::QueueFlagBits::eGraphics, submitInfos, m_FrameFences[0])) {
-            corePtr->getDevice().waitForFences(1, &m_FrameFences[0], VK_TRUE, UINT64_MAX);
+        if (m_BeginZone(m_FrameCommandBuffers[0], true, nullptr, vLabel, vLabel)) {
+            m_FrameCommandBuffers[0].end();
+            auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &m_FrameCommandBuffers[0], 0, nullptr);
+            if (GaiApi::VulkanSubmitter::Submit(m_VulkanCore, vk::QueueFlagBits::eGraphics, submitInfos, m_FrameFences[0])) {
+                corePtr->getDevice().waitForFences(1, &m_FrameFences[0], VK_TRUE, UINT64_MAX);
+            }
         }
     }
 }
 
 void vkProfiler::EndFrame() {
-    if (canRecordTimeStamp() && !m_QueryStack.empty()) {
+    if (canRecordTimeStamp(true) && !m_QueryStack.empty()) {
         m_FrameCommandBuffers[1].begin(vk::CommandBufferBeginInfo());
-        if (endZone(m_FrameCommandBuffers[1])) {
+        if (m_EndZone(m_FrameCommandBuffers[1], true)) {
             m_FrameCommandBuffers[1].end();
             auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &m_FrameCommandBuffers[1], 0, nullptr);
             if (GaiApi::VulkanSubmitter::Submit(m_VulkanCore, vk::QueueFlagBits::eGraphics, submitInfos, m_FrameFences[1])) {
@@ -1008,13 +963,36 @@ void vkProfiler::EndFrame() {
     }
 }
 
-bool vkProfiler::beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, ...) {
-    if (canRecordTimeStamp()) {
-        va_list args;
-        va_start(args, fmt);
+bool vkProfiler::beginChildZone(const VkCommandBuffer& vCmd, const void* vPtr, const std::string& vSection, const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    bool res = m_BeginZone(vCmd, false, vPtr, vSection, fmt, args);
+    va_end(args);
+    return res;
+}
+
+bool vkProfiler::endChildZone(const VkCommandBuffer& vCmd) {
+    return m_EndZone(vCmd, false);
+}
+
+bool vkProfiler::m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* label) {
+    if (canRecordTimeStamp(vIsRoot) && label != nullptr) {
+        auto queryZonePtr = GetQueryZoneForName(vPtr, label, vSection, vIsRoot);
+        if (queryZonePtr != nullptr) {
+            m_QueryStack.push(queryZonePtr);
+            BeginMarkTime(vCmd, queryZonePtr);
+            ++vkProfQueryZone::sCurrentDepth;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool vkProfiler::m_BeginZone(
+    const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs) {
+    if (canRecordTimeStamp(vIsRoot)) {
         static char TempBuffer[256];
-        const int w = vsnprintf(TempBuffer, 256, fmt, args);
-        va_end(args);
+        const int w = vsnprintf(TempBuffer, 256, fmt, vArgs);
         if (w) {
             const auto& label = std::string(TempBuffer, (size_t)w);
             auto queryZonePtr = GetQueryZoneForName(vPtr, label, vSection, vIsRoot);
@@ -1029,17 +1007,16 @@ bool vkProfiler::beginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, con
     return false;
 }
 
-bool vkProfiler::endZone(const VkCommandBuffer& vCmd) {
-    if (canRecordTimeStamp() && !m_QueryStack.empty()) {
+bool vkProfiler::m_EndZone(const VkCommandBuffer& vCmd, const bool& vIsRoot) {
+    if (canRecordTimeStamp(vIsRoot) && !m_QueryStack.empty()) {
         auto queryZone = m_QueryStack.top();
         m_QueryStack.pop();
         auto queryPtr = queryZone.lock();
-        if (queryPtr != nullptr) {
-            EndMarkTime(vCmd, queryPtr);
-            ++queryPtr->current_count;
-            --vkProfQueryZone::sCurrentDepth;
-            return true;
-        }
+        assert(queryPtr != nullptr);
+        EndMarkTime(vCmd, queryPtr);
+        ++queryPtr->current_count;
+        --vkProfQueryZone::sCurrentDepth;
+        return true;
     }
     return false;
 }
@@ -1110,6 +1087,52 @@ int32_t vkProfiler::m_GetNextQueryId() {
     assert(m_QueryHead != m_QueryTail);
     m_TimeStampMeasures.push_back(0);  // append a value
     return (uint32_t)id;
+}
+
+////////////////////////////////////////////////////////////
+/////////////////////// SCOPED ZONE ////////////////////////
+////////////////////////////////////////////////////////////
+
+vkScopedChildZone::vkScopedChildZone(  //
+    const VkCommandBuffer& vCmd,  //
+    const void* vPtr,             //
+    const std::string& vSection,  //
+    const char* fmt,              //
+    ...) {                        //
+    if (vkProfiler::Instance()->canRecordTimeStamp(false)) {
+        va_list args;
+        va_start(args, fmt);
+        static char TempBuffer[256];
+        const int w = vsnprintf(TempBuffer, 256, fmt, args);
+        va_end(args);
+        if (w) {
+            const auto& label = std::string(TempBuffer, (size_t)w);
+            queryPtr = vkProfiler::Instance()->GetQueryZoneForName(vPtr, label, vSection, false);
+            if (queryPtr != nullptr) {
+                commandBuffer = vCmd;
+                vkProfiler::Instance()->BeginMarkTime(vCmd, queryPtr);
+                vkProfQueryZone::sCurrentDepth++;
+            }
+        }
+    }
+}
+
+vkScopedChildZone::~vkScopedChildZone() {
+    if (vkProfiler::Instance()->canRecordTimeStamp(false)) {
+        assert(queryPtr != nullptr);
+#ifdef vkProf_DEBUG_MODE_LOGGING
+        if (queryPtr->depth > 0) {
+            vkProf_DEBUG_MODE_LOGGING("%*s end : [%u:%u] (depth:%u)",  //
+                (queryPtr->depth - 1U), "", queryPtr->ids[0], queryPtr->ids[1], queryPtr->depth);
+        } else {
+            vkProf_DEBUG_MODE_LOGGING("end : [%u:%u] (depth:%u)",  //
+                queryPtr->ids[0], queryPtr->ids[1], 0);
+        }
+#endif
+        vkProfiler::Instance()->EndMarkTime(commandBuffer, queryPtr);
+        ++queryPtr->current_count;
+        --vkProfQueryZone::sCurrentDepth;
+    }
 }
 
 }  // namespace GaiApi

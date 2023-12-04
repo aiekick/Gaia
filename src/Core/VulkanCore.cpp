@@ -576,7 +576,7 @@ void VulkanCore::ResetCommandPools() {
 }
 
 void VulkanCore::setupProfiler() {
-    m_vkProfilerPtr = vkProfiler::create(m_This, 1024U);
+    vkProfiler::Instance(m_This, 1024U);
 
 #ifdef PROFILER_INCLUDE
 #ifdef TRACY_ENABLE
@@ -597,7 +597,7 @@ void VulkanCore::destroyProfiler() {
     TracyVkDestroy(m_TracyContext);
 #endif  // PROFILER_INCLUDE
 
-    m_vkProfilerPtr.reset();
+    vkProfiler::Instance()->Unit();
 }
 
 void VulkanCore::destroyGraphicCommandsAndSynchronization() {

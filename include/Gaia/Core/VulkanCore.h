@@ -87,8 +87,6 @@ protected:
     vk::PipelineCache m_PipelineCache = nullptr;
     bool m_CreateSwapChain = false;
 
-    vkProfilerPtr m_vkProfilerPtr = nullptr;
-
     VmaVulkanFunctions m_VmaVulkanFunctions;
 
 protected:  // extentions
@@ -123,9 +121,6 @@ public:  // get / set
     vk::Viewport getViewport() const;
     vk::Rect2D getRenderArea() const;
     VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
-    vkProfilerWeak getVkProfiler() {
-        return m_vkProfilerPtr;
-    }
 #ifdef PROFILER_INCLUDE
     TracyVkCtx getTracyContext();
 #endif  // PROFILER_INCLUDE
