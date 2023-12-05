@@ -43,12 +43,26 @@ limitations under the License.
 #define vkProfBeginZonePtr(commandBuffer, ptr, section, fmt, ...) \
     GaiApi::vkProfiler::Instance()->beginChildZone(commandBuffer, ptr, section, fmt, ##__VA_ARGS__);
 #define vkProfEndZone(commandBuffer) GaiApi::vkProfiler::Instance()->endChildZone(commandBuffer)
+
 #define vkProfScoped(commandBuffer, section, fmt, ...)                                                                        \
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(commandBuffer, nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
 #define vkProfScopedPtr(commandBuffer, ptr, section, fmt, ...)                                                            \
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(commandBuffer, ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
+
+#define vkProfScopedNoCmd(section, fmt, ...)                                                               \
+    auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(nullptr, section, fmt, ##__VA_ARGS__); \
+    (void)__vkProf__ScopedChildZoneNoCmd
+#define vkProfScopedPtrNoCmd(ptr, section, fmt, ...)                                                   \
+    auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(ptr, section, fmt, ##__VA_ARGS__); \
+    (void)__vkProf__ScopedChildZoneNoCmd
+
+#define vkProfBeginZoneNoCmd(section, fmt, ...) \
+    GaiApi::vkProfiler::Instance()->beginChildZoneNoCmd(nullptr, section, fmt, ##__VA_ARGS__)
+#define vkProfBeginZonePtrNoCmd(ptr, section, fmt, ...) \
+    GaiApi::vkProfiler::Instance()->beginChildZoneNoCmd(ptr, section, fmt, ##__VA_ARGS__);
+#define vkProfEndZoneNoCmd GaiApi::vkProfiler::Instance()->endChildZoneNoCmd()
 
 ///////////////////////////////////
 ///////////////////////////////////
@@ -140,7 +154,7 @@ public:
     static uint32_t sMaxDepth;      // max depth catched ever
     static std::vector<vkProfQueryZoneWeak> sTabbedQueryZones;
     static vkProfQueryZonePtr create(
-        void* vThread, const void* vPtr, const std::string& vName, const std::string& vSectionName, const bool& vIsRoot = false);
+        void* vThreadPtr, const void* vPtr, const std::string& vName, const std::string& vSectionName, const bool& vIsRoot = false);
     static circularSettings sCircularSettings;
 
 public:
@@ -173,7 +187,7 @@ private:
     bool m_Highlighted = false;
     vkProfAverageValue<uint64_t> m_AverageStartValue;
     vkProfAverageValue<uint64_t> m_AverageEndValue;
-    void* m_Context;
+    void* m_ThreadPtr = nullptr;
     std::string m_BarLabel;
     std::string m_SectionName;
     ImVec4 cv4;
@@ -191,7 +205,7 @@ private:
 
 public:
     vkProfQueryZone() = default;
-    vkProfQueryZone(void* vThread, const void* vPtr, const std::string& vName, const std::string& vSectionName, const bool& vIsRoot = false);
+    vkProfQueryZone(void* vThreadPtr, const void* vPtr, const std::string& vName, const std::string& vSectionName, const bool& vIsRoot = false);
     ~vkProfQueryZone();
     void Clear();
     void SetStartTimeStamp(const uint64_t& vValue);
@@ -212,25 +226,24 @@ private:
     bool m_DrawCircularFlameGraph(vkProfQueryZonePtr vRoot, vkProfQueryZoneWeak& vOutSelectedQuery, vkProfQueryZoneWeak vParent, uint32_t vDepth);
 };
 
-class GAIA_API vkScopedChildZone {
-public:
-    vkProfQueryZonePtr queryPtr = nullptr;
-    VkCommandBuffer commandBuffer = {};
-
-public:
-    vkScopedChildZone(                //
-        const VkCommandBuffer& vCmd,  //
-        const void* vPtr,             //
-        const std::string& vSection,  //
-        const char* fmt,              //
-        ...);                         //
-    ~vkScopedChildZone();
-};
-
 class GAIA_API vkProfiler {
 public:
     typedef std::function<bool(const char*, bool*, ImGuiWindowFlags)> ImGuiBeginFunctor;
     typedef std::function<void()> ImGuiEndFunctor;
+    class CommandBufferInfos {
+    private:
+        vk::Device device;
+        VulkanCoreWeak core;
+
+    public:
+        std::array<vk::CommandBuffer, 2U> cmds;
+        std::array<vk::Fence, 2U> fences;
+        CommandBufferInfos() = default;
+        ~CommandBufferInfos();
+        void Init(VulkanCoreWeak vCore, vk::Device vDevice, vk::CommandPool vCmdPool);
+        void begin(const size_t& idx);
+        void end(const size_t& idx);
+    };
 
 public:
     static vkProfilerPtr create(VulkanCoreWeak vVulkanCore, const uint32_t& vMaxQueryCount);
@@ -264,14 +277,18 @@ private:
     size_t m_QueryCount = 0U;
     bool m_IsActive = false;
     bool m_IsPaused = false;
+
     std::array<vk::CommandBuffer, 2> m_FrameCommandBuffers = {};
     std::array<vk::Fence, 2> m_FrameFences = {};
+    std::unordered_map<std::string, CommandBufferInfos> m_CommandBuffers;
 
     std::stack<vkProfQueryZoneWeak> m_QueryStack;
 
+    char m_TempBuffer[1024] = {};
+
 public:
     vkProfiler() = default;
-    ~vkProfiler();
+    ~vkProfiler() = default;
 
     bool Init(VulkanCoreWeak vVulkanCore, const uint32_t& vMaxQueryCount);
     void Unit();
@@ -295,7 +312,7 @@ public:
     bool& isPausedRef();
     const bool& isPaused();
 
-    const bool canRecordTimeStamp(const bool& isRoot);
+    const bool canRecordTimeStamp(const bool& isRoot = false);
 
     vkProfQueryZonePtr GetQueryZoneForName(const void* vPtr, const std::string& vName, const std::string& vSection = "", const bool& vIsRoot = false);
 
@@ -306,20 +323,52 @@ public:
     void EndFrame();
 
     bool beginChildZone(const VkCommandBuffer& vCmd, const void* vPtr, const std::string& vSection, const char* fmt, ...);
-    bool endChildZone(const VkCommandBuffer& vCm);
-    
+    bool endChildZone(const VkCommandBuffer& vCmd);
+
+    CommandBufferInfos* beginChildZoneNoCmd(const void* vPtr, const std::string& vSection, const char* fmt, ...);
+    void endChildZoneNoCmd(CommandBufferInfos* vCommandBufferInfosPtr);
+
+    CommandBufferInfos* GetCommandBufferInfosPtr(const void* vPtr, const std::string& vSection, const char* fmt, ...);
+    CommandBufferInfos* GetCommandBufferInfosPtr(const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
+
 private:
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* label);
-    bool m_BeginZone(
-        const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
+    bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
     bool m_EndZone(const VkCommandBuffer& vCmd, const bool& vIsRoot);
-    
+
     void m_SetQueryZoneForDepth(vkProfQueryZonePtr vQueryZone, uint32_t vDepth);
     vkProfQueryZonePtr m_GetQueryZoneFromDepth(uint32_t vDepth);
     void m_DrawMenuBar();
     int32_t m_GetNextQueryId();
+};
 
-protected:
+class GAIA_API vkScopedChildZone {
+public:
+    vkProfQueryZonePtr queryPtr = nullptr;
+    VkCommandBuffer commandBuffer = {};
+
+public:
+    vkScopedChildZone(                //
+        const VkCommandBuffer& vCmd,  //
+        const void* vPtr,             //
+        const std::string& vSection,  //
+        const char* fmt,              //
+        ...);                         //
+    ~vkScopedChildZone();
+};
+
+class GAIA_API vkScopedChildZoneNoCmd {
+public:
+    vkProfQueryZonePtr queryPtr = nullptr;
+    vkProfiler::CommandBufferInfos* infosPtr = nullptr;
+
+public:
+    vkScopedChildZoneNoCmd(           //
+        const void* vPtr,             //
+        const std::string& vSection,  //
+        const char* fmt,              //
+        ...);                         //
+    ~vkScopedChildZoneNoCmd();
 };
 
 }  // namespace GaiApi
