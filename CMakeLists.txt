@@ -11,6 +11,7 @@ project(
 enable_language(C CXX)
 
 option(GAIA_DEBUG_PRINT "Enable debug print of Gaia" OFF) 
+option(USE_PROFILERS "Enable the use of profilers. affect teh reset of  Command Buffers" ON)
 
 set(GAIA_PROFILER_INCLUDE "Tracy Profiler Include file" CACHE FILEPATH "${PROFILER_INCLUDE}")
 set(GAIA_STB_IMAGE_INCLUDE "Stb Image Include file" CACHE FILEPATH "${STB_IMAGE_INCLUDE}")
@@ -31,6 +32,10 @@ else()
 	set(LLVM_USE_CRT_RELEASE MT CACHE STRING "" FORCE)
 	set(LLVM_USE_CRT_RELWITHDEBINFO MT CACHE STRING "" FORCE)
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF CACHE BOOL "")
+endif()
+
+if (USE_PROFILERS)
+	add_definitions(-DUSE_PROFILERS)
 endif()
 
 set(GAIA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include PARENT_SCOPE)

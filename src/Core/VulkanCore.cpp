@@ -576,7 +576,7 @@ void VulkanCore::ResetCommandPools() {
 }
 
 void VulkanCore::setupProfiler() {
-    vkProfiler::Instance(m_This, 1024U);
+    vkProfiler::Instance(m_This);
 
 #ifdef PROFILER_INCLUDE
 #ifdef TRACY_ENABLE

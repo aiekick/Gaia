@@ -44,17 +44,31 @@ limitations under the License.
     GaiApi::vkProfiler::Instance()->beginChildZone(commandBuffer, ptr, section, fmt, ##__VA_ARGS__);
 #define vkProfEndZone(commandBuffer) GaiApi::vkProfiler::Instance()->endChildZone(commandBuffer)
 
-#define vkProfScoped(commandBuffer, section, fmt, ...)                                                                        \
+#define vkProfScopedStages(stages, commandBuffer, section, fmt, ...)                                                                        \
+    auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(stages, commandBuffer, nullptr, section, fmt, ##__VA_ARGS__); \
+    (void)__vkProf__ScopedChildZone
+#define vkProfScopedStagesPtr(stages, commandBuffer, ptr, section, fmt, ...)                                                            \
+    auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(stages, commandBuffer, ptr, section, fmt, ##__VA_ARGS__); \
+    (void)__vkProf__ScopedChildZone
+
+#define vkProfScoped(commandBuffer, section, fmt, ...)                                                               \
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(commandBuffer, nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
-#define vkProfScopedPtr(commandBuffer, ptr, section, fmt, ...)                                                            \
+#define vkProfScopedPtr(commandBuffer, ptr, section, fmt, ...)                                                   \
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(commandBuffer, ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
 
-#define vkProfScopedNoCmd(section, fmt, ...)                                                               \
+#define vkProfScopedStagesNoCmd(stages, section, fmt, ...)                                                               \
+    auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(stages, nullptr, section, fmt, ##__VA_ARGS__); \
+    (void)__vkProf__ScopedChildZoneNoCmd
+#define vkProfScopedStagesPtrNoCmd(stages, ptr, section, fmt, ...)                                                   \
+    auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(stages, ptr, section, fmt, ##__VA_ARGS__); \
+    (void)__vkProf__ScopedChildZoneNoCmd
+
+#define vkProfScopedNoCmd(section, fmt, ...)                                                              \
     auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZoneNoCmd
-#define vkProfScopedPtrNoCmd(ptr, section, fmt, ...)                                                   \
+#define vkProfScopedPtrNoCmd(ptr, section, fmt, ...)                                                  \
     auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZoneNoCmd
 
@@ -227,6 +241,9 @@ private:
 };
 
 class GAIA_API vkProfiler {
+private:
+    static constexpr uint32_t sMaxQueryCount = 1024U;
+
 public:
     typedef std::function<bool(const char*, bool*, ImGuiWindowFlags)> ImGuiBeginFunctor;
     typedef std::function<void()> ImGuiEndFunctor;
@@ -234,21 +251,24 @@ public:
     private:
         vk::Device device;
         VulkanCoreWeak core;
+        vk::QueryPool queryPool;
+        vkProfiler* parentProfilerPtr = nullptr;        
 
     public:
         std::array<vk::CommandBuffer, 2U> cmds;
         std::array<vk::Fence, 2U> fences;
         CommandBufferInfos() = default;
         ~CommandBufferInfos();
-        void Init(VulkanCoreWeak vCore, vk::Device vDevice, vk::CommandPool vCmdPool);
+        void Init(VulkanCoreWeak vCore, vk::Device vDevice, vk::CommandPool vCmdPool, vk::QueryPool vQueryPool, vkProfiler* vParentProfilerPtr);
         void begin(const size_t& idx);
         void end(const size_t& idx);
+        void writeTimeStamp(const size_t& idx, vkProfQueryZoneWeak vQueryZone, vk::PipelineStageFlagBits vStages);
     };
 
 public:
-    static vkProfilerPtr create(VulkanCoreWeak vVulkanCore, const uint32_t& vMaxQueryCount);
-    static vkProfilerPtr Instance(VulkanCoreWeak vVulkanCore = {}, const uint32_t& vMaxQueryCount = 0U) {
-        static auto _instance_ptr = vkProfiler::create(vVulkanCore, vMaxQueryCount);
+    static vkProfilerPtr create(VulkanCoreWeak vVulkanCore);
+    static vkProfilerPtr Instance(VulkanCoreWeak vVulkanCore = {}) {
+        static auto _instance_ptr = vkProfiler::create(vVulkanCore);
         return _instance_ptr;
     };
 
@@ -269,17 +289,16 @@ private:
     vkProfQueryZoneWeak m_SelectedQuery;                                 // query to show the flamegraph in this context
     std::unordered_map<uint32_t, vkProfQueryZonePtr> m_QueryIDToZone;    // Get the zone for a query id because a query have to id's : start and end
     std::unordered_map<uint32_t, vkProfQueryZonePtr> m_DepthToLastZone;  // last zone registered at this depth
-    
-    std::vector<vkTimeStamp> m_TimeStampMeasures;
+
+    std::array<uint32_t, sMaxQueryCount> m_TimeStampIds;
+    std::array<vkTimeStamp, sMaxQueryCount> m_TimeStampMeasures;
     vk::QueryPool m_QueryPool = {};
-    size_t m_QueryTail = 0U;
-    size_t m_QueryHead = 0U;
-    size_t m_QueryCount = 0U;
+    uint32_t m_QueryHead = 0U;
+    uint32_t m_QueryCount = 0U; // reseted each frames
+    uint32_t m_MaxQueryCount = 0U; // tuned at creation
     bool m_IsActive = false;
     bool m_IsPaused = false;
 
-    std::array<vk::CommandBuffer, 2> m_FrameCommandBuffers = {};
-    std::array<vk::Fence, 2> m_FrameFences = {};
     std::unordered_map<std::string, CommandBufferInfos> m_CommandBuffers;
 
     std::stack<vkProfQueryZoneWeak> m_QueryStack;
@@ -290,7 +309,7 @@ public:
     vkProfiler() = default;
     ~vkProfiler() = default;
 
-    bool Init(VulkanCoreWeak vVulkanCore, const uint32_t& vMaxQueryCount);
+    bool Init(VulkanCoreWeak vVulkanCore);
     void Unit();
     void Clear();
 
@@ -316,14 +335,13 @@ public:
 
     vkProfQueryZonePtr GetQueryZoneForName(const void* vPtr, const std::string& vName, const std::string& vSection = "", const bool& vIsRoot = false);
 
-    void BeginMarkTime(const VkCommandBuffer& vCmd, vkProfQueryZoneWeak vQueryZone);
-    void EndMarkTime(const VkCommandBuffer& vCmd, vkProfQueryZoneWeak vQueryZone);
-
     void BeginFrame(const char* vLabel);
     void EndFrame();
 
     bool beginChildZone(const VkCommandBuffer& vCmd, const void* vPtr, const std::string& vSection, const char* fmt, ...);
     bool endChildZone(const VkCommandBuffer& vCmd);
+
+    void writeTimeStamp(const vk::CommandBuffer& vCmd, const size_t& idx, vkProfQueryZoneWeak vQueryZone, vk::PipelineStageFlagBits vStages);
 
     CommandBufferInfos* beginChildZoneNoCmd(const void* vPtr, const std::string& vSection, const char* fmt, ...);
     void endChildZoneNoCmd(CommandBufferInfos* vCommandBufferInfosPtr);
@@ -332,6 +350,8 @@ public:
     CommandBufferInfos* GetCommandBufferInfosPtr(const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
 
 private:
+    void vkProfiler::m_ClearMeasures();
+    void m_AddMeasure(const uint32_t& vIdx);
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* label);
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
     bool m_EndZone(const VkCommandBuffer& vCmd, const bool& vIsRoot);
@@ -344,30 +364,45 @@ private:
 
 class GAIA_API vkScopedChildZone {
 public:
-    vkProfQueryZonePtr queryPtr = nullptr;
+    vkProfQueryZonePtr queryZonePtr = nullptr;
     VkCommandBuffer commandBuffer = {};
+    vk::PipelineStageFlagBits stages = vk::PipelineStageFlagBits::eBottomOfPipe;
 
 public:
-    vkScopedChildZone(                //
-        const VkCommandBuffer& vCmd,  //
-        const void* vPtr,             //
-        const std::string& vSection,  //
-        const char* fmt,              //
-        ...);                         //
+    vkScopedChildZone(                             //
+        const vk::PipelineStageFlagBits& vStages,  //
+        const VkCommandBuffer& vCmd,               //
+        const void* vPtr,                          //
+        const std::string& vSection,               //
+        const char* fmt,                           //
+        ...);                                      //
+    vkScopedChildZone(                             //
+        const VkCommandBuffer& vCmd,               //
+        const void* vPtr,                          //
+        const std::string& vSection,               //
+        const char* fmt,                           //
+        ...);                                      //
     ~vkScopedChildZone();
 };
 
 class GAIA_API vkScopedChildZoneNoCmd {
 public:
-    vkProfQueryZonePtr queryPtr = nullptr;
+    vkProfQueryZonePtr queryZonePtr = nullptr;
     vkProfiler::CommandBufferInfos* infosPtr = nullptr;
+    vk::PipelineStageFlagBits stages = vk::PipelineStageFlagBits::eBottomOfPipe;
 
 public:
-    vkScopedChildZoneNoCmd(           //
-        const void* vPtr,             //
-        const std::string& vSection,  //
-        const char* fmt,              //
-        ...);                         //
+    vkScopedChildZoneNoCmd(                        //
+        const vk::PipelineStageFlagBits& vStages,  //
+        const void* vPtr,                          //
+        const std::string& vSection,               //
+        const char* fmt,                           //
+        ...);                                      //
+    vkScopedChildZoneNoCmd(                        //
+        const void* vPtr,                          //
+        const std::string& vSection,               //
+        const char* fmt,                           //
+        ...);                                      //
     ~vkScopedChildZoneNoCmd();
 };
 

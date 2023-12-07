@@ -847,8 +847,8 @@ bool VulkanDevice::CreateLogicalDevice() {
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(m_LogDevice);
 
-// tracy need the (unoptimized) vk::CommandPoolCreateFlagBits::eResetCommandBuffer
-#ifdef TRACY_ENABLE
+// tracy and my in app profiler need the (unoptimized) vk::CommandPoolCreateFlagBits::eResetCommandBuffer
+#ifdef USE_PROFILERS
     uint32_t familyQueueIndex = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eGraphics].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
     m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
