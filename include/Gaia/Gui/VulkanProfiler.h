@@ -44,10 +44,10 @@ limitations under the License.
     GaiApi::vkProfiler::Instance()->beginChildZone(commandBuffer, ptr, section, fmt, ##__VA_ARGS__);
 #define vkProfEndZone(commandBuffer) GaiApi::vkProfiler::Instance()->endChildZone(commandBuffer)
 
-#define vkProfScopedStages(stages, commandBuffer, section, fmt, ...)                                                                        \
+#define vkProfScopedStages(stages, commandBuffer, section, fmt, ...)                                                         \
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(stages, commandBuffer, nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
-#define vkProfScopedStagesPtr(stages, commandBuffer, ptr, section, fmt, ...)                                                            \
+#define vkProfScopedStagesPtr(stages, commandBuffer, ptr, section, fmt, ...)                                             \
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(stages, commandBuffer, ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
 
@@ -58,24 +58,22 @@ limitations under the License.
     auto __vkProf__ScopedChildZone = GaiApi::vkScopedChildZone(commandBuffer, ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZone
 
-#define vkProfScopedStagesNoCmd(stages, section, fmt, ...)                                                               \
+#define vkProfScopedStagesNoCmd(stages, section, fmt, ...)                                                              \
     auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(stages, nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZoneNoCmd
-#define vkProfScopedStagesPtrNoCmd(stages, ptr, section, fmt, ...)                                                   \
+#define vkProfScopedStagesPtrNoCmd(stages, ptr, section, fmt, ...)                                                  \
     auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(stages, ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZoneNoCmd
 
-#define vkProfScopedNoCmd(section, fmt, ...)                                                              \
+#define vkProfScopedNoCmd(section, fmt, ...)                                                                    \
     auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(nullptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZoneNoCmd
-#define vkProfScopedPtrNoCmd(ptr, section, fmt, ...)                                                  \
+#define vkProfScopedPtrNoCmd(ptr, section, fmt, ...)                                                        \
     auto __vkProf__ScopedChildZoneNoCmd = GaiApi::vkScopedChildZoneNoCmd(ptr, section, fmt, ##__VA_ARGS__); \
     (void)__vkProf__ScopedChildZoneNoCmd
 
-#define vkProfBeginZoneNoCmd(section, fmt, ...) \
-    GaiApi::vkProfiler::Instance()->beginChildZoneNoCmd(nullptr, section, fmt, ##__VA_ARGS__)
-#define vkProfBeginZonePtrNoCmd(ptr, section, fmt, ...) \
-    GaiApi::vkProfiler::Instance()->beginChildZoneNoCmd(ptr, section, fmt, ##__VA_ARGS__);
+#define vkProfBeginZoneNoCmd(section, fmt, ...) GaiApi::vkProfiler::Instance()->beginChildZoneNoCmd(nullptr, section, fmt, ##__VA_ARGS__)
+#define vkProfBeginZonePtrNoCmd(ptr, section, fmt, ...) GaiApi::vkProfiler::Instance()->beginChildZoneNoCmd(ptr, section, fmt, ##__VA_ARGS__);
 #define vkProfEndZoneNoCmd GaiApi::vkProfiler::Instance()->endChildZoneNoCmd()
 
 ///////////////////////////////////
@@ -252,7 +250,7 @@ public:
         vk::Device device;
         VulkanCoreWeak core;
         vk::QueryPool queryPool;
-        vkProfiler* parentProfilerPtr = nullptr;        
+        vkProfiler* parentProfilerPtr = nullptr;
 
     public:
         std::array<vk::CommandBuffer, 2U> cmds;
@@ -290,12 +288,11 @@ private:
     std::unordered_map<uint32_t, vkProfQueryZonePtr> m_QueryIDToZone;    // Get the zone for a query id because a query have to id's : start and end
     std::unordered_map<uint32_t, vkProfQueryZonePtr> m_DepthToLastZone;  // last zone registered at this depth
 
-    std::array<uint32_t, sMaxQueryCount> m_TimeStampIds;
     std::array<vkTimeStamp, sMaxQueryCount> m_TimeStampMeasures;
     vk::QueryPool m_QueryPool = {};
     uint32_t m_QueryHead = 0U;
-    uint32_t m_QueryCount = 0U; // reseted each frames
-    uint32_t m_MaxQueryCount = 0U; // tuned at creation
+    uint32_t m_QueryCount = 0U;     // reseted each frames
+    uint32_t m_MaxQueryCount = 0U;  // tuned at creation
     bool m_IsActive = false;
     bool m_IsPaused = false;
 
@@ -320,10 +317,10 @@ public:
     void DrawFlamGraph(const char* vLabel, bool* pOpen, ImGuiWindowFlags vFlags = 0);
     void DrawFlamGraphNoWin();
     void DrawFlamGraphChilds(ImGuiWindowFlags vFlags = 0);
-    
+
     void SetImGuiBeginFunctor(const ImGuiBeginFunctor& vImGuiBeginFunctor);
     void SetImGuiEndFunctor(const ImGuiEndFunctor& vImGuiEndFunctor);
-    
+
     void Collect();
 
     bool& isActiveRef();
@@ -351,7 +348,7 @@ public:
 
 private:
     void vkProfiler::m_ClearMeasures();
-    void m_AddMeasure(const uint32_t& vIdx);
+    void m_AddMeasure();
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* label);
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
     bool m_EndZone(const VkCommandBuffer& vCmd, const bool& vIsRoot);

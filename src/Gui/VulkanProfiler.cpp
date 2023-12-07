@@ -41,7 +41,7 @@ static bool PlayPauseButton(bool& vPlayPause) {
     if (vPlayPause) {
         play_pause_label = "Play";
     }
-    if (ImGui ::Button(play_pause_label)) {
+    if (ImGui::ContrastedButton(play_pause_label)) {
         vPlayPause = !vPlayPause;
         res = true;
     }
@@ -173,8 +173,15 @@ void vkProfQueryZone::SetEndTimeStamp(const uint64_t& vValue) {
 void vkProfQueryZone::ComputeElapsedTime() {
     // we take the last frame
     if (m_StartFrameId == m_EndFrameId) {
-        m_AverageStartValue.AddValue(m_StartTimeStamp); 
-        m_AverageEndValue.AddValue(m_EndTimeStamp);   
+        auto inf = m_StartTimeStamp;
+        auto sup = m_EndTimeStamp;
+        if (inf > sup) {
+            auto tmp = sup;
+            sup = inf;
+            inf = tmp;
+        }
+        m_AverageStartValue.AddValue(inf);
+        m_AverageEndValue.AddValue(sup);
         m_StartTime = (double)(m_AverageStartValue.GetAverage() * 1e-6);  // ns to ms
         m_EndTime = (double)(m_AverageEndValue.GetAverage() * 1e-6);      // ns to ms
         m_ElapsedTime = m_EndTime - m_StartTime;
@@ -245,10 +252,12 @@ void vkProfQueryZone::DrawDetails() {
         } else {
             ImGui::Text("%s", "Infinite");
         }
+#ifdef vkProf_DEV_MODE
         ImGui::TableNextColumn();  // start time
         ImGui::Text("%.5f ms", m_StartTime);
         ImGui::TableNextColumn();  // end time
         ImGui::Text("%.5f", m_EndTime);
+#endif
 
         if (res) {
             m_Expanded = true;
@@ -338,7 +347,7 @@ void vkProfQueryZone::DrawBreadCrumbTrail(vkProfQueryZoneWeak& vOutSelectedQuery
                     ImGui::SameLine();
                 }
                 ImGui::PushID(ptr.get());
-                if (ImGui ::Button(ptr->imGuiLabel.c_str())) {
+                if (ImGui::ContrastedButton(ptr->imGuiLabel.c_str())) {
                     vOutSelectedQuery = m_BreadCrumbTrail[idx];
                 }
                 ImGui::PopID();
@@ -612,7 +621,8 @@ bool vkProfQueryZone::m_DrawCircularFlameGraph(
 //////////////// COMMAND BUFFERS INFOS /////////////////////
 ////////////////////////////////////////////////////////////
 
-void vkProfiler::CommandBufferInfos::Init(VulkanCoreWeak vCore, vk::Device vDevice, vk::CommandPool vCmdPool, vk::QueryPool vQueryPool, vkProfiler* vParentProfilerPtr) {
+void vkProfiler::CommandBufferInfos::Init(
+    VulkanCoreWeak vCore, vk::Device vDevice, vk::CommandPool vCmdPool, vk::QueryPool vQueryPool, vkProfiler* vParentProfilerPtr) {
     core = vCore;
     device = vDevice;
     auto _cmds = device.allocateCommandBuffers(vk::CommandBufferAllocateInfo(vCmdPool, vk::CommandBufferLevel::ePrimary, 2));
@@ -650,7 +660,7 @@ void vkProfiler::CommandBufferInfos::writeTimeStamp(const size_t& idx, vkProfQue
     const auto& id = queryPtr->ids[idx];
     assert((id + idx) % 2 == 0);
     cmds[idx].writeTimestamp(vStages, queryPool, id);
-    parentProfilerPtr->m_AddMeasure(id);
+    parentProfilerPtr->m_AddMeasure();
 }
 
 ////////////////////////////////////////////////////////////
@@ -677,7 +687,7 @@ bool vkProfiler::Init(VulkanCoreWeak vVulkanCore) {
     assert(corePtr != nullptr);
 
     vk::Result creation_result = vk::Result::eNotReady;
-    while ((creation_result = corePtr->getDevice().createQueryPool(&poolInfos, nullptr, &m_QueryPool)) != vk::Result::eSuccess){
+    while ((creation_result = corePtr->getDevice().createQueryPool(&poolInfos, nullptr, &m_QueryPool)) != vk::Result::eSuccess) {
         m_MaxQueryCount /= 2U;
         poolInfos.queryCount = m_MaxQueryCount;
     }
@@ -753,8 +763,8 @@ void vkProfiler::Collect() {
                             DEBUG_BREAK;
                         }
                     } else {
-						DEBUG_BREAK;
-					}
+                        DEBUG_BREAK;
+                    }
                 }
             }
         }
@@ -786,7 +796,7 @@ const bool vkProfiler::canRecordTimeStamp(const bool& isRoot) {
         if (!isRoot) {
             return (vkProfQueryZone::sCurrentDepth > 0);  // child is authorized only if there a root frame
         } else {
-            return true; // root frame is already authorized
+            return true;  // root frame is already authorized
         }
     }
     return false;
@@ -855,7 +865,7 @@ void vkProfiler::m_DrawMenuBar() {
 
         PlayPauseButton(isPausedRef());
 
-        if (ImGui ::Button("Details")) {
+        if (ImGui::ContrastedButton("Details")) {
             m_ShowDetails = !m_ShowDetails;
         }
 
@@ -1057,12 +1067,10 @@ vkProfiler::CommandBufferInfos* vkProfiler::GetCommandBufferInfosPtr(const void*
 void vkProfiler::m_ClearMeasures() {
     m_QueryCount = 0U;
     m_TimeStampMeasures = {};
-    m_TimeStampIds = {};
 }
 
-void vkProfiler::m_AddMeasure(const uint32_t& vIdx) {
+void vkProfiler::m_AddMeasure() {
     m_TimeStampMeasures[m_QueryCount] = 0U;
-    m_TimeStampIds[m_QueryCount] = vIdx;
     ++m_QueryCount;
 }
 
@@ -1117,7 +1125,7 @@ void vkProfiler::writeTimeStamp(const vk::CommandBuffer& vCmd, const size_t& idx
     const auto& id = queryPtr->ids[idx];
     assert((id + idx) % 2 == 0);
     vCmd.writeTimestamp(vStages, m_QueryPool, id);
-    m_AddMeasure(id);
+    m_AddMeasure();
 }
 
 void vkProfiler::DrawDetails(ImGuiWindowFlags vFlags) {
@@ -1137,9 +1145,18 @@ void vkProfiler::DrawDetailsNoWin() {
     }
 
     if (m_RootZone != nullptr) {
-        int32_t count_tables = 5;
+#ifdef vkProf_DEV_MODE
 #ifdef vkProf_SHOW_COUNT
-        ++count_tables;
+        int32_t count_tables = 6;
+#else
+        int32_t count_tables = 5;
+#endif
+#else
+#ifdef vkProf_SHOW_COUNT
+        int32_t count_tables = 4;
+#else
+        int32_t count_tables = 3;
+#endif
 #endif
         static ImGuiTableFlags flags =        //
             ImGuiTableFlags_SizingFixedFit |  //
@@ -1156,15 +1173,16 @@ void vkProfiler::DrawDetailsNoWin() {
 #endif
             ImGui::TableSetupColumn("Elapsed time");
             ImGui::TableSetupColumn("Max fps");
+#ifdef vkProf_DEV_MODE
             ImGui::TableSetupColumn("Start time");
             ImGui::TableSetupColumn("End time");
+#endif
             ImGui::TableHeadersRow();
             m_RootZone->DrawDetails();
             ImGui::EndTable();
         }
     }
 }
-
 
 void vkProfiler::m_SetQueryZoneForDepth(vkProfQueryZonePtr vvkProfQueryZone, uint32_t vDepth) {
     m_DepthToLastZone[vDepth] = vvkProfQueryZone;
@@ -1217,12 +1235,12 @@ vkScopedChildZone::vkScopedChildZone(          //
     }
 }
 
-vkScopedChildZone::vkScopedChildZone(          //
-    const VkCommandBuffer& vCmd,               //
-    const void* vPtr,                          //
-    const std::string& vSection,               //
-    const char* fmt,                           //
-    ...) {                                     //
+vkScopedChildZone::vkScopedChildZone(  //
+    const VkCommandBuffer& vCmd,       //
+    const void* vPtr,                  //
+    const std::string& vSection,       //
+    const char* fmt,                   //
+    ...) {                             //
     if (vkProfiler::Instance()->canRecordTimeStamp(false)) {
         va_list args;
         va_start(args, fmt);
