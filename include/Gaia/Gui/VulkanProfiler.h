@@ -171,7 +171,7 @@ public:
 
 public:
     uint32_t depth = 0U;  // the depth of the QueryZone
-    // inc the query each calls (for identify where a id is called 
+    // inc the query each calls (for identify where a id is called
     // many time per frame but not reseted before and causse layer issue)
     uint32_t calledCountPerFrame = 0U;
     std::vector<vkProfQueryZonePtr> zonesOrdered;
@@ -292,7 +292,7 @@ private:
     vkProfilerWeak m_This;
     VulkanCoreWeak m_VulkanCore;
     vkProfQueryZonePtr m_RootZone = nullptr;
-    vkProfQueryZoneWeak m_SelectedQuery;                                 // query to show the flamegraph in this context
+    vkProfQueryZoneWeak m_SelectedQuery;                                  // query to show the flamegraph in this context
     std::array<vkProfQueryZonePtr, sMaxQueryCount> m_QueryIDToZone = {};  // Get the zone for a query id because a query have to id's : start and end
     std::array<vkProfQueryZonePtr, sMaxDepth> m_DepthToLastZone = {};     // last zone registered at this depth
     std::array<vkTimeStamp, sMaxQueryCount> m_TimeStampMeasures = {};
@@ -354,7 +354,7 @@ public:
     CommandBufferInfos* GetCommandBufferInfosPtr(const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);
 
 private:
-    void vkProfiler::m_ClearMeasures();
+    void m_ClearMeasures();
     void m_AddMeasure();
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* label);
     bool m_BeginZone(const VkCommandBuffer& vCmd, const bool& vIsRoot, const void* vPtr, const std::string& vSection, const char* fmt, va_list vArgs);

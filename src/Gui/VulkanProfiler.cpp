@@ -146,7 +146,8 @@ void vkProfQueryZone::Clear() {
 const uint32_t& vkProfQueryZone::GetIdForWrite(const size_t& vIdx) {
     if (vIdx == 0) {
         if (calledCountPerFrame != 0U) {
-            LogVarError(u8R"(vkProfiler error : Only one query ID can be used per frame.
+            LogVarError(
+                u8R"(vkProfiler error : Only one query ID can be used per frame.
 You need to be sure than the section and label names are unique per frame
 when you are calling vkProf macros)");
             assert(0);
