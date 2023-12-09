@@ -39,53 +39,50 @@ todo : to Refactor and Convert for use of Vulkan.hpp
 
 typedef std::string ShaderEntryPoint;
 
-class GAIA_API VulkanShader
-{
+class GAIA_API VulkanShader {
 public:
-	static VulkanShaderPtr Create();
-
-public:
-	typedef std::function<void(std::string, std::string, std::string)> ShaderMessagingFunction;
-	typedef std::function<void(glslang::TIntermediate*)> TraverserFunction;
-
-public: // errors
-	std::unordered_map<EShLanguage, std::vector<std::string>> m_Error;
-	std::unordered_map<EShLanguage, std::vector<std::string>> m_Warnings;
+    static VulkanShaderPtr Create();
 
 public:
-	const std::vector<unsigned int> CompileGLSLFile(
-		const std::string& filename,
-		const ShaderEntryPoint& vEntryPoint = "main",
-		ShaderMessagingFunction vMessagingFunction = nullptr,
-		std::string* vShaderCode = nullptr,
-		std::unordered_map<std::string, bool>* vUsedUniforms = nullptr);
-	const std::vector<unsigned int> CompileGLSLString(
-		const std::string& vCode,
-		const std::string& vShaderSuffix,
-		const std::string& vOriginalFileName,
-		const ShaderEntryPoint& vEntryPoint = "main",
-		ShaderMessagingFunction vMessagingFunction = nullptr,
-		std::string* vShaderCode = nullptr,
-		std::unordered_map<std::string, bool>* vUsedUniforms = nullptr);
-	void ParseGLSLString(
-		const std::string& vCode,
-		const std::string& vShaderSuffix,
-		const std::string& vOriginalFileName,
-		const ShaderEntryPoint& vEntryPoint,
-		ShaderMessagingFunction vMessagingFunction,
-		TraverserFunction vTraverser);
-	vk::ShaderModule CreateShaderModule(vk::Device vLogicalDevice, std::vector<unsigned int> vSPIRVCode);
-	void DestroyShaderModule(vk::Device vLogicalDevice, vk::ShaderModule vShaderModule);
-	std::unordered_map<std::string, bool> CollectUniformInfosFromIR(const glslang::TIntermediate& intermediate);
+    typedef std::function<void(std::string, std::string, std::string)> ShaderMessagingFunction;
+    typedef std::function<void(glslang::TIntermediate*)> TraverserFunction;
+
+public:  // errors
+    std::unordered_map<EShLanguage, std::vector<std::string>> m_Error;
+    std::unordered_map<EShLanguage, std::vector<std::string>> m_Warnings;
 
 public:
-	bool Init();
-	void Unit();
+    const std::vector<unsigned int> CompileGLSLFile(const std::string& filename,
+        const ShaderEntryPoint& vEntryPoint = "main",
+        ShaderMessagingFunction vMessagingFunction = nullptr,
+        std::string* vShaderCode = nullptr,
+        std::unordered_map<std::string, bool>* vUsedUniforms = nullptr);
+    const std::vector<unsigned int> CompileGLSLString(const std::string& vCode,
+        const std::string& vShaderSuffix,
+        const std::string& vOriginalFileName,
+        const ShaderEntryPoint& vEntryPoint = "main",
+        ShaderMessagingFunction vMessagingFunction = nullptr,
+        std::string* vShaderCode = nullptr,
+        std::unordered_map<std::string, bool>* vUsedUniforms = nullptr);
+    void ParseGLSLString(const std::string& vCode,
+        const std::string& vShaderSuffix,
+        const std::string& vOriginalFileName,
+        const ShaderEntryPoint& vEntryPoint,
+        ShaderMessagingFunction vMessagingFunction,
+        TraverserFunction vTraverser);
+    vk::ShaderModule CreateShaderModule(vk::Device vLogicalDevice, std::vector<unsigned int> vSPIRVCode);
+    void DestroyShaderModule(vk::Device vLogicalDevice, vk::ShaderModule vShaderModule);
+    std::unordered_map<std::string, bool> CollectUniformInfosFromIR(const glslang::TIntermediate& intermediate);
 
 public:
-	VulkanShader(); // Prevent construction
-	VulkanShader(const VulkanShader&) {}; // Prevent construction by copying
-	VulkanShader& operator =(const VulkanShader&) { return *this; }; // Prevent assignment
-	~VulkanShader(); // Prevent unwanted destruction
+    bool Init();
+    void Unit();
 
+public:
+    VulkanShader();                       // Prevent construction
+    VulkanShader(const VulkanShader&){};  // Prevent construction by copying
+    VulkanShader& operator=(const VulkanShader&) {
+        return *this;
+    };                // Prevent assignment
+    ~VulkanShader();  // Prevent unwanted destruction
 };

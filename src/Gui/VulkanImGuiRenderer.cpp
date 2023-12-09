@@ -510,7 +510,8 @@ void ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer comm
         size_t vertex_size = draw_data->TotalVtxCount * sizeof(ImDrawVert);
         size_t index_size = draw_data->TotalIdxCount * sizeof(ImDrawIdx);
         if (!rb->vertexBufferPtr || (rb->vertexBufferPtr && !rb->vertexBufferPtr->buffer) || rb->VertexBufferSize < vertex_size) {
-            rb->vertexBufferPtr = GaiApi::VulkanRessource::createEmptyVertexBufferObject(v->vulkanCore, vertex_size, false, false, false, "ImGuiRenderer");
+            rb->vertexBufferPtr =
+                GaiApi::VulkanRessource::createEmptyVertexBufferObject(v->vulkanCore, vertex_size, false, false, false, "ImGuiRenderer");
             rb->VertexBufferSize = vertex_size;
         }
         if (!rb->indexBufferPtr || (rb->indexBufferPtr && !rb->indexBufferPtr->buffer) || rb->IndexBufferSize < index_size) {

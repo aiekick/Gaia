@@ -42,16 +42,16 @@
 #include <Gaia/gaia.h>
 
 namespace glslang {
-	// These are the default resources for TBuiltInResources, used for both
-	//  - parsing this string for the case where the user didn't supply one,
-	//  - dumping out a template for user construction of a config file.
-	extern const TBuiltInResource DefaultTBuiltInResource;
+// These are the default resources for TBuiltInResources, used for both
+//  - parsing this string for the case where the user didn't supply one,
+//  - dumping out a template for user construction of a config file.
+extern const TBuiltInResource DefaultTBuiltInResource;
 
-	// Returns the DefaultTBuiltInResource as a human-readable string.
-	std::string GetDefaultTBuiltInResourceString();
+// Returns the DefaultTBuiltInResource as a human-readable string.
+std::string GetDefaultTBuiltInResourceString();
 
-	// Decodes the resource limits from |config| to |resources|.
-	void DecodeResourceLimits(TBuiltInResource* resources, char* config);
+// Decodes the resource limits from |config| to |resources|.
+void DecodeResourceLimits(TBuiltInResource* resources, char* config);
 }  // end namespace glslang
 
 #endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_

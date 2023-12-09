@@ -29,18 +29,17 @@ limitations under the License.
 // pour le moment on cherche pas � savoir si l'uniforms est vraiment utilis�
 // genre si au bout du compte ca valeur ne sert a rien. on verra ca plus tard
 
-class TIRUniformsLocator : public glslang::TIntermTraverser
-{
+class TIRUniformsLocator : public glslang::TIntermTraverser {
 public:
-	std::unordered_map<std::string, bool> usedUniforms;
+    std::unordered_map<std::string, bool> usedUniforms;
 
 public:
-	TIRUniformsLocator();
+    TIRUniformsLocator();
 
-	virtual bool visitBinary(glslang::TVisit, glslang::TIntermBinary* vNode);
-	virtual void visitSymbol(glslang::TIntermSymbol* vNode);
+    virtual bool visitBinary(glslang::TVisit, glslang::TIntermBinary* vNode);
+    virtual void visitSymbol(glslang::TIntermSymbol* vNode);
 
 protected:
-	TIRUniformsLocator(TIRUniformsLocator&);
-	TIRUniformsLocator& operator=(TIRUniformsLocator&);
+    TIRUniformsLocator(TIRUniformsLocator&);
+    TIRUniformsLocator& operator=(TIRUniformsLocator&);
 };

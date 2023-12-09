@@ -31,25 +31,24 @@ class VulkanComputeImageTarget;
 }  // namespace GaiApi
 
 class VulkanImGuiRenderer;
-class GAIA_API ImGuiTexture
-{
+class GAIA_API ImGuiTexture {
 public:
-	static ImGuiTexturePtr Create();
+    static ImGuiTexturePtr Create();
 
 public:
-	ImGuiTextureWeak m_This;
-	vk::DescriptorSet descriptor = {};
-	float ratio = 0.0f;
-	bool canDisplayPreview = false;
-	bool firstLoad = true;
-	bool destroyed = false;
+    ImGuiTextureWeak m_This;
+    vk::DescriptorSet descriptor = {};
+    float ratio = 0.0f;
+    bool canDisplayPreview = false;
+    bool firstLoad = true;
+    bool destroyed = false;
 
 public:
-	ImGuiTexture();
-	~ImGuiTexture();
-	void SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, vk::DescriptorImageInfo* vDescriptorImageInfo, float vRatio = 1.0f);
-	void SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, GaiApi::VulkanFrameBufferAttachment* vVulkanFrameBufferAttachment);
+    ImGuiTexture();
+    ~ImGuiTexture();
+    void SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, vk::DescriptorImageInfo* vDescriptorImageInfo, float vRatio = 1.0f);
+    void SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, GaiApi::VulkanFrameBufferAttachment* vVulkanFrameBufferAttachment);
     void SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, GaiApi::VulkanComputeImageTarget* vVulkanComputeImageTarget);
-	void ClearDescriptor();
-	void DestroyDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer);
+    void ClearDescriptor();
+    void DestroyDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer);
 };

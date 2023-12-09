@@ -26,101 +26,102 @@ limitations under the License.
 #define VULKAN_DEBUG_FEATURES 1
 #define VULKAN_DEBUG_SYNCHRONIZATION_FEATURES 1
 
-namespace GaiApi
-{
-	struct GAIA_API VulkanQueue
-	{
-		uint32_t familyQueueIndex = 0U;
-		vk::Queue vkQueue;
-		vk::CommandPool cmdPools;
-	};
+namespace GaiApi {
+struct GAIA_API VulkanQueue {
+    uint32_t familyQueueIndex = 0U;
+    vk::Queue vkQueue;
+    vk::CommandPool cmdPools;
+};
 
-	class VulkanWindow;
-	class GAIA_API VulkanDevice
-	{
-	public:
-		static VulkanDevicePtr Create(
-			VulkanWindowWeak vVulkanWindow,
-			const std::string& vAppName,
-			const int& vAppVersion,
-			const std::string& vEngineName,
-			const int& vEngineVersion,
-			const bool& vUseRTX);
-	public:
-		std::unordered_map<vk::QueueFlagBits, VulkanQueue> m_Queues;
+class VulkanWindow;
+class GAIA_API VulkanDevice {
+public:
+    static VulkanDevicePtr Create(VulkanWindowWeak vVulkanWindow,
+        const std::string& vAppName,
+        const int& vAppVersion,
+        const std::string& vEngineName,
+        const int& vEngineVersion,
+        const bool& vUseRTX);
 
-	public:
-		vk::Instance m_Instance;
+public:
+    std::unordered_map<vk::QueueFlagBits, VulkanQueue> m_Queues;
 
-		vk::DebugReportCallbackEXT m_DebugReport;
-		vk::PhysicalDeviceRobustness2FeaturesEXT m_Robustness2Feature;
-		vk::PhysicalDeviceSynchronization2FeaturesKHR m_Synchronization2Feature;
-        vk::PhysicalDeviceHostQueryResetFeatures m_HostQueryResetFeature;
-		vk::PhysicalDeviceAccelerationStructureFeaturesKHR m_AccelerationStructureFeature;
-		vk::PhysicalDeviceRayTracingPipelineFeaturesKHR m_RayTracingPipelineFeature;
-		vk::PhysicalDeviceRayTracingPipelinePropertiesKHR m_RayTracingDeviceProperties;
-		vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT m_DynamicStates;
-		vk::PhysicalDeviceBufferDeviceAddressFeatures m_BufferDeviceAddress;
-		vk::PhysicalDeviceFeatures m_PhysDeviceFeatures;
-		vk::PhysicalDeviceFeatures2 m_PhysDeviceFeatures2;
-		vk::PhysicalDevice m_PhysDevice;
-		vk::Device m_LogDevice;
-		uint32_t m_ApiVersion = VK_API_VERSION_1_0;
+public:
+    vk::Instance m_Instance;
 
-	private:
-		bool m_Use_RTX = false;
+    vk::DebugReportCallbackEXT m_DebugReport;
+    vk::PhysicalDeviceRobustness2FeaturesEXT m_Robustness2Feature;
+    vk::PhysicalDeviceSynchronization2FeaturesKHR m_Synchronization2Feature;
+    vk::PhysicalDeviceHostQueryResetFeatures m_HostQueryResetFeature;
+    vk::PhysicalDeviceAccelerationStructureFeaturesKHR m_AccelerationStructureFeature;
+    vk::PhysicalDeviceRayTracingPipelineFeaturesKHR m_RayTracingPipelineFeature;
+    vk::PhysicalDeviceRayTracingPipelinePropertiesKHR m_RayTracingDeviceProperties;
+    vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT m_DynamicStates;
+    vk::PhysicalDeviceBufferDeviceAddressFeatures m_BufferDeviceAddress;
+    vk::PhysicalDeviceFeatures m_PhysDeviceFeatures;
+    vk::PhysicalDeviceFeatures2 m_PhysDeviceFeatures2;
+    vk::PhysicalDevice m_PhysDevice;
+    vk::Device m_LogDevice;
+    uint32_t m_ApiVersion = VK_API_VERSION_1_0;
 
-	private: // debug extention must use dynamic loader m_Dldy ( not part of vulkan core), so we let it here
-		vk::DebugUtilsLabelEXT markerInfo;		// marker info for vkCmdBeginDebugUtilsLabelEXT
-		bool m_Debug_Utils_Supported = false;
+private:
+    bool m_Use_RTX = false;
 
-	public:
-        static void findBestExtensions(const char* vLabel,
-            const std::vector<vk::ExtensionProperties>& installed,
-            const std::vector<const char*>& wanted,
-            ct::SearchableVector<std::string>& out);
-		static void findBestLayers(const std::vector<vk::LayerProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out);
-		static uint32_t getQueueIndex(vk::PhysicalDevice& physicalDevice, vk::QueueFlags flags, bool standalone);
-        static vk::PhysicalDeviceFeatures getSupportedFeatures(vk::PhysicalDevice& physicalDevice);
-        static vk::PhysicalDeviceFeatures2 getSupportedFeatures2(vk::PhysicalDevice& physicalDevice);
-        static vk::PhysicalDeviceFeatures2KHR getSupportedFeatures2KHR(vk::PhysicalDevice& physicalDevice);
-	public:
-		VulkanDevice();
-		~VulkanDevice();
+private:                                // debug extention must use dynamic loader m_Dldy ( not part of vulkan core), so we let it here
+    vk::DebugUtilsLabelEXT markerInfo;  // marker info for vkCmdBeginDebugUtilsLabelEXT
+    bool m_Debug_Utils_Supported = false;
 
-		bool Init(
-			VulkanWindowWeak vVulkanWindow, 
-			const std::string& vAppName, 
-			const int& vAppVersion, 
-			const std::string& vEngineName,
-			const int& vEngineVersion,
-			const bool& vUseRTX);
-		void Unit();
+public:
+    static void findBestExtensions(const char* vLabel,
+        const std::vector<vk::ExtensionProperties>& installed,
+        const std::vector<const char*>& wanted,
+        ct::SearchableVector<std::string>& out);
+    static void findBestLayers(
+        const std::vector<vk::LayerProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out);
+    static uint32_t getQueueIndex(vk::PhysicalDevice& physicalDevice, vk::QueueFlags flags, bool standalone);
+    static vk::PhysicalDeviceFeatures getSupportedFeatures(vk::PhysicalDevice& physicalDevice);
+    static vk::PhysicalDeviceFeatures2 getSupportedFeatures2(vk::PhysicalDevice& physicalDevice);
+    static vk::PhysicalDeviceFeatures2KHR getSupportedFeatures2KHR(vk::PhysicalDevice& physicalDevice);
 
-		void WaitIdle();
+public:
+    VulkanDevice();
+    ~VulkanDevice();
 
-		VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
+    bool Init(VulkanWindowWeak vVulkanWindow,
+        const std::string& vAppName,
+        const int& vAppVersion,
+        const std::string& vEngineName,
+        const int& vEngineVersion,
+        const bool& vUseRTX);
+    void Unit();
 
-		// debug extention must use dynamic loader m_Dldy ( not part of vulkan core), so we let it here
-		void BeginDebugLabel(vk::CommandBuffer *vCmd, const char* vLabel, ct::fvec4 vColor = 0.0f);
-		void EndDebugLabel(vk::CommandBuffer *vCmd);
+    void WaitIdle();
 
-		void SetUseRTX(const bool& vFlag) { m_Use_RTX = vFlag; }
-		bool GetRTXUse() { return m_Use_RTX; }
+    VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
 
-	private:
-		bool CreateVulkanInstance(
-			VulkanWindowWeak vVulkanWindow,
-			const std::string& vAppName,
-			const int& vAppVersion,
-			const std::string& vEngineName,
-			const int& vEngineVersion);
-		void DestroyVulkanInstance();
+    // debug extention must use dynamic loader m_Dldy ( not part of vulkan core), so we let it here
+    void BeginDebugLabel(vk::CommandBuffer* vCmd, const char* vLabel, ct::fvec4 vColor = 0.0f);
+    void EndDebugLabel(vk::CommandBuffer* vCmd);
 
-		bool CreatePhysicalDevice();
-		void DestroyPhysicalDevice();
+    void SetUseRTX(const bool& vFlag) {
+        m_Use_RTX = vFlag;
+    }
+    bool GetRTXUse() {
+        return m_Use_RTX;
+    }
 
-		bool CreateLogicalDevice();
-		void DestroyLogicalDevice();
-	};
-}
+private:
+    bool CreateVulkanInstance(VulkanWindowWeak vVulkanWindow,
+        const std::string& vAppName,
+        const int& vAppVersion,
+        const std::string& vEngineName,
+        const int& vEngineVersion);
+    void DestroyVulkanInstance();
+
+    bool CreatePhysicalDevice();
+    void DestroyPhysicalDevice();
+
+    bool CreateLogicalDevice();
+    void DestroyLogicalDevice();
+};
+}  // namespace GaiApi

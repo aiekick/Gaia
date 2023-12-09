@@ -36,7 +36,10 @@ private:
 public:
     GpuOnlyStorageBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
     ~GpuOnlyStorageBuffer();
-    bool CreateBuffer(const uint32_t& vDatasSizeInBytes, const uint32_t& vDatasCount, const VmaMemoryUsage& vVmaMemoryUsage = VMA_MEMORY_USAGE_GPU_ONLY, const vk::BufferUsageFlags& vBufferUsageFlags = (vk::BufferUsageFlags)0);
+    bool CreateBuffer(const uint32_t& vDatasSizeInBytes,
+        const uint32_t& vDatasCount,
+        const VmaMemoryUsage& vVmaMemoryUsage = VMA_MEMORY_USAGE_GPU_ONLY,
+        const vk::BufferUsageFlags& vBufferUsageFlags = (vk::BufferUsageFlags)0);
 
     VulkanBufferObjectPtr GetBufferObjectPtr();
     vk::DescriptorBufferInfo* GetBufferInfo();

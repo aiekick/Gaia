@@ -147,7 +147,9 @@ public:  // get / set
     // from device
     vk::SampleCountFlagBits GetMaxUsableSampleCount();
 
-    const SupportedFeatures& GetSupportedFeatures() const { return m_SupportedFeatures; }
+    const SupportedFeatures& GetSupportedFeatures() const {
+        return m_SupportedFeatures;
+    }
 
 public:
     void setupMemoryAllocator();
@@ -189,9 +191,11 @@ protected:
     void destroyProfiler();
 
 public:
-    VulkanCore() = default;                                      // Prevent construction
-    VulkanCore(const VulkanCore&) = default;                     // Prevent construction by copying
-    VulkanCore& operator=(const VulkanCore&) { return *this; };  // Prevent assignment
-    ~VulkanCore() = default;                                     // Prevent unwanted destruction
+    VulkanCore() = default;                   // Prevent construction
+    VulkanCore(const VulkanCore&) = default;  // Prevent construction by copying
+    VulkanCore& operator=(const VulkanCore&) {
+        return *this;
+    };                        // Prevent assignment
+    ~VulkanCore() = default;  // Prevent unwanted destruction
 };
 }  // namespace GaiApi

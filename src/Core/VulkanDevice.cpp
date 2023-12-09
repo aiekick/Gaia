@@ -139,7 +139,14 @@ static inline const char* GetStringFromObjetType(VkDebugReportObjectTypeEXT vObj
 }
 
 // HELPERS
-VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData) {
+VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t object,
+    size_t location,
+    int32_t messageCode,
+    const char* pLayerPrefix,
+    const char* pMessage,
+    void* pUserData) {
     UNUSED(flags);
     UNUSED(object);
     UNUSED(location);
@@ -156,7 +163,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebug
 //// STATIC //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VulkanDevicePtr VulkanDevice::Create(VulkanWindowWeak vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion, const bool& vUseRTX) {
+VulkanDevicePtr VulkanDevice::Create(VulkanWindowWeak vVulkanWindow,
+    const std::string& vAppName,
+    const int& vAppVersion,
+    const std::string& vEngineName,
+    const int& vEngineVersion,
+    const bool& vUseRTX) {
     auto res = std::make_shared<VulkanDevice>();
     if (!res->Init(vVulkanWindow, vAppName, vAppVersion, vEngineName, vEngineVersion, vUseRTX)) {
         res.reset();
@@ -164,7 +176,10 @@ VulkanDevicePtr VulkanDevice::Create(VulkanWindowWeak vVulkanWindow, const std::
     return res;
 }
 
-void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::ExtensionProperties>& installed, const std::vector<const char*>& wanted, ct::SearchableVector<std::string>& out) {
+void VulkanDevice::findBestExtensions(const char* vLabel,
+    const std::vector<vk::ExtensionProperties>& installed,
+    const std::vector<const char*>& wanted,
+    ct::SearchableVector<std::string>& out) {
     ZoneScoped;
 
     assert(vLabel);
@@ -186,7 +201,8 @@ void VulkanDevice::findBestExtensions(const char* vLabel, const std::vector<vk::
     }
 }
 
-void VulkanDevice::findBestLayers(const std::vector<vk::LayerProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out) {
+void VulkanDevice::findBestLayers(
+    const std::vector<vk::LayerProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out) {
     ZoneScoped;
 
     for (const char* const& w : wanted) {
@@ -317,7 +333,12 @@ VulkanDevice::~VulkanDevice() = default;
 //// INIT / UNIT /////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool VulkanDevice::Init(VulkanWindowWeak vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion, const bool& vUseRTX) {
+bool VulkanDevice::Init(VulkanWindowWeak vVulkanWindow,
+    const std::string& vAppName,
+    const int& vAppVersion,
+    const std::string& vEngineName,
+    const int& vEngineVersion,
+    const bool& vUseRTX) {
     ZoneScoped;
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init();
@@ -325,7 +346,7 @@ bool VulkanDevice::Init(VulkanWindowWeak vVulkanWindow, const std::string& vAppN
     bool res = true;
 
     // tofix : trouver un moyen de tester le support du RTX avant son init
-    //         voir un moyen que chaque plugin soit chargé avant et disent ce dont il a besoin
+    //         voir un moyen que chaque plugin soit chargï¿½ avant et disent ce dont il a besoin
 
     SetUseRTX(vUseRTX);
 
@@ -378,7 +399,8 @@ void VulkanDevice::EndDebugLabel(vk::CommandBuffer* vCmd) {
 //// PRIVATE // LAYERS ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const std::vector<const char*> validationLayers = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation", "VK_LAYER_LUNARG_device_limits", "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_image", "VK_LAYER_LUNARG_core_validation",
+const std::vector<const char*> validationLayers = {"VK_LAYER_GOOGLE_threading", "VK_LAYER_LUNARG_parameter_validation",
+    "VK_LAYER_LUNARG_device_limits", "VK_LAYER_LUNARG_object_tracker", "VK_LAYER_LUNARG_image", "VK_LAYER_LUNARG_core_validation",
     "VK_LAYER_LUNARG_swapchain", "VK_LAYER_GOOGLE_unique_objects", "VK_LAYER_LUNARG_core_validation", "VK_LAYER_KHRONOS_validation"};
 
 void PrintLayerStatus(const VkLayerProperties& layer_info, const bool& vWanted, const size_t& vMaxLayerNameSize) {
@@ -394,7 +416,8 @@ void PrintLayerStatus(const VkLayerProperties& layer_info, const bool& vWanted, 
     size_t of = vMaxLayerNameSize - strlen(layer_info.layerName);
     if (of < 255)
         spaceBuffer[of] = '\0';
-    LogVarLightTag(MESSAGING_TYPE_VKLAYER, "Debug : [%s] Layer %s %s [%s] %s", (vWanted ? "X" : " "), layer_info.layerName, spaceBuffer, version.c_str(), layer_info.description);
+    LogVarLightTag(MESSAGING_TYPE_VKLAYER, "Debug : [%s] Layer %s %s [%s] %s", (vWanted ? "X" : " "), layer_info.layerName, spaceBuffer,
+        version.c_str(), layer_info.description);
 }
 
 // Find available validation layers
@@ -476,7 +499,8 @@ bool PrintActiveExtensions() {
 //// PRIVATE /////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool VulkanDevice::CreateVulkanInstance(VulkanWindowWeak vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion) {
+bool VulkanDevice::CreateVulkanInstance(
+    VulkanWindowWeak vVulkanWindow, const std::string& vAppName, const int& vAppVersion, const std::string& vEngineName, const int& vEngineVersion) {
     ZoneScoped;
 
     auto vkWindowPtr = vVulkanWindow.lock();
@@ -640,14 +664,16 @@ bool VulkanDevice::CreatePhysicalDevice() {
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Recursion Depth : %u", m_RayTracingDeviceProperties.maxRayRecursionDepth);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Shader Group Stride : %u", m_RayTracingDeviceProperties.maxShaderGroupStride);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Base Alignment : %u", m_RayTracingDeviceProperties.shaderGroupBaseAlignment);
-        LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Capture Replay Size : %u", m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize);
+        LogVarLightTag(
+            MESSAGING_TYPE_DEBUG, " - Shader Group Handle Capture Replay Size : %u", m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Dispatch Invocation Count : %u", m_RayTracingDeviceProperties.maxRayDispatchInvocationCount);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Shader Group Handle Alignment : %u", m_RayTracingDeviceProperties.shaderGroupHandleAlignment);
         LogVarLightTag(MESSAGING_TYPE_DEBUG, " - Max Ray Hit Attribute Size : %u", m_RayTracingDeviceProperties.maxRayHitAttributeSize);
 
-        if (!m_RayTracingDeviceProperties.shaderGroupHandleSize || !m_RayTracingDeviceProperties.maxRayRecursionDepth || !m_RayTracingDeviceProperties.maxShaderGroupStride || !m_RayTracingDeviceProperties.shaderGroupBaseAlignment ||
-            !m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize || !m_RayTracingDeviceProperties.maxRayDispatchInvocationCount || !m_RayTracingDeviceProperties.shaderGroupHandleAlignment ||
-            !m_RayTracingDeviceProperties.maxRayHitAttributeSize) {
+        if (!m_RayTracingDeviceProperties.shaderGroupHandleSize || !m_RayTracingDeviceProperties.maxRayRecursionDepth ||
+            !m_RayTracingDeviceProperties.maxShaderGroupStride || !m_RayTracingDeviceProperties.shaderGroupBaseAlignment ||
+            !m_RayTracingDeviceProperties.shaderGroupHandleCaptureReplaySize || !m_RayTracingDeviceProperties.maxRayDispatchInvocationCount ||
+            !m_RayTracingDeviceProperties.shaderGroupHandleAlignment || !m_RayTracingDeviceProperties.maxRayHitAttributeSize) {
             m_Use_RTX = false;
         }
     }
@@ -820,7 +846,6 @@ bool VulkanDevice::CreateLogicalDevice() {
             m_RayTracingPipelineFeature.setRayTracingPipeline(true);
             chains.push_back((pNextDatas*)&m_RayTracingPipelineFeature);
         }
-
     }
 
     // recreate the chain
@@ -829,7 +854,7 @@ bool VulkanDevice::CreateLogicalDevice() {
         last_item_ptr->pNext = item_ptr;
         last_item_ptr = item_ptr;
     }
-    
+
     std::cout << ("-----------") << std::endl;
 
     std::vector<const char*> charDeviceExtensions;
@@ -851,27 +876,33 @@ bool VulkanDevice::CreateLogicalDevice() {
 #ifdef USE_PROFILERS
     uint32_t familyQueueIndex = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eGraphics].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(
+        vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
 
     familyQueueIndex = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eCompute].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eCompute].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eCompute].cmdPools = m_LogDevice.createCommandPool(
+        vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
 
     familyQueueIndex = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eTransfer].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools = m_LogDevice.createCommandPool(
+        vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer), familyQueueIndex));
 #else
     uint32_t familyQueueIndex = m_Queues[vk::QueueFlagBits::eGraphics].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eGraphics].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eGraphics].cmdPools =
+        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
 
     familyQueueIndex = m_Queues[vk::QueueFlagBits::eCompute].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eCompute].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eCompute].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eCompute].cmdPools =
+        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
 
     familyQueueIndex = m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex;
     m_Queues[vk::QueueFlagBits::eTransfer].vkQueue = m_LogDevice.getQueue(familyQueueIndex, 0);
-    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools = m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
+    m_Queues[vk::QueueFlagBits::eTransfer].cmdPools =
+        m_LogDevice.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlags(), familyQueueIndex));
 #endif
 
     return true;

@@ -21,49 +21,46 @@ limitations under the License.
 #include <Gaia/Resources/VulkanFrameBufferAttachment.h>
 #include <ctools/cTools.h>
 
-namespace GaiApi
-{
-	class VulkanCore;
-	class GAIA_API VulkanFrameBuffer
-	{
-	public:
-		std::vector<VulkanFrameBufferAttachment> attachments;
-		std::vector<vk::ImageView> attachmentViews;
-		std::vector<vk::ClearAttachment> attachmentClears;
-		std::vector<vk::ClearValue> clearColorValues;
-		std::vector<vk::ClearRect> rectClears;
-		uint32_t mipLevelCount = 1u;
-		uint32_t width = 0u;
-		uint32_t height = 0u;
-		vk::Format format = vk::Format::eR32G32B32A32Sfloat;
-		float ratio = 0.0f;
-		vk::Framebuffer framebuffer = nullptr;
-		bool neverCleared = true;
-		bool needToClear = false;
-		vk::SampleCountFlagBits sampleCount = vk::SampleCountFlagBits::e1;
-		uint32_t depthAttIndex = 0U;
+namespace GaiApi {
+class VulkanCore;
+class GAIA_API VulkanFrameBuffer {
+public:
+    std::vector<VulkanFrameBufferAttachment> attachments;
+    std::vector<vk::ImageView> attachmentViews;
+    std::vector<vk::ClearAttachment> attachmentClears;
+    std::vector<vk::ClearValue> clearColorValues;
+    std::vector<vk::ClearRect> rectClears;
+    uint32_t mipLevelCount = 1u;
+    uint32_t width = 0u;
+    uint32_t height = 0u;
+    vk::Format format = vk::Format::eR32G32B32A32Sfloat;
+    float ratio = 0.0f;
+    vk::Framebuffer framebuffer = nullptr;
+    bool neverCleared = true;
+    bool needToClear = false;
+    vk::SampleCountFlagBits sampleCount = vk::SampleCountFlagBits::e1;
+    uint32_t depthAttIndex = 0U;
 
-	private:
-		VulkanCoreWeak m_VulkanCore;
+private:
+    VulkanCoreWeak m_VulkanCore;
 
-	public:
-		VulkanFrameBuffer();
-		~VulkanFrameBuffer();
+public:
+    VulkanFrameBuffer();
+    ~VulkanFrameBuffer();
 
-	public:
-		bool Init(
-			GaiApi::VulkanCoreWeak vVulkanCore,
-			ct::uvec2 vSize,
-			uint32_t vCount,
-			vk::RenderPass& vRenderPass,
-			bool vCreateRenderPass,
-			bool vUseDepth = false,
-			bool vNeedToClear = false,
-			ct::fvec4 vClearColor = 0.0f,
-			vk::Format vFormat = vk::Format::eR32G32B32A32Sfloat,
-			vk::SampleCountFlagBits vSampleCount = vk::SampleCountFlagBits::e1);
-		void Unit();
+public:
+    bool Init(GaiApi::VulkanCoreWeak vVulkanCore,
+        ct::uvec2 vSize,
+        uint32_t vCount,
+        vk::RenderPass& vRenderPass,
+        bool vCreateRenderPass,
+        bool vUseDepth = false,
+        bool vNeedToClear = false,
+        ct::fvec4 vClearColor = 0.0f,
+        vk::Format vFormat = vk::Format::eR32G32B32A32Sfloat,
+        vk::SampleCountFlagBits vSampleCount = vk::SampleCountFlagBits::e1);
+    void Unit();
 
-		VulkanFrameBufferAttachment* GetDepthAttachment();
-	};
-}
+    VulkanFrameBufferAttachment* GetDepthAttachment();
+};
+}  // namespace GaiApi

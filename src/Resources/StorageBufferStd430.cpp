@@ -70,7 +70,7 @@ void StorageBufferStd430::UseCustomBufferInfo() {
 void StorageBufferStd430::SetCustomBufferInfo(vk::DescriptorBufferInfo* vBufferObjectInfo) {
     ZoneScoped;
     if (vBufferObjectInfo) {
-        customBufferInfo     = true;
+        customBufferInfo = true;
         descriptorBufferInfo = *vBufferObjectInfo;
     }
 }
@@ -90,7 +90,7 @@ void StorageBufferStd430::Upload(GaiApi::VulkanCoreWeak vVulkanCore, bool vOnlyI
                 VulkanRessource::upload(vVulkanCore, bufferObjectPtr, datas.data(), datas.size());
 
                 firstUploadWasDone = true;
-                isDirty            = false;
+                isDirty = false;
             }
         }
     }
@@ -117,7 +117,7 @@ bool StorageBufferStd430::CreateSBO(GaiApi::VulkanCoreWeak vVulkanCore, VmaMemor
         bufferObjectPtr = VulkanRessource::createStorageBufferObject(vVulkanCore, datas.size(), vVmaMemoryUsage, "StorageBufferStd430");
         if (bufferObjectPtr && bufferObjectPtr->buffer) {
             descriptorBufferInfo.buffer = bufferObjectPtr->buffer;
-            descriptorBufferInfo.range  = datas.size();
+            descriptorBufferInfo.range = datas.size();
             descriptorBufferInfo.offset = 0;
 
             Upload(vVulkanCore, false);
@@ -163,16 +163,16 @@ bool StorageBufferStd430::RegisterByteSize(const std::string& vKey, uint32_t vSi
     if (OffsetExist(vKey)) {
         LogVarDebugWarning("key %s is already defined in UniformBlockStd140. RegisterVar fail.", vKey.c_str());
     } else if (vSizeInBytes > 0) {
-        uint32_t newSize    = vSizeInBytes;
+        uint32_t newSize = vSizeInBytes;
         uint32_t lastOffset = (uint32_t)datas.size();
-        auto baseAlign      = GetGoodAlignement(newSize);
+        auto baseAlign = GetGoodAlignement(newSize);
         // il faut trouver le prochain offset qui est multiple de baseAlign
-        auto startOffset       = baseAlign * (uint32_t)std::ceil((double)lastOffset / (double)baseAlign);
+        auto startOffset = baseAlign * (uint32_t)std::ceil((double)lastOffset / (double)baseAlign);
         auto newSizeToAllocate = startOffset - lastOffset + newSize;
 #ifdef PRINT_BLOCK_DATAS
         auto endOffset = startOffset + newSize;
-        LogVarTag(MESSAGING_TYPE_DEBUG, "key %s, size %u, align %u, Offsets : %u => %u, size to alloc %u", vKey.c_str(),
-            newSize, baseAlign, startOffset, endOffset, newSizeToAllocate);
+        LogVarTag(MESSAGING_TYPE_DEBUG, "key %s, size %u, align %u, Offsets : %u => %u, size to alloc %u", vKey.c_str(), newSize, baseAlign,
+            startOffset, endOffset, newSizeToAllocate);
 #endif
         datas.resize(lastOffset + newSizeToAllocate);
         // on set de "lastOffset" � "lastOffset + newSizeToAllocate"

@@ -50,7 +50,7 @@ void UniformBlockStd140::UseCustomBufferInfo() {
 void UniformBlockStd140::SetCustomBufferInfo(vk::DescriptorBufferInfo* vBufferObjectInfo) {
     ZoneScoped;
     if (vBufferObjectInfo) {
-        customBufferInfo     = true;
+        customBufferInfo = true;
         descriptorBufferInfo = *vBufferObjectInfo;
     }
 }
@@ -84,7 +84,7 @@ bool UniformBlockStd140::CreateUBO(GaiApi::VulkanCoreWeak vVulkanCore) {
         bufferObjectPtr = VulkanRessource::createUniformBufferObject(vVulkanCore, datas.size(), "UniformBlockStd140");
         if (bufferObjectPtr) {
             descriptorBufferInfo.buffer = bufferObjectPtr->buffer;
-            descriptorBufferInfo.range  = datas.size();
+            descriptorBufferInfo.range = datas.size();
             descriptorBufferInfo.offset = 0;
             return true;
         }
@@ -122,16 +122,16 @@ bool UniformBlockStd140::RegisterByteSize(const std::string& vKey, uint32_t vSiz
     if (OffsetExist(vKey)) {
         LogVarDebugWarning("Debug : key %s is already defined in UniformBlockStd140. RegisterVar fail.", vKey.c_str());
     } else if (vSizeInBytes > 0) {
-        uint32_t newSize    = vSizeInBytes;
+        uint32_t newSize = vSizeInBytes;
         uint32_t lastOffset = (uint32_t)datas.size();
-        auto baseAlign      = GetGoodAlignement(newSize);
+        auto baseAlign = GetGoodAlignement(newSize);
         // il faut trouver le prochain offset qui est multiple de baseAlign
-        auto startOffset       = baseAlign * (uint32_t)std::ceil((double)lastOffset / (double)baseAlign);
+        auto startOffset = baseAlign * (uint32_t)std::ceil((double)lastOffset / (double)baseAlign);
         auto newSizeToAllocate = startOffset - lastOffset + newSize;
 #ifdef PRINT_BLOCK_DATAS
         auto endOffset = startOffset + newSize;
-        LogVarTag(MESSAGING_TYPE_DEBUG , "key %s, size %u, align %u, Offsets : %u => %u, size to alloc %u\n",
-            vKey.c_str(), newSize, baseAlign, startOffset, endOffset, newSizeToAllocate);
+        LogVarTag(MESSAGING_TYPE_DEBUG, "key %s, size %u, align %u, Offsets : %u => %u, size to alloc %u\n", vKey.c_str(), newSize, baseAlign,
+            startOffset, endOffset, newSizeToAllocate);
 #endif
         datas.resize(lastOffset + newSizeToAllocate);
         // on set de "lastOffset" � "lastOffset + newSizeToAllocate"

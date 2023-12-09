@@ -25,17 +25,17 @@ limitations under the License.
 namespace GaiApi {
 class GAIA_API VulkanFrameBufferAttachment {
 public:
-    VulkanImageObjectPtr attachmentPtr               = nullptr;
-    vk::ImageView attachmentView                     = {};
-    vk::Sampler attachmentSampler                    = {};
+    VulkanImageObjectPtr attachmentPtr = nullptr;
+    vk::ImageView attachmentView = {};
+    vk::Sampler attachmentSampler = {};
     vk::DescriptorImageInfo attachmentDescriptorInfo = {};
-    vk::AttachmentDescription attachmentDescription  = {};  // pour al renderpass
-    uint32_t mipLevelCount                           = 1U;
-    uint32_t width                                   = 0u;
-    uint32_t height                                  = 0u;
-    vk::Format format                                = vk::Format::eR32G32B32A32Sfloat;
-    float ratio                                      = 0.0f;
-    vk::SampleCountFlagBits sampleCount              = vk::SampleCountFlagBits::e1;
+    vk::AttachmentDescription attachmentDescription = {};  // pour al renderpass
+    uint32_t mipLevelCount = 1U;
+    uint32_t width = 0u;
+    uint32_t height = 0u;
+    vk::Format format = vk::Format::eR32G32B32A32Sfloat;
+    float ratio = 0.0f;
+    vk::SampleCountFlagBits sampleCount = vk::SampleCountFlagBits::e1;
 
 private:
     GaiApi::VulkanCoreWeak m_VulkanCore;
@@ -45,7 +45,12 @@ public:
     ~VulkanFrameBufferAttachment();
 
 public:
-    bool InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, bool vNeedToClear, vk::SampleCountFlagBits vSampleCount);
+    bool InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore,
+        ct::uvec2 vSize,
+        vk::Format vFormat,
+        uint32_t vMipLevelCount,
+        bool vNeedToClear,
+        vk::SampleCountFlagBits vSampleCount);
     bool InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount);
     void Unit();
 

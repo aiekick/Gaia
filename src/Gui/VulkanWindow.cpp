@@ -30,152 +30,133 @@ limitations under the License.
 #define ZoneScoped
 #endif
 
-static void glfw_error_callback(int error, const char* description)
-{
-	ZoneScoped;
+static void glfw_error_callback(int error, const char* description) {
+    ZoneScoped;
 
-	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-	LogVarError("Glfw Error %d: %s", error, description);
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+    LogVarError("Glfw Error %d: %s", error, description);
 }
 
-static std::vector<const char*> getRequiredExtensions()
-{
-	ZoneScoped;
+static std::vector<const char*> getRequiredExtensions() {
+    ZoneScoped;
 
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions;
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	//if (enableValidationLayers)
-	{
-		extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
+    // if (enableValidationLayers)
+    { extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); }
 
-	return extensions;
+    return extensions;
 }
-namespace GaiApi
-{
+namespace GaiApi {
 
-	VulkanWindowPtr VulkanWindow::Create(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated)
-	{
-		auto res = std::make_shared<VulkanWindow>();
-		if (!res->Init(vWidth, vHeight, vName, vOffScreen, vDecorated))
-		{
-			res.reset();
-		}
-		return res;
-	}
-
-	bool VulkanWindow::Init(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated)
-	{
-		ZoneScoped;
-
-		m_Name = vName;
-
-		if (!glfwInit())
-		{
-			return false;
-        }
-        glfwSetErrorCallback(glfw_error_callback);
-
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		if (vOffScreen)
-		{
-			glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-		}
-		else if (!vDecorated)
-		{
-			glfwWindowHint(GLFW_DECORATED, GL_FALSE);
-		}
-
-		m_Window = glfwCreateWindow(vWidth, vHeight, vName.c_str(), NULL, NULL);
-		if (!m_Window)
-		{
-			return false;
-		}
-
-		m_VKInstanceExtension = getRequiredExtensions();
-
-		return true;
-	}
-
-	void VulkanWindow::Unit()
-	{
-		ZoneScoped;
-
-		glfwDestroyWindow(m_Window);
-		glfwTerminate();
-	}
-
-	vk::SurfaceKHR VulkanWindow::createSurface(vk::Instance vkInstance)
-	{
-		ZoneScoped;
-
-		vk::SurfaceKHR surface;
-		VkResult err = glfwCreateWindowSurface((VkInstance)vkInstance, m_Window, nullptr, (VkSurfaceKHR*)&surface);
-		if (err != VK_SUCCESS)
-		{
-			exit(EXIT_FAILURE);
-		}
-		return surface;
-	}
-
-void VulkanWindow::setAppTitle(const std::string & vTitle) {
-	glfwSetWindowTitle(m_Window, vTitle.c_str());
+VulkanWindowPtr VulkanWindow::Create(
+    const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated) {
+    auto res = std::make_shared<VulkanWindow>();
+    if (!res->Init(vWidth, vHeight, vName, vOffScreen, vDecorated)) {
+        res.reset();
+    }
+    return res;
 }
 
-	const std::vector<const char*>& VulkanWindow::getVKInstanceExtensions() const
-	{
-		ZoneScoped;
+bool VulkanWindow::Init(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated) {
+    ZoneScoped;
 
-		return m_VKInstanceExtension;
-	}
+    m_Name = vName;
 
-	GLFWwindow* VulkanWindow::getWindowPtr() const
-	{
-		ZoneScoped;
+    if (!glfwInit()) {
+        return false;
+    }
+    glfwSetErrorCallback(glfw_error_callback);
 
-		return m_Window;
-	}
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    if (vOffScreen) {
+        glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    } else if (!vDecorated) {
+        glfwWindowHint(GLFW_DECORATED, GL_FALSE);
+    }
 
-    void VulkanWindow::CloseWindowWhenPossible() { glfwSetWindowShouldClose(m_Window, 1); }
+    m_Window = glfwCreateWindow(vWidth, vHeight, vName.c_str(), NULL, NULL);
+    if (!m_Window) {
+        return false;
+    }
 
-	ct::ivec2 VulkanWindow::getFrameBufferResolution() const
-	{
-		ZoneScoped;
+    m_VKInstanceExtension = getRequiredExtensions();
 
-		ct::ivec2 res;
-		glfwGetFramebufferSize(m_Window, &res.x, &res.y);
-		return res;
-	}
-
-	ct::ivec2 VulkanWindow::getWindowResolution() const
-	{
-		ZoneScoped;
-
-		ct::ivec2 res;
-		glfwGetWindowSize(m_Window, &res.x, &res.y);
-
-		return res;
-	}
-
-	bool VulkanWindow::IsMinimized()
-	{
-		ZoneScoped;
-
-		// pause if minimized
-		auto size = getFrameBufferResolution();
-		if (size.x == 0 || size.y == 0)
-			return true;
-		return false;
-	}
-
-	const std::string& VulkanWindow::name() const
-	{
-		ZoneScoped;
-
-		return m_Name;
-	}
+    return true;
 }
+
+void VulkanWindow::Unit() {
+    ZoneScoped;
+
+    glfwDestroyWindow(m_Window);
+    glfwTerminate();
+}
+
+vk::SurfaceKHR VulkanWindow::createSurface(vk::Instance vkInstance) {
+    ZoneScoped;
+
+    vk::SurfaceKHR surface;
+    VkResult err = glfwCreateWindowSurface((VkInstance)vkInstance, m_Window, nullptr, (VkSurfaceKHR*)&surface);
+    if (err != VK_SUCCESS) {
+        exit(EXIT_FAILURE);
+    }
+    return surface;
+}
+
+void VulkanWindow::setAppTitle(const std::string& vTitle) {
+    glfwSetWindowTitle(m_Window, vTitle.c_str());
+}
+
+const std::vector<const char*>& VulkanWindow::getVKInstanceExtensions() const {
+    ZoneScoped;
+
+    return m_VKInstanceExtension;
+}
+
+GLFWwindow* VulkanWindow::getWindowPtr() const {
+    ZoneScoped;
+
+    return m_Window;
+}
+
+void VulkanWindow::CloseWindowWhenPossible() {
+    glfwSetWindowShouldClose(m_Window, 1);
+}
+
+ct::ivec2 VulkanWindow::getFrameBufferResolution() const {
+    ZoneScoped;
+
+    ct::ivec2 res;
+    glfwGetFramebufferSize(m_Window, &res.x, &res.y);
+    return res;
+}
+
+ct::ivec2 VulkanWindow::getWindowResolution() const {
+    ZoneScoped;
+
+    ct::ivec2 res;
+    glfwGetWindowSize(m_Window, &res.x, &res.y);
+
+    return res;
+}
+
+bool VulkanWindow::IsMinimized() {
+    ZoneScoped;
+
+    // pause if minimized
+    auto size = getFrameBufferResolution();
+    if (size.x == 0 || size.y == 0)
+        return true;
+    return false;
+}
+
+const std::string& VulkanWindow::name() const {
+    ZoneScoped;
+
+    return m_Name;
+}
+}  // namespace GaiApi

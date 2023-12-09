@@ -21,35 +21,34 @@ limitations under the License.
 #include <mutex>
 #include <thread>
 
-namespace GaiApi
-{
-	class VulkanCore;
-	class GAIA_API VulkanCommandBuffer
-	{
-	public:
-		static vk::CommandBuffer beginSingleTimeCommands(GaiApi::VulkanCoreWeak vVulkanCore, bool begin, vk::CommandPool* vCommandPool = 0);
-		static void flushSingleTimeCommands(GaiApi::VulkanCoreWeak vVulkanCore, vk::CommandBuffer& cmd, bool end, vk::CommandPool* vCommandPool = 0);
-		static VulkanCommandBuffer CreateCommandBuffer(GaiApi::VulkanCoreWeak vVulkanCore, vk::QueueFlagBits vQueueType, vk::CommandPool* vCommandPool = 0);
-		static std::mutex VulkanCommandBuffer_Mutex;
+namespace GaiApi {
+class VulkanCore;
+class GAIA_API VulkanCommandBuffer {
+public:
+    static vk::CommandBuffer beginSingleTimeCommands(GaiApi::VulkanCoreWeak vVulkanCore, bool begin, vk::CommandPool* vCommandPool = 0);
+    static void flushSingleTimeCommands(GaiApi::VulkanCoreWeak vVulkanCore, vk::CommandBuffer& cmd, bool end, vk::CommandPool* vCommandPool = 0);
+    static VulkanCommandBuffer CreateCommandBuffer(
+        GaiApi::VulkanCoreWeak vVulkanCore, vk::QueueFlagBits vQueueType, vk::CommandPool* vCommandPool = 0);
+    static std::mutex VulkanCommandBuffer_Mutex;
 
-	public:
-		vk::CommandBuffer cmd;
-		vk::Fence fence;
-		vk::QueueFlagBits type;
-		vk::Queue queue;
-		uint32_t familyQueueIndex = 0;
-		vk::Device device;
-		vk::CommandPool commandpool;
+public:
+    vk::CommandBuffer cmd;
+    vk::Fence fence;
+    vk::QueueFlagBits type;
+    vk::Queue queue;
+    uint32_t familyQueueIndex = 0;
+    vk::Device device;
+    vk::CommandPool commandpool;
 
-	private:
-		VulkanCoreWeak m_VulkanCore;
+private:
+    VulkanCoreWeak m_VulkanCore;
 
-	public:
-		void DestroyCommandBuffer();
-		bool ResetFence();
-		bool Begin();
-		void End();
-		bool SubmitCmd(vk::PipelineStageFlags vDstStage);
-		bool SubmitCmd(vk::SubmitInfo vSubmitInfo);
-	};
-}
+public:
+    void DestroyCommandBuffer();
+    bool ResetFence();
+    bool Begin();
+    void End();
+    bool SubmitCmd(vk::PipelineStageFlags vDstStage);
+    bool SubmitCmd(vk::SubmitInfo vSubmitInfo);
+};
+}  // namespace GaiApi

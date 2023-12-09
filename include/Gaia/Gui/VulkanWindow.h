@@ -22,42 +22,43 @@ limitations under the License.
 #include <Gaia/gaia.h>
 
 struct GLFWwindow;
-namespace GaiApi
-{
-	class GAIA_API VulkanWindow
-	{
-	public:
-		static VulkanWindowPtr Create(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated = true);
+namespace GaiApi {
+class GAIA_API VulkanWindow {
+public:
+    static VulkanWindowPtr Create(
+        const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated = true);
 
-	private:
-		std::string m_Name;
-		GLFWwindow* m_Window = nullptr;
-		std::vector<const char*> m_VKInstanceExtension;
+private:
+    std::string m_Name;
+    GLFWwindow* m_Window = nullptr;
+    std::vector<const char*> m_VKInstanceExtension;
 
-	public:
-		bool Init(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated = true);
-		void Unit();
+public:
+    bool Init(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated = true);
+    void Unit();
 
-		[[nodiscard]] ct::ivec2 getFrameBufferResolution() const;
-		[[nodiscard]] ct::ivec2 getWindowResolution() const;
+    [[nodiscard]] ct::ivec2 getFrameBufferResolution() const;
+    [[nodiscard]] ct::ivec2 getWindowResolution() const;
 
-		bool IsMinimized();
+    bool IsMinimized();
 
-		vk::SurfaceKHR createSurface(vk::Instance vkInstance);
+    vk::SurfaceKHR createSurface(vk::Instance vkInstance);
 
-		void setAppTitle(const std::string& vFilePathName = {});
+    void setAppTitle(const std::string& vFilePathName = {});
 
-		[[nodiscard]] const std::string& name() const;
-		[[nodiscard]] const std::vector<const char*>& getVKInstanceExtensions() const;
+    [[nodiscard]] const std::string& name() const;
+    [[nodiscard]] const std::vector<const char*>& getVKInstanceExtensions() const;
 
-		[[nodiscard]] GLFWwindow* getWindowPtr() const;
+    [[nodiscard]] GLFWwindow* getWindowPtr() const;
 
-		void CloseWindowWhenPossible();
+    void CloseWindowWhenPossible();
 
-	public:
-		VulkanWindow() = default; // Prevent construction
-		VulkanWindow(const VulkanWindow&) = default; // Prevent construction by copying
-		VulkanWindow& operator =(const VulkanWindow&) { return *this; }; // Prevent assignment
-		~VulkanWindow() = default; // Prevent unwanted destruction
-	};
-}
+public:
+    VulkanWindow() = default;                     // Prevent construction
+    VulkanWindow(const VulkanWindow&) = default;  // Prevent construction by copying
+    VulkanWindow& operator=(const VulkanWindow&) {
+        return *this;
+    };                          // Prevent assignment
+    ~VulkanWindow() = default;  // Prevent unwanted destruction
+};
+}  // namespace GaiApi

@@ -35,7 +35,12 @@ VulkanFrameBufferAttachment::~VulkanFrameBufferAttachment() {
     Unit();
 }
 
-bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, bool vNeedToClear, vk::SampleCountFlagBits vSampleCount) {
+bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore,
+    ct::uvec2 vSize,
+    vk::Format vFormat,
+    uint32_t vMipLevelCount,
+    bool vNeedToClear,
+    vk::SampleCountFlagBits vSampleCount) {
     ZoneScoped;
 
     m_VulkanCore = vVulkanCore;
@@ -45,34 +50,35 @@ bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore
     ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
         mipLevelCount = vMipLevelCount;
-        width         = size.x;
-        height        = size.y;
-        format        = vFormat;
-        ratio         = (float)height / (float)width;
-        sampleCount   = vSampleCount;
+        width = size.x;
+        height = size.y;
+        format = vFormat;
+        ratio = (float)height / (float)width;
+        sampleCount = vSampleCount;
 
-        attachmentPtr = VulkanRessource::createColorAttachment2D(m_VulkanCore, width, height, mipLevelCount, format, sampleCount, "VulkanFrameBufferAttachment");
+        attachmentPtr =
+            VulkanRessource::createColorAttachment2D(m_VulkanCore, width, height, mipLevelCount, format, sampleCount, "VulkanFrameBufferAttachment");
 
         auto corePtr = m_VulkanCore.lock();
         assert(corePtr != nullptr);
 
         vk::ImageViewCreateInfo imViewInfo = {};
-        imViewInfo.flags                   = vk::ImageViewCreateFlags();
-        imViewInfo.image                   = attachmentPtr->image;
-        imViewInfo.viewType                = vk::ImageViewType::e2D;
-        imViewInfo.format                  = format;
-        imViewInfo.components              = vk::ComponentMapping();
-        imViewInfo.subresourceRange        = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, mipLevelCount, 0, 1);
-        attachmentView                     = corePtr->getDevice().createImageView(imViewInfo);
+        imViewInfo.flags = vk::ImageViewCreateFlags();
+        imViewInfo.image = attachmentPtr->image;
+        imViewInfo.viewType = vk::ImageViewType::e2D;
+        imViewInfo.format = format;
+        imViewInfo.components = vk::ComponentMapping();
+        imViewInfo.subresourceRange = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, mipLevelCount, 0, 1);
+        attachmentView = corePtr->getDevice().createImageView(imViewInfo);
 
         vk::SamplerCreateInfo samplerInfo = {};
-        samplerInfo.flags                 = vk::SamplerCreateFlags();
-        samplerInfo.magFilter             = vk::Filter::eLinear;
-        samplerInfo.minFilter             = vk::Filter::eLinear;
-        samplerInfo.mipmapMode            = vk::SamplerMipmapMode::eLinear;
-        samplerInfo.addressModeU          = vk::SamplerAddressMode::eClampToEdge;  // U
-        samplerInfo.addressModeV          = vk::SamplerAddressMode::eClampToEdge;  // V
-        samplerInfo.addressModeW          = vk::SamplerAddressMode::eClampToEdge;  // W
+        samplerInfo.flags = vk::SamplerCreateFlags();
+        samplerInfo.magFilter = vk::Filter::eLinear;
+        samplerInfo.minFilter = vk::Filter::eLinear;
+        samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+        samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;  // U
+        samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;  // V
+        samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;  // W
         // samplerInfo.mipLodBias = 0.0f;
         // samplerInfo.anisotropyEnable = false;
         // samplerInfo.maxAnisotropy = 0.0f;
@@ -83,12 +89,12 @@ bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore
         // samplerInfo.unnormalizedCoordinates = false;
         attachmentSampler = corePtr->getDevice().createSampler(samplerInfo);
 
-        attachmentDescriptorInfo.sampler   = attachmentSampler;
+        attachmentDescriptorInfo.sampler = attachmentSampler;
         attachmentDescriptorInfo.imageView = attachmentView;
         attachmentDescriptorInfo.imageLayout = vk::ImageLayout::eAttachmentOptimal;
 
-        attachmentDescription.flags   = vk::AttachmentDescriptionFlags();
-        attachmentDescription.format  = format;
+        attachmentDescription.flags = vk::AttachmentDescriptionFlags();
+        attachmentDescription.format = format;
         attachmentDescription.samples = vSampleCount;
 
         if (vNeedToClear) {
@@ -108,7 +114,7 @@ bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore
         }
 
         attachmentDescription.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-        attachmentDescription.initialLayout  = vk::ImageLayout::eUndefined;
+        attachmentDescription.initialLayout = vk::ImageLayout::eUndefined;
         attachmentDescription.finalLayout = vk::ImageLayout::eAttachmentOptimal;
 
         res = true;
@@ -117,7 +123,8 @@ bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore
     return res;
 }
 
-bool VulkanFrameBufferAttachment::InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount) {
+bool VulkanFrameBufferAttachment::InitDepth(
+    GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount) {
     ZoneScoped;
 
     m_VulkanCore = vVulkanCore;
@@ -127,11 +134,11 @@ bool VulkanFrameBufferAttachment::InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, 
     ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
         mipLevelCount = 1U;
-        width         = size.x;
-        height        = size.y;
-        format        = vFormat;
-        ratio         = (float)height / (float)width;
-        sampleCount   = vSampleCount;
+        width = size.x;
+        height = size.y;
+        format = vFormat;
+        ratio = (float)height / (float)width;
+        sampleCount = vSampleCount;
 
         attachmentPtr = VulkanRessource::createDepthAttachment(m_VulkanCore, width, height, format, sampleCount, "VulkanFrameBufferAttachment");
 
@@ -139,22 +146,22 @@ bool VulkanFrameBufferAttachment::InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, 
         assert(corePtr != nullptr);
 
         vk::ImageViewCreateInfo imViewInfo = {};
-        imViewInfo.flags                   = vk::ImageViewCreateFlags();
-        imViewInfo.image                   = attachmentPtr->image;
-        imViewInfo.viewType                = vk::ImageViewType::e2D;
-        imViewInfo.format                  = format;
-        imViewInfo.components              = vk::ComponentMapping();
-        imViewInfo.subresourceRange        = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil, 0, 1, 0, 1);
-        attachmentView                     = corePtr->getDevice().createImageView(imViewInfo);
+        imViewInfo.flags = vk::ImageViewCreateFlags();
+        imViewInfo.image = attachmentPtr->image;
+        imViewInfo.viewType = vk::ImageViewType::e2D;
+        imViewInfo.format = format;
+        imViewInfo.components = vk::ComponentMapping();
+        imViewInfo.subresourceRange = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil, 0, 1, 0, 1);
+        attachmentView = corePtr->getDevice().createImageView(imViewInfo);
 
         vk::SamplerCreateInfo samplerInfo = {};
-        samplerInfo.flags                 = vk::SamplerCreateFlags();
-        samplerInfo.magFilter             = vk::Filter::eLinear;
-        samplerInfo.minFilter             = vk::Filter::eLinear;
-        samplerInfo.mipmapMode            = vk::SamplerMipmapMode::eLinear;
-        samplerInfo.addressModeU          = vk::SamplerAddressMode::eClampToEdge;  // U
-        samplerInfo.addressModeV          = vk::SamplerAddressMode::eClampToEdge;  // V
-        samplerInfo.addressModeW          = vk::SamplerAddressMode::eClampToEdge;  // W
+        samplerInfo.flags = vk::SamplerCreateFlags();
+        samplerInfo.magFilter = vk::Filter::eLinear;
+        samplerInfo.minFilter = vk::Filter::eLinear;
+        samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+        samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;  // U
+        samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;  // V
+        samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;  // W
         // samplerInfo.mipLodBias = 0.0f;
         // samplerInfo.anisotropyEnable = false;
         // samplerInfo.maxAnisotropy = 0.0f;
@@ -165,12 +172,12 @@ bool VulkanFrameBufferAttachment::InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, 
         // samplerInfo.unnormalizedCoordinates = false;
         attachmentSampler = corePtr->getDevice().createSampler(samplerInfo);
 
-        attachmentDescriptorInfo.sampler     = attachmentSampler;
-        attachmentDescriptorInfo.imageView   = attachmentView;
+        attachmentDescriptorInfo.sampler = attachmentSampler;
+        attachmentDescriptorInfo.imageView = attachmentView;
         attachmentDescriptorInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
-        attachmentDescription.flags   = vk::AttachmentDescriptionFlags();
-        attachmentDescription.format  = format;
+        attachmentDescription.flags = vk::AttachmentDescriptionFlags();
+        attachmentDescription.format = format;
         attachmentDescription.samples = sampleCount;
 
         attachmentDescription.loadOp = vk::AttachmentLoadOp::eClear;
@@ -181,10 +188,10 @@ bool VulkanFrameBufferAttachment::InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, 
             attachmentDescription.storeOp = vk::AttachmentStoreOp::eStore;
         }
 
-        attachmentDescription.stencilLoadOp  = vk::AttachmentLoadOp::eClear;
+        attachmentDescription.stencilLoadOp = vk::AttachmentLoadOp::eClear;
         attachmentDescription.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-        attachmentDescription.initialLayout  = vk::ImageLayout::eUndefined;
-        attachmentDescription.finalLayout    = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+        attachmentDescription.initialLayout = vk::ImageLayout::eUndefined;
+        attachmentDescription.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
         res = true;
     }

@@ -23,7 +23,7 @@ limitations under the License.
 
 // the deph here is not compatible wiht imgui viewport who is not suning depth is the wiewport swapchain
 // this will create many validation layering issues
-//#define SWAPCHAIN_USE_DEPTH
+// #define SWAPCHAIN_USE_DEPTH
 
 #include <string>
 #include <functional>
@@ -33,111 +33,106 @@ limitations under the License.
 #include <list>
 #include <array>
 
-namespace GaiApi
-{
-	class VulkanWindow;
-	class VulkanCore;
-	class GAIA_API VulkanSwapChain
-	{
-	public:
-        static constexpr uint8_t SWAPCHAIN_IMAGES_COUNT = 3U;  // tripple buffering is interesting when vsync is enabled
-        static constexpr uint8_t USE_VSYNC              = 1U;
-		enum FrameType
-		{
-			COLOR = 0,
+namespace GaiApi {
+class VulkanWindow;
+class VulkanCore;
+class GAIA_API VulkanSwapChain {
+public:
+    static constexpr uint8_t SWAPCHAIN_IMAGES_COUNT = 3U;  // tripple buffering is interesting when vsync is enabled
+    static constexpr uint8_t USE_VSYNC = 1U;
+    enum FrameType {
+        COLOR = 0,
 #ifdef SWAPCHAIN_USE_DEPTH
-			DEPTH,
+        DEPTH,
 #endif
-			FrameTypeSize
-		};
-		struct SwapChainFrameBuffer
-		{
-			std::array<vk::ImageView, FrameTypeSize> views;
-			vk::Framebuffer frameBuffer;
-		};
-		struct DepthImageMem
-		{
-			vk::Image image;
-			VmaAllocation meta;
-			vk::ImageView view;
-		};
+        FrameTypeSize
+    };
+    struct SwapChainFrameBuffer {
+        std::array<vk::ImageView, FrameTypeSize> views;
+        vk::Framebuffer frameBuffer;
+    };
+    struct DepthImageMem {
+        vk::Image image;
+        VmaAllocation meta;
+        vk::ImageView view;
+    };
 
-	public:
-        static VulkanSwapChainPtr Create(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
+public:
+    static VulkanSwapChainPtr Create(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
 
-	private:
-		std::function<void()> m_ResizeFunction = nullptr;
+private:
+    std::function<void()> m_ResizeFunction = nullptr;
 
-	public:
-		// swapchain
-		vk::SurfaceKHR m_Surface;
-		vk::SwapchainKHR m_Swapchain;
-		vk::Rect2D m_RenderArea;
-		vk::Viewport m_Viewport;
-		vk::Extent2D m_OutputSize;
-		vk::Format m_SurfaceColorFormat = vk::Format::eB8G8R8A8Unorm;
-		vk::ColorSpaceKHR m_SurfaceColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
+public:
+    // swapchain
+    vk::SurfaceKHR m_Surface;
+    vk::SwapchainKHR m_Swapchain;
+    vk::Rect2D m_RenderArea;
+    vk::Viewport m_Viewport;
+    vk::Extent2D m_OutputSize;
+    vk::Format m_SurfaceColorFormat = vk::Format::eB8G8R8A8Unorm;
+    vk::ColorSpaceKHR m_SurfaceColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
 #ifdef SWAPCHAIN_USE_DEPTH
-		vk::Format m_SurfaceDepthFormat = vk::Format::eD32SfloatS8Uint;
-		DepthImageMem m_Depth;
+    vk::Format m_SurfaceDepthFormat = vk::Format::eD32SfloatS8Uint;
+    DepthImageMem m_Depth;
 #endif
-		vk::SampleCountFlagBits m_SampleCount = vk::SampleCountFlagBits::e1;
-		ct::frect m_DisplayRect;
-		std::array<SwapChainFrameBuffer, SWAPCHAIN_IMAGES_COUNT> m_SwapchainFrameBuffers;
-		uint32_t m_FrameIndex = 0;
+    vk::SampleCountFlagBits m_SampleCount = vk::SampleCountFlagBits::e1;
+    ct::frect m_DisplayRect;
+    std::array<SwapChainFrameBuffer, SWAPCHAIN_IMAGES_COUNT> m_SwapchainFrameBuffers;
+    uint32_t m_FrameIndex = 0;
 
-		// sync objects : graphic
-		std::array<vk::Semaphore, SWAPCHAIN_IMAGES_COUNT> m_PresentCompleteSemaphores;
-		std::array<vk::Semaphore, SWAPCHAIN_IMAGES_COUNT> m_RenderCompleteSemaphores;
-		std::array<vk::Fence, SWAPCHAIN_IMAGES_COUNT> m_WaitFences;
+    // sync objects : graphic
+    std::array<vk::Semaphore, SWAPCHAIN_IMAGES_COUNT> m_PresentCompleteSemaphores;
+    std::array<vk::Semaphore, SWAPCHAIN_IMAGES_COUNT> m_RenderCompleteSemaphores;
+    std::array<vk::Fence, SWAPCHAIN_IMAGES_COUNT> m_WaitFences;
 
-		// render pass
-		vk::RenderPass m_RenderPass;
+    // render pass
+    vk::RenderPass m_RenderPass;
 #ifdef SWAPCHAIN_USE_DEPTH
-		std::array<vk::ClearValue, 2> m_ClearValues;
+    std::array<vk::ClearValue, 2> m_ClearValues;
 #else
-		std::array<vk::ClearValue, 1> m_ClearValues;
+    std::array<vk::ClearValue, 1> m_ClearValues;
 #endif
 
-	private:
-        VulkanWindowWeak m_VulkanWindow;
-		VulkanCoreWeak m_VulkanCore;
-        FrameBufferPtr m_FrameBufferPtr = nullptr;
+private:
+    VulkanWindowWeak m_VulkanWindow;
+    VulkanCoreWeak m_VulkanCore;
+    FrameBufferPtr m_FrameBufferPtr = nullptr;
 
-	public:
-		VulkanSwapChain() = default;
-		~VulkanSwapChain() = default;
+public:
+    VulkanSwapChain() = default;
+    ~VulkanSwapChain() = default;
 
-	public:
-        bool Init(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
-		bool Load();
-		bool Reload();
-		void Unit();
+public:
+    bool Init(VulkanWindowWeak vVulkanWindow, VulkanCoreWeak vVulkanCore, std::function<void()> vResizeFunc);
+    bool Load();
+    bool Reload();
+    void Unit();
 
-	public: // get
-		vk::SurfaceKHR			getSurface() const;
-		vk::SwapchainKHR		getSwapchain() const;
-		vk::Viewport			getViewport() const;
-		vk::Rect2D				getRenderArea() const;
-		uint32_t				getSwapchainFrameBuffers() const;
-		vk::SampleCountFlagBits getSwapchainFrameBufferSampleCount() const;
+public:  // get
+    vk::SurfaceKHR getSurface() const;
+    vk::SwapchainKHR getSwapchain() const;
+    vk::Viewport getViewport() const;
+    vk::Rect2D getRenderArea() const;
+    uint32_t getSwapchainFrameBuffers() const;
+    vk::SampleCountFlagBits getSwapchainFrameBufferSampleCount() const;
 
-	public: // Presentation
-		bool AcquireNextImage();
-		void Present();
+public:  // Presentation
+    bool AcquireNextImage();
+    void Present();
 
-	private:
-		void CheckSurfaceFormat();
-		void Resize();
+private:
+    void CheckSurfaceFormat();
+    void Resize();
 
-		bool CreateSurface();
-		bool CreateSyncObjects();
-		bool CreateFrameBuffers();
-		bool CreateRenderPass();
+    bool CreateSurface();
+    bool CreateSyncObjects();
+    bool CreateFrameBuffers();
+    bool CreateRenderPass();
 
-		void DestroySurface();
-		void DestroySyncObjects();
-		void DestroyFrameBuffers();
-		void DestroyRenderPass();
-	};
-}
+    void DestroySurface();
+    void DestroySyncObjects();
+    void DestroyFrameBuffers();
+    void DestroyRenderPass();
+};
+}  // namespace GaiApi

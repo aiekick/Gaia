@@ -64,9 +64,9 @@
 #pragma clang diagnostic ignored "-Wexit-time-destructors"  // warning: declaration requires an exit-time destructor     // exit-time destruction
                                                             // order is undefined. if MemFree() leads to users code that has been disabled before exit
                                                             // it might cause problems. ImGui coding style welcomes static/globals.
-#pragma clang diagnostic ignored "-Wglobal-constructors"  // warning: declaration requires a global destructor         // similar to above, not sure
-                                                          // what the exact difference is.
-#pragma clang diagnostic ignored "-Wsign-conversion"      // warning: implicit conversion changes signedness
+#pragma clang diagnostic ignored "-Wglobal-constructors"    // warning: declaration requires a global destructor         // similar to above, not sure
+                                                            // what the exact difference is.
+#pragma clang diagnostic ignored "-Wsign-conversion"        // warning: implicit conversion changes signedness
 #pragma clang diagnostic ignored "-Wformat-pedantic"  // warning: format specifies type 'void *' but the argument has type 'xxxx *' // unreasonable,
                                                       // would lead to casting every %p arg to void*. probably enabled by -pedantic.
 #pragma clang diagnostic ignored "-Wint-to-void-pointer-cast"       // warning: cast to 'void *' from smaller integer type 'int'
@@ -121,19 +121,19 @@ typedef std::shared_ptr<VulkanShader> VulkanShaderPtr;
 typedef std::weak_ptr<VulkanShader> VulkanShaderWeak;
 
 namespace GaiApi {
-    class VulkanSwapChain;
-    typedef std::shared_ptr<VulkanSwapChain> VulkanSwapChainPtr;
-    typedef std::weak_ptr<VulkanSwapChain> VulkanSwapChainWeak;
+class VulkanSwapChain;
+typedef std::shared_ptr<VulkanSwapChain> VulkanSwapChainPtr;
+typedef std::weak_ptr<VulkanSwapChain> VulkanSwapChainWeak;
 
-    class VulkanCore;
-    typedef std::shared_ptr<VulkanCore> VulkanCorePtr;
-    typedef std::weak_ptr<VulkanCore> VulkanCoreWeak;
+class VulkanCore;
+typedef std::shared_ptr<VulkanCore> VulkanCorePtr;
+typedef std::weak_ptr<VulkanCore> VulkanCoreWeak;
 
-    class VulkanWindow;
-    typedef std::shared_ptr<VulkanWindow> VulkanWindowPtr;
-    typedef std::weak_ptr<VulkanWindow> VulkanWindowWeak;
+class VulkanWindow;
+typedef std::shared_ptr<VulkanWindow> VulkanWindowPtr;
+typedef std::weak_ptr<VulkanWindow> VulkanWindowWeak;
 
-    class VulkanDevice;
-    typedef std::shared_ptr<VulkanDevice> VulkanDevicePtr;
-    typedef std::weak_ptr<VulkanDevice> VulkanDeviceWeak;
+class VulkanDevice;
+typedef std::shared_ptr<VulkanDevice> VulkanDevicePtr;
+typedef std::weak_ptr<VulkanDevice> VulkanDeviceWeak;
 }  // namespace GaiApi

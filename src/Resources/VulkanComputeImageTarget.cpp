@@ -20,7 +20,7 @@ VulkanComputeImageTarget::~VulkanComputeImageTarget() {
 }
 
 bool VulkanComputeImageTarget::InitTarget2D(  //
-    GaiApi::VulkanCoreWeak vVulkanCore,     //
+    GaiApi::VulkanCoreWeak vVulkanCore,       //
     ct::uvec2 vSize,                          //
     vk::Format vFormat,                       //
     uint32_t vMipLevelCount,                  //
@@ -34,11 +34,11 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
     ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
         mipLevelCount = vMipLevelCount;
-        width         = size.x;
-        height        = size.y;
-        format        = vFormat;
-        ratio         = (float)height / (float)width;
-        sampleCount   = vSampleCount;
+        width = size.x;
+        height = size.y;
+        format = vFormat;
+        ratio = (float)height / (float)width;
+        sampleCount = vSampleCount;
 
         target = VulkanRessource::createComputeTarget2D(m_VulkanCore, width, height, mipLevelCount, format, sampleCount, "VulkanComputeImageTarget");
 
@@ -46,26 +46,26 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
         assert(corePtr != nullptr);
 
         vk::ImageViewCreateInfo imViewInfo = {};
-        imViewInfo.flags                   = vk::ImageViewCreateFlags();
-        imViewInfo.image                   = target->image;
-        imViewInfo.viewType                = vk::ImageViewType::e2D;
-        imViewInfo.format                  = format;
-        imViewInfo.components              = vk::ComponentMapping();
-        imViewInfo.subresourceRange        = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, mipLevelCount, 0, 1);
-        targetView                         = corePtr->getDevice().createImageView(imViewInfo);
+        imViewInfo.flags = vk::ImageViewCreateFlags();
+        imViewInfo.image = target->image;
+        imViewInfo.viewType = vk::ImageViewType::e2D;
+        imViewInfo.format = format;
+        imViewInfo.components = vk::ComponentMapping();
+        imViewInfo.subresourceRange = vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, mipLevelCount, 0, 1);
+        targetView = corePtr->getDevice().createImageView(imViewInfo);
 
         vk::SamplerCreateInfo samplerInfo = {};
-        samplerInfo.flags                 = vk::SamplerCreateFlags();
-        samplerInfo.magFilter             = vk::Filter::eLinear;
-        samplerInfo.minFilter             = vk::Filter::eLinear;
-        samplerInfo.mipmapMode            = vk::SamplerMipmapMode::eLinear;
-        samplerInfo.addressModeU          = vk::SamplerAddressMode::eClampToEdge;  // U
-        samplerInfo.addressModeV          = vk::SamplerAddressMode::eClampToEdge;  // V
-        samplerInfo.addressModeW          = vk::SamplerAddressMode::eClampToEdge;  // W
-        targetSampler                     = corePtr->getDevice().createSampler(samplerInfo);
+        samplerInfo.flags = vk::SamplerCreateFlags();
+        samplerInfo.magFilter = vk::Filter::eLinear;
+        samplerInfo.minFilter = vk::Filter::eLinear;
+        samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+        samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;  // U
+        samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;  // V
+        samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;  // W
+        targetSampler = corePtr->getDevice().createSampler(samplerInfo);
 
-        targetDescriptorInfo.sampler     = targetSampler;
-        targetDescriptorInfo.imageView   = targetView;
+        targetDescriptorInfo.sampler = targetSampler;
+        targetDescriptorInfo.imageView = targetView;
         targetDescriptorInfo.imageLayout = vk::ImageLayout::eGeneral;
 
         res = true;

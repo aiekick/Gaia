@@ -48,7 +48,7 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <ImGuiPack.h>      // GAIA_API
+#include <ImGuiPack.h>  // GAIA_API
 
 #include <cstdint>
 
@@ -62,7 +62,7 @@ limitations under the License.
 //     - Do not simply add it in a .cpp file!
 // (2) Call ImGui_ImplVulkan_LoadFunctions() before ImGui_ImplVulkan_Init() with your custom function.
 // If you have no idea what this is, leave it alone!
-//#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
+// #define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
 
 // Vulkan includes
 #if defined(IMGUI_IMPL_VULKAN_NO_PROTOTYPES) && !defined(VK_NO_PROTOTYPES)
@@ -77,33 +77,34 @@ struct GAIA_API ImGui_ImplVulkan_InitInfo {
 #ifdef ENABLE_AIEKICK_CODE
     GaiApi::VulkanCoreWeak vulkanCore;
 #endif
-    vk::Instance                      Instance;
+    vk::Instance Instance;
     vk::PhysicalDevice PhysicalDevice;
     vk::Device Device;
-    uint32_t                        QueueFamily;
+    uint32_t QueueFamily;
     vk::Queue Queue;
     vk::PipelineCache PipelineCache;
     vk::DescriptorPool DescriptorPool;
-    uint32_t                        Subpass;
-    uint32_t                        MinImageCount;          // >= 2
-    uint32_t                        ImageCount;             // >= MinImageCount
-    VkSampleCountFlagBits MSAASamples;                    // >= VK_SAMPLE_COUNT_1_BIT
+    uint32_t Subpass;
+    uint32_t MinImageCount;             // >= 2
+    uint32_t ImageCount;                // >= MinImageCount
+    VkSampleCountFlagBits MSAASamples;  // >= VK_SAMPLE_COUNT_1_BIT
     const vk::AllocationCallbacks* Allocator;
-    void                            (*CheckVkResultFn)(VkResult err);
+    void (*CheckVkResultFn)(VkResult err);
 };
 
 // Called by user code
-GAIA_API bool     ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info, VkRenderPass render_pass);
-GAIA_API void     ImGui_ImplVulkan_Shutdown();
-GAIA_API void     ImGui_ImplVulkan_NewFrame();
-GAIA_API void     ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
-GAIA_API bool     ImGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer command_buffer);
-GAIA_API void     ImGui_ImplVulkan_DestroyFontUploadObjects();
-GAIA_API void     ImGui_ImplVulkan_SetMinImageCount(uint32_t min_image_count); // To override MinImageCount after initialization (e.g. if swap chain is recreated)
+GAIA_API bool ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info, VkRenderPass render_pass);
+GAIA_API void ImGui_ImplVulkan_Shutdown();
+GAIA_API void ImGui_ImplVulkan_NewFrame();
+GAIA_API void ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
+GAIA_API bool ImGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer command_buffer);
+GAIA_API void ImGui_ImplVulkan_DestroyFontUploadObjects();
+GAIA_API void ImGui_ImplVulkan_SetMinImageCount(
+    uint32_t min_image_count);  // To override MinImageCount after initialization (e.g. if swap chain is recreated)
 
 // Optional: load Vulkan functions with a custom function loader
 // This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
-GAIA_API bool     ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = NULL);
+GAIA_API bool ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction (*loader_func)(const char* function_name, void* user_data), void* user_data = NULL);
 
 //-------------------------------------------------------------------------
 // Internal / Miscellaneous Vulkan Helpers
@@ -125,53 +126,67 @@ struct ImGui_ImplVulkanH_Frame;
 struct ImGui_ImplVulkanH_Window;
 
 // Helpers
-GAIA_API void                 ImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, ImGui_ImplVulkanH_Window* wnd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count);
-GAIA_API void                 ImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wnd, const VkAllocationCallbacks* allocator);
-GAIA_API VkSurfaceFormatKHR   ImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space);
-GAIA_API VkPresentModeKHR     ImGui_ImplVulkanH_SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count);
-GAIA_API int                  ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode);
-GAIA_API VkDescriptorSet      ImGui_ImplVulkanH_Create_UserTexture_Descriptor(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout, VkDescriptorSet* vExistingDescriptorSet = nullptr);
-GAIA_API bool                 ImGui_ImplVulkanH_Destroy_UserTexture_Descriptor(VkDescriptorSet* vVkDescriptorSet);
-GAIA_API uint32_t             ImGui_ImplVulkanH_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);
+GAIA_API void ImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance,
+    VkPhysicalDevice physical_device,
+    VkDevice device,
+    ImGui_ImplVulkanH_Window* wnd,
+    uint32_t queue_family,
+    const VkAllocationCallbacks* allocator,
+    int w,
+    int h,
+    uint32_t min_image_count);
+GAIA_API void ImGui_ImplVulkanH_DestroyWindow(
+    VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wnd, const VkAllocationCallbacks* allocator);
+GAIA_API VkSurfaceFormatKHR ImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device,
+    VkSurfaceKHR surface,
+    const VkFormat* request_formats,
+    int request_formats_count,
+    VkColorSpaceKHR request_color_space);
+GAIA_API VkPresentModeKHR ImGui_ImplVulkanH_SelectPresentMode(
+    VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count);
+GAIA_API int ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode);
+GAIA_API VkDescriptorSet ImGui_ImplVulkanH_Create_UserTexture_Descriptor(
+    VkSampler sampler, VkImageView image_view, VkImageLayout image_layout, VkDescriptorSet* vExistingDescriptorSet = nullptr);
+GAIA_API bool ImGui_ImplVulkanH_Destroy_UserTexture_Descriptor(VkDescriptorSet* vVkDescriptorSet);
+GAIA_API uint32_t ImGui_ImplVulkanH_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);
 
 // Helper structure to hold the data needed by one rendering frame
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
 // [Please zero-clear before use!]
 struct GAIA_API ImGui_ImplVulkanH_Frame {
-    VkCommandPool       CommandPool;
-    VkCommandBuffer     CommandBuffer;
-    VkFence             Fence;
-    VkImage             Backbuffer;
-    VkImageView         BackbufferView;
-    VkFramebuffer       Framebuffer;
+    VkCommandPool CommandPool;
+    VkCommandBuffer CommandBuffer;
+    VkFence Fence;
+    VkImage Backbuffer;
+    VkImageView BackbufferView;
+    VkFramebuffer Framebuffer;
 };
 
 struct GAIA_API ImGui_ImplVulkanH_FrameSemaphores {
-    VkSemaphore         ImageAcquiredSemaphore;
-    VkSemaphore         RenderCompleteSemaphore;
+    VkSemaphore ImageAcquiredSemaphore;
+    VkSemaphore RenderCompleteSemaphore;
 };
 
 // Helper structure to hold the data needed by one rendering context into one OS window
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
 struct GAIA_API ImGui_ImplVulkanH_Window {
-    int                 Width;
-    int                 Height;
-    VkSwapchainKHR      Swapchain;
-    VkSurfaceKHR        Surface;
-    VkSurfaceFormatKHR  SurfaceFormat;
-    VkPresentModeKHR    PresentMode;
-    VkRenderPass        RenderPass;
-    VkPipeline          Pipeline;               // The window pipeline may uses a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo
-    bool                ClearEnable;
-    VkClearValue        ClearValue;
-    uint32_t            FrameIndex;             // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
-    uint32_t            ImageCount;             // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
-    uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
+    int Width;
+    int Height;
+    VkSwapchainKHR Swapchain;
+    VkSurfaceKHR Surface;
+    VkSurfaceFormatKHR SurfaceFormat;
+    VkPresentModeKHR PresentMode;
+    VkRenderPass RenderPass;
+    VkPipeline Pipeline;  // The window pipeline may uses a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo
+    bool ClearEnable;
+    VkClearValue ClearValue;
+    uint32_t FrameIndex;      // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
+    uint32_t ImageCount;      // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
+    uint32_t SemaphoreIndex;  // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
     ImGui_ImplVulkanH_Frame* Frames;
     ImGui_ImplVulkanH_FrameSemaphores* FrameSemaphores;
 
-    ImGui_ImplVulkanH_Window()
-    {
+    ImGui_ImplVulkanH_Window() {
         memset(this, 0, sizeof(*this));
         PresentMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
         ClearEnable = true;
@@ -188,28 +203,31 @@ public:
 
 public:
     VulkanImGuiRendererWeak m_This;
-    ImGui_ImplVulkan_InitInfo m_Info  = {};
+    ImGui_ImplVulkan_InitInfo m_Info = {};
     vk::PipelineCache m_PipelineCache = nullptr;
     GaiApi::VulkanCoreWeak m_VulkanCore;
     GaiApi::VulkanWindowWeak m_VulkanWindow;
 
 private:
-	VkRenderPass m_RenderPass = VK_NULL_HANDLE;
+    VkRenderPass m_RenderPass = VK_NULL_HANDLE;
 
 public:
     bool Init(GaiApi::VulkanCoreWeak vVulkanCore, GaiApi::VulkanWindowWeak vVulkanWindow);
     void Unit();
 
 public:
-	void NewFrame();
-	void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
-	bool CreateFontsTexture();
-	vk::DescriptorSet CreateImGuiTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout, vk::DescriptorSet* vExistingDescriptorSet = nullptr);
-	bool DestroyImGuiTexture(vk::DescriptorSet* vVkDescriptorSet);
+    void NewFrame();
+    void RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
+    bool CreateFontsTexture();
+    vk::DescriptorSet CreateImGuiTexture(
+        VkSampler sampler, VkImageView image_view, VkImageLayout image_layout, vk::DescriptorSet* vExistingDescriptorSet = nullptr);
+    bool DestroyImGuiTexture(vk::DescriptorSet* vVkDescriptorSet);
 
 public:
-	VulkanImGuiRenderer() = default; // Prevent construction
-	VulkanImGuiRenderer(const VulkanImGuiRenderer&) = default; // Prevent construction by copying
-	VulkanImGuiRenderer& operator =(const VulkanImGuiRenderer&) { return *this; }; // Prevent assignment
-	~VulkanImGuiRenderer() = default; // Prevent unwanted destruction
+    VulkanImGuiRenderer() = default;                            // Prevent construction
+    VulkanImGuiRenderer(const VulkanImGuiRenderer&) = default;  // Prevent construction by copying
+    VulkanImGuiRenderer& operator=(const VulkanImGuiRenderer&) {
+        return *this;
+    };                                 // Prevent assignment
+    ~VulkanImGuiRenderer() = default;  // Prevent unwanted destruction
 };

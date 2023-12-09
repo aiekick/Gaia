@@ -38,145 +38,144 @@ limitations under the License.
 
 class GAIA_API FrameBuffer : public OutputSizeInterface {
 public:
-	static FrameBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
+    static FrameBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
 
 private:
-	bool m_NeedNewUBOUpload = true;			// true for first render
-	bool m_NeedNewSBOUpload = true;			// true for first render
+    bool m_NeedNewUBOUpload = true;  // true for first render
+    bool m_NeedNewSBOUpload = true;  // true for first render
 
 protected:
-	uint32_t m_BufferIdToResize = 0U;								// buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
-	bool m_IsRenderPassExternal = false;							// true if the renderpass is not created here, but come from external (inportant for not destroy him)
-	
-	bool m_PingPongBufferMode = false;
-	bool m_CreateRenderPass = false;
-	bool m_NeedResize = false;				// will be resized if true
-	bool m_Loaded = false;					// if shader operationnel
-	bool m_JustReseted = false;				// when shader was reseted
-	bool m_FirstRender = true;				// 1er rendu
+    uint32_t m_BufferIdToResize = 0U;     // buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
+    bool m_IsRenderPassExternal = false;  // true if the renderpass is not created here, but come from external (inportant for not destroy him)
 
-	uint32_t m_CountBuffers = 0U;			// FRAGMENT count framebuffer color attachment from 0 to 7
+    bool m_PingPongBufferMode = false;
+    bool m_CreateRenderPass = false;
+    bool m_NeedResize = false;   // will be resized if true
+    bool m_Loaded = false;       // if shader operationnel
+    bool m_JustReseted = false;  // when shader was reseted
+    bool m_FirstRender = true;   // 1er rendu
 
-	ct::ivec2 m_TemporarySize;				// temporary size before resize can be used by imgui
-	int32_t m_TemporaryCountBuffer = 0;		// temporary count before resize can be used by imgui
+    uint32_t m_CountBuffers = 0U;  // FRAGMENT count framebuffer color attachment from 0 to 7
 
-	bool m_UseDepth = false;				// if depth needed for creation
-	bool m_NeedToClear = false;				// if color can be cleared for attachment
-	ct::fvec4 m_ClearColor = 0.0f;			// color to clear
+    ct::ivec2 m_TemporarySize;           // temporary size before resize can be used by imgui
+    int32_t m_TemporaryCountBuffer = 0;  // temporary count before resize can be used by imgui
 
-	uint32_t m_CurrentFrame = 0U;
+    bool m_UseDepth = false;        // if depth needed for creation
+    bool m_NeedToClear = false;     // if color can be cleared for attachment
+    ct::fvec4 m_ClearColor = 0.0f;  // color to clear
 
-	DescriptorImageInfoVector m_FrontDescriptors;
-	DescriptorImageInfoVector m_BackDescriptors;
-	fvec2Vector m_DescriptorSizes;
+    uint32_t m_CurrentFrame = 0U;
 
-	// vulkan creation
-	GaiApi::VulkanCoreWeak m_VulkanCore;	// vulkan core
-	GaiApi::VulkanQueue m_Queue;					// queue
-	vk::Device m_Device;						// device copy
+    DescriptorImageInfoVector m_FrontDescriptors;
+    DescriptorImageInfoVector m_BackDescriptors;
+    fvec2Vector m_DescriptorSizes;
 
-	// FrameBuffer
-	std::vector<GaiApi::VulkanFrameBuffer> m_FrameBuffers;
-	vk::Format m_SurfaceColorFormat = vk::Format::eR32G32B32A32Sfloat;
+    // vulkan creation
+    GaiApi::VulkanCoreWeak m_VulkanCore;  // vulkan core
+    GaiApi::VulkanQueue m_Queue;          // queue
+    vk::Device m_Device;                  // device copy
 
-	// Submition
-	std::vector<vk::Semaphore> m_RenderCompleteSemaphores;
-	std::vector<vk::Fence> m_WaitFences;
-	std::vector<vk::CommandBuffer> m_CommandBuffers;
+    // FrameBuffer
+    std::vector<GaiApi::VulkanFrameBuffer> m_FrameBuffers;
+    vk::Format m_SurfaceColorFormat = vk::Format::eR32G32B32A32Sfloat;
 
-	// dynamic state
-	vk::Rect2D m_RenderArea = {};
-	vk::Viewport m_Viewport = {};
-	ct::uvec3 m_OutputSize;							// output size for compute stage
-	float m_OutputRatio = 1.0f;
+    // Submition
+    std::vector<vk::Semaphore> m_RenderCompleteSemaphores;
+    std::vector<vk::Fence> m_WaitFences;
+    std::vector<vk::CommandBuffer> m_CommandBuffers;
 
-	// Renderpass
-	vk::RenderPass m_RenderPass = {};
+    // dynamic state
+    vk::Rect2D m_RenderArea = {};
+    vk::Viewport m_Viewport = {};
+    ct::uvec3 m_OutputSize;  // output size for compute stage
+    float m_OutputRatio = 1.0f;
 
-	// pixel format
-	vk::Format m_PixelFormat = vk::Format::eR32G32B32A32Sfloat;
+    // Renderpass
+    vk::RenderPass m_RenderPass = {};
 
-	// Multi Sampling
-	vk::SampleCountFlagBits m_SampleCount = vk::SampleCountFlagBits::e1; // sampling for primitives
+    // pixel format
+    vk::Format m_PixelFormat = vk::Format::eR32G32B32A32Sfloat;
 
-	// clear Color
-	std::vector<vk::ClearValue> m_ClearColorValues;
+    // Multi Sampling
+    vk::SampleCountFlagBits m_SampleCount = vk::SampleCountFlagBits::e1;  // sampling for primitives
 
-public: // contructor
-	FrameBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
-	virtual ~FrameBuffer();
+    // clear Color
+    std::vector<vk::ClearValue> m_ClearColorValues;
 
-	// init/unit
-	bool Init(
-		const ct::uvec2& vSize, 
-		const uint32_t& vCountColorBuffers, 
-		const bool& vUseDepth, 
-		const bool& vNeedToClear, 
-		const ct::fvec4& vClearColor,
-		const bool& vPingPongBufferMode,
-		const vk::Format& vFormat,
-		const vk::SampleCountFlagBits& vSampleCount,
-		const bool& vCreateRenderPass = true,
-		const vk::RenderPass& vExternalRenderPass = nullptr);
-	void Unit();
+public:  // contructor
+    FrameBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
+    virtual ~FrameBuffer();
 
-	// resize
-	void NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr); // to call at any moment
+    // init/unit
+    bool Init(const ct::uvec2& vSize,
+        const uint32_t& vCountColorBuffers,
+        const bool& vUseDepth,
+        const bool& vNeedToClear,
+        const ct::fvec4& vClearColor,
+        const bool& vPingPongBufferMode,
+        const vk::Format& vFormat,
+        const vk::SampleCountFlagBits& vSampleCount,
+        const bool& vCreateRenderPass = true,
+        const vk::RenderPass& vExternalRenderPass = nullptr);
+    void Unit();
 
-	// not to call at any moment, to call only aftter submit or before any command buffer recording
-	// return true, if was resized
-	bool ResizeIfNeeded();
+    // resize
+    void NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr);  // to call at any moment
 
-	// Merger for merged rendering one FBO in the merger
-	bool Begin(vk::CommandBuffer* vCmdBufferPtr);
-	void End(vk::CommandBuffer* vCmdBufferPtr);
+    // not to call at any moment, to call only aftter submit or before any command buffer recording
+    // return true, if was resized
+    bool ResizeIfNeeded();
 
-	// get sampler / image / buffer
-	GaiApi::VulkanFrameBuffer* GetBackFbo();
-	std::vector<GaiApi::VulkanFrameBufferAttachment>* GetBackBufferAttachments(uint32_t* vMaxBuffers);
+    // Merger for merged rendering one FBO in the merger
+    bool Begin(vk::CommandBuffer* vCmdBufferPtr);
+    void End(vk::CommandBuffer* vCmdBufferPtr);
+
+    // get sampler / image / buffer
+    GaiApi::VulkanFrameBuffer* GetBackFbo();
+    std::vector<GaiApi::VulkanFrameBufferAttachment>* GetBackBufferAttachments(uint32_t* vMaxBuffers);
     VulkanImageObjectPtr GetBackImage(const uint32_t& vBindingPoint);
     vk::DescriptorImageInfo* GetBackDescriptorImageInfo(const uint32_t& vBindingPoint);
-	DescriptorImageInfoVector* GetBackDescriptorImageInfos(fvec2Vector* vOutSizes);
+    DescriptorImageInfoVector* GetBackDescriptorImageInfos(fvec2Vector* vOutSizes);
 
-	GaiApi::VulkanFrameBuffer* GetFrontFbo();
-	std::vector<GaiApi::VulkanFrameBufferAttachment>* GetFrontBufferAttachments(uint32_t* vMaxBuffers);
+    GaiApi::VulkanFrameBuffer* GetFrontFbo();
+    std::vector<GaiApi::VulkanFrameBufferAttachment>* GetFrontBufferAttachments(uint32_t* vMaxBuffers);
     VulkanImageObjectPtr GetFrontImage(const uint32_t& vBindingPoint);
     vk::DescriptorImageInfo* GetFrontDescriptorImageInfo(const uint32_t& vBindingPoint);
-	DescriptorImageInfoVector* GetFrontDescriptorImageInfos(fvec2Vector* vOutSizes);
-	
-	// Get
-	vk::Viewport GetViewport() const;
-	vk::Rect2D GetRenderArea() const;
-	vk::RenderPass* GetRenderPass();
-	void SetRenderPass(const vk::RenderPass& vExternalRenderPass);
-	vk::SampleCountFlagBits GetSampleCount() const;
-	uint32_t GetBuffersCount() const;
+    DescriptorImageInfoVector* GetFrontDescriptorImageInfos(fvec2Vector* vOutSizes);
 
-	// OutputSizeInterface
-	float GetOutputRatio() const override;
+    // Get
+    vk::Viewport GetViewport() const;
+    vk::Rect2D GetRenderArea() const;
+    vk::RenderPass* GetRenderPass();
+    void SetRenderPass(const vk::RenderPass& vExternalRenderPass);
+    vk::SampleCountFlagBits GetSampleCount() const;
+    uint32_t GetBuffersCount() const;
+
+    // OutputSizeInterface
+    float GetOutputRatio() const override;
     ct::fvec2 GetOutputSize() const override;
-	
-	void BeginRenderPass(vk::CommandBuffer* vCmdBufferPtr);
-	void ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBufferPtr, const bool& vForce = false); // clear if clear is needed internally (set by ClearAttachments)
-	void EndRenderPass(vk::CommandBuffer* vCmdBufferPtr);
 
-	void ClearAttachments(); // set clear flag for clearing at next render
+    void BeginRenderPass(vk::CommandBuffer* vCmdBufferPtr);
+    void ClearAttachmentsIfNeeded(
+        vk::CommandBuffer* vCmdBufferPtr, const bool& vForce = false);  // clear if clear is needed internally (set by ClearAttachments)
+    void EndRenderPass(vk::CommandBuffer* vCmdBufferPtr);
+
+    void ClearAttachments();  // set clear flag for clearing at next render
     void SetClearColorValue(const ct::fvec4& vColor);
 
     bool UpdateMipMapping(const uint32_t& vBindingPoint);
-	
-	void Swap();
+
+    void Swap();
 
 protected:
-	// Framebuffer
-	bool CreateFrameBuffers(
-		const ct::uvec2& vSize,
-		const uint32_t& vCountColorBuffers,
-		const bool& vUseDepth,
-		const bool& vNeedToClear,
-		const ct::fvec4& vClearColor,
-		const vk::Format& vFormat,
-		const vk::SampleCountFlagBits& vSampleCount,
-		const bool& vCreateRenderPass);
-	void DestroyFrameBuffers();
+    // Framebuffer
+    bool CreateFrameBuffers(const ct::uvec2& vSize,
+        const uint32_t& vCountColorBuffers,
+        const bool& vUseDepth,
+        const bool& vNeedToClear,
+        const ct::fvec4& vClearColor,
+        const vk::Format& vFormat,
+        const vk::SampleCountFlagBits& vSampleCount,
+        const bool& vCreateRenderPass);
+    void DestroyFrameBuffers();
 };

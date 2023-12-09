@@ -38,89 +38,82 @@ limitations under the License.
 
 class GAIA_API ComputeBuffer : public OutputSizeInterface {
 public:
-	static ComputeBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
+    static ComputeBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
 
 protected:
-	uint32_t m_BufferIdToResize = 0U;								// buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
-	bool m_IsRenderPassExternal = false;							// true if the renderpass is not created here, but come from external (inportant for not destroy him)
-	
-	bool m_PingPongBufferMode = false;
+    uint32_t m_BufferIdToResize = 0U;     // buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
+    bool m_IsRenderPassExternal = false;  // true if the renderpass is not created here, but come from external (inportant for not destroy him)
 
-	bool m_NeedResize = false;				// will be resized if true
-	bool m_Loaded = false;					// if shader operationnel
-	bool m_JustReseted = false;				// when shader was reseted
-	bool m_FirstRender = true;				// 1er rendu
+    bool m_PingPongBufferMode = false;
 
-	uint32_t m_CountBuffers = 0U;			// count buffers
+    bool m_NeedResize = false;   // will be resized if true
+    bool m_Loaded = false;       // if shader operationnel
+    bool m_JustReseted = false;  // when shader was reseted
+    bool m_FirstRender = true;   // 1er rendu
 
-	ct::ivec2 m_TemporarySize;				// temporary size before resize can be used by imgui
-	int32_t m_TemporaryCountBuffer = 0;		// temporary count before resize can be used by imgui
+    uint32_t m_CountBuffers = 0U;  // count buffers
 
-	uint32_t m_CurrentFrame = 0U;
+    ct::ivec2 m_TemporarySize;           // temporary size before resize can be used by imgui
+    int32_t m_TemporaryCountBuffer = 0;  // temporary count before resize can be used by imgui
 
-	// vulkan creation
-	GaiApi::VulkanCoreWeak m_VulkanCore;	// vulkan core
-	GaiApi::VulkanQueue m_Queue;					// queue
-	vk::Device m_Device;						// device copy
+    uint32_t m_CurrentFrame = 0U;
 
-	// ComputeBuffer
-	std::vector<std::vector<Texture2DPtr>> m_ComputeBuffers;
-	vk::Format m_Format = vk::Format::eR32G32B32A32Sfloat;
+    // vulkan creation
+    GaiApi::VulkanCoreWeak m_VulkanCore;  // vulkan core
+    GaiApi::VulkanQueue m_Queue;          // queue
+    vk::Device m_Device;                  // device copy
 
-	// Submition
-	std::vector<vk::Semaphore> m_RenderCompleteSemaphores;
-	std::vector<vk::Fence> m_WaitFences;
-	std::vector<vk::CommandBuffer> m_CommandBuffers;
+    // ComputeBuffer
+    std::vector<std::vector<Texture2DPtr>> m_ComputeBuffers;
+    vk::Format m_Format = vk::Format::eR32G32B32A32Sfloat;
 
-	// dynamic state
-	//vk::Rect2D m_RenderArea = {};
-	//vk::Viewport m_Viewport = {};
-	ct::uvec3 m_OutputSize;							// output size for compute stage
-	float m_OutputRatio = 1.0f;
+    // Submition
+    std::vector<vk::Semaphore> m_RenderCompleteSemaphores;
+    std::vector<vk::Fence> m_WaitFences;
+    std::vector<vk::CommandBuffer> m_CommandBuffers;
 
-public: // contructor
-	ComputeBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
-	virtual ~ComputeBuffer();
+    // dynamic state
+    // vk::Rect2D m_RenderArea = {};
+    // vk::Viewport m_Viewport = {};
+    ct::uvec3 m_OutputSize;  // output size for compute stage
+    float m_OutputRatio = 1.0f;
 
-	// init/unit
-	bool Init(
-		const ct::uvec2& vSize, 
-		const uint32_t& vCountColorBuffers,
-		const bool& vPingPongBufferMode,
-		const vk::Format& vFormat);
-	void Unit();
+public:  // contructor
+    ComputeBuffer(GaiApi::VulkanCoreWeak vVulkanCore);
+    virtual ~ComputeBuffer();
 
-	// resize
-	void NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr); // to call at any moment
+    // init/unit
+    bool Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vPingPongBufferMode, const vk::Format& vFormat);
+    void Unit();
 
-	// not to call at any moment, to call only aftter submit or before any command buffer recording
-	// return true, if was resized
-	bool ResizeIfNeeded();
+    // resize
+    void NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr);  // to call at any moment
 
-	// Merger for merged rendering one FBO in the merger
-	bool Begin(vk::CommandBuffer* vCmdBufferPtr);
-	void End(vk::CommandBuffer* vCmdBufferPtr);
+    // not to call at any moment, to call only aftter submit or before any command buffer recording
+    // return true, if was resized
+    bool ResizeIfNeeded();
 
-	// get sampler / image / buffer
-	vk::DescriptorImageInfo* GetBackDescriptorImageInfo(const uint32_t& vBindingPoint);
-	vk::DescriptorImageInfo* GetFrontDescriptorImageInfo(const uint32_t& vBindingPoint);
-	
-	uint32_t GetBuffersCount() const;
-	bool IsPingPongBufferMode() const;
+    // Merger for merged rendering one FBO in the merger
+    bool Begin(vk::CommandBuffer* vCmdBufferPtr);
+    void End(vk::CommandBuffer* vCmdBufferPtr);
+
+    // get sampler / image / buffer
+    vk::DescriptorImageInfo* GetBackDescriptorImageInfo(const uint32_t& vBindingPoint);
+    vk::DescriptorImageInfo* GetFrontDescriptorImageInfo(const uint32_t& vBindingPoint);
+
+    uint32_t GetBuffersCount() const;
+    bool IsPingPongBufferMode() const;
 
     // OutputSizeInterface
     float GetOutputRatio() const override;
     ct::fvec2 GetOutputSize() const override;
 
-	bool UpdateMipMapping(const uint32_t& vBindingPoint);
+    bool UpdateMipMapping(const uint32_t& vBindingPoint);
 
-	void Swap();
+    void Swap();
 
 protected:
-	// Framebuffer
-	bool CreateComputeBuffers(
-		const ct::uvec2& vSize,
-		const uint32_t& vCountColorBuffers,
-		const vk::Format& vFormat);
-	void DestroyComputeBuffers();
+    // Framebuffer
+    bool CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const vk::Format& vFormat);
+    void DestroyComputeBuffers();
 };

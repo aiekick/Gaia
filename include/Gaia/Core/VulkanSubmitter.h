@@ -20,23 +20,21 @@ limitations under the License.
 #include <Gaia/gaia.h>
 
 // unique_lock::lock/unlock
-#include <iostream>       // std::cout
-#include <thread>         // std::thread
-#include <mutex>          // std::mutex, std::unique_lock, std::defer_lock
+#include <iostream>  // std::cout
+#include <thread>    // std::thread
+#include <mutex>     // std::mutex, std::unique_lock, std::defer_lock
 
-namespace GaiApi
-{
-	class VulkanCore;
-	class GAIA_API VulkanSubmitter
-	{
-	public:
-		static std::mutex criticalSectionMutex;
+namespace GaiApi {
+class VulkanCore;
+class GAIA_API VulkanSubmitter {
+public:
+    static std::mutex criticalSectionMutex;
 
-	public:
-		VulkanSubmitter() = default;
-		~VulkanSubmitter() = default;
+public:
+    VulkanSubmitter() = default;
+    ~VulkanSubmitter() = default;
 
-	public:
-		static bool Submit(GaiApi::VulkanCoreWeak vVulkanCore, vk::QueueFlagBits vQueueType, vk::SubmitInfo vSubmitInfo, vk::Fence vWaitFence);
-	};
-}
+public:
+    static bool Submit(GaiApi::VulkanCoreWeak vVulkanCore, vk::QueueFlagBits vQueueType, vk::SubmitInfo vSubmitInfo, vk::Fence vWaitFence);
+};
+}  // namespace GaiApi

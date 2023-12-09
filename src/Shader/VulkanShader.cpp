@@ -66,9 +66,13 @@ VulkanShaderPtr VulkanShader::Create() {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-VulkanShader::VulkanShader() { ZoneScoped; }
+VulkanShader::VulkanShader() {
+    ZoneScoped;
+}
 
-VulkanShader::~VulkanShader() { ZoneScoped; }
+VulkanShader::~VulkanShader() {
+    ZoneScoped;
+}
 
 bool VulkanShader::Init() {
     ZoneScoped;
@@ -159,8 +163,7 @@ std::string GetFullShaderStageString(const EShLanguage& stage) {
 }
 
 // TODO: Multithread, manage SpirV that doesn't need recompiling (only recompile when dirty)
-const std::vector<unsigned int> VulkanShader::CompileGLSLFile(
-    const std::string& filename,
+const std::vector<unsigned int> VulkanShader::CompileGLSLFile(const std::string& filename,
     const ShaderEntryPoint& vEntryPoint,
     ShaderMessagingFunction vMessagingFunction,
     std::string* vShaderCode,
@@ -191,8 +194,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLFile(
     return SpirV;
 }
 
-const std::vector<unsigned int> VulkanShader::CompileGLSLString(
-    const std::string& vCode,
+const std::vector<unsigned int> VulkanShader::CompileGLSLString(const std::string& vCode,
     const std::string& vShaderSuffix,
     const std::string& vOriginalFileName,
     const ShaderEntryPoint& vEntryPoint,
@@ -308,7 +310,8 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
         Shader.setSourceEntryPoint("main");
 
         if (!Shader.parse(&glslang::DefaultTBuiltInResource, 100, false, messages)) {
-            LogVarError("Debug Parse (%s) : GLSL stage %s Parse Failed for stage : %s", entry.c_str(), vShaderSuffix.c_str(), vOriginalFileName.c_str());
+            LogVarError(
+                "Debug Parse (%s) : GLSL stage %s Parse Failed for stage : %s", entry.c_str(), vShaderSuffix.c_str(), vOriginalFileName.c_str());
 
             std::string log = Shader.getInfoLog();
             if (!log.empty()) {
@@ -359,7 +362,8 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
         Program.addShader(&Shader);
 
         if (!Program.link(messages)) {
-            LogVarError("Debug Linking (%s) : GLSL stage %s Linking Failed for : %s", entry.c_str(), vShaderSuffix.c_str(), vOriginalFileName.c_str());
+            LogVarError(
+                "Debug Linking (%s) : GLSL stage %s Linking Failed for : %s", entry.c_str(), vShaderSuffix.c_str(), vOriginalFileName.c_str());
 
             std::string log = Program.getInfoLog();
             if (!log.empty()) {
@@ -443,8 +447,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(
     return SpirV;
 }
 
-void VulkanShader::ParseGLSLString(
-    const std::string& vCode,
+void VulkanShader::ParseGLSLString(const std::string& vCode,
     const std::string& vShaderSuffix,
     const std::string& vOriginalFileName,
     const ShaderEntryPoint& vEntryPoint,

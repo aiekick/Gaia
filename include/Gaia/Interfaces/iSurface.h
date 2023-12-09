@@ -3,7 +3,7 @@
 
 namespace gaia {
 
-template<typename T>
+template <typename T>
 class iSurface {
 protected:
     T m_size = T(0);

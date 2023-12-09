@@ -29,94 +29,69 @@ limitations under the License.
 #define ZoneScoped
 #endif
 
-ImGuiTexturePtr ImGuiTexture::Create()
-{
-	ImGuiTexturePtr res = std::make_shared<ImGuiTexture>();
-	res->m_This = res;
-	return res;
+ImGuiTexturePtr ImGuiTexture::Create() {
+    ImGuiTexturePtr res = std::make_shared<ImGuiTexture>();
+    res->m_This = res;
+    return res;
 }
 
-ImGuiTexture::ImGuiTexture() 
-{
-	ZoneScoped;
+ImGuiTexture::ImGuiTexture() {
+    ZoneScoped;
 }
 
-ImGuiTexture::~ImGuiTexture()
-{
-	ZoneScoped;
+ImGuiTexture::~ImGuiTexture() {
+    ZoneScoped;
 }
 
 void ImGuiTexture::SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, vk::DescriptorImageInfo* vDescriptorImageInfo, float vRatio) {
-	ZoneScoped;
+    ZoneScoped;
 
-	auto rendPtr = vVulkanImGuiRenderer.lock();
-	if (rendPtr)
-	{
-		if (vDescriptorImageInfo)
-		{
-			if (IS_FLOAT_DIFFERENT(vRatio, 0.0f))
-				ratio = vRatio;
+    auto rendPtr = vVulkanImGuiRenderer.lock();
+    if (rendPtr) {
+        if (vDescriptorImageInfo) {
+            if (IS_FLOAT_DIFFERENT(vRatio, 0.0f))
+                ratio = vRatio;
 
-			if (firstLoad)
-			{
-				descriptor = rendPtr->CreateImGuiTexture(
-					(VkSampler)vDescriptorImageInfo->sampler,
-					(VkImageView)vDescriptorImageInfo->imageView,
-					(VkImageLayout)vDescriptorImageInfo->imageLayout);
-				firstLoad = false;
-			}
-			else
-			{
-				descriptor = rendPtr->CreateImGuiTexture(
-					(VkSampler)vDescriptorImageInfo->sampler,
-					(VkImageView)vDescriptorImageInfo->imageView,
-					(VkImageLayout)vDescriptorImageInfo->imageLayout,
-					&descriptor);
-			}
+            if (firstLoad) {
+                descriptor = rendPtr->CreateImGuiTexture((VkSampler)vDescriptorImageInfo->sampler, (VkImageView)vDescriptorImageInfo->imageView,
+                    (VkImageLayout)vDescriptorImageInfo->imageLayout);
+                firstLoad = false;
+            } else {
+                descriptor = rendPtr->CreateImGuiTexture((VkSampler)vDescriptorImageInfo->sampler, (VkImageView)vDescriptorImageInfo->imageView,
+                    (VkImageLayout)vDescriptorImageInfo->imageLayout, &descriptor);
+            }
 
-			canDisplayPreview = true;
-		}
-		else
-		{
-			ClearDescriptor();
-		}
-	}
+            canDisplayPreview = true;
+        } else {
+            ClearDescriptor();
+        }
+    }
 }
 
 void ImGuiTexture::SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, GaiApi::VulkanFrameBufferAttachment* vVulkanFrameBufferAttachment) {
-	ZoneScoped;
+    ZoneScoped;
 
-	auto rendPtr = vVulkanImGuiRenderer.lock();
-	if (rendPtr)
-	{
-		if (vVulkanFrameBufferAttachment)
-		{
-			ratio = (float)vVulkanFrameBufferAttachment->width / (float)vVulkanFrameBufferAttachment->height;
+    auto rendPtr = vVulkanImGuiRenderer.lock();
+    if (rendPtr) {
+        if (vVulkanFrameBufferAttachment) {
+            ratio = (float)vVulkanFrameBufferAttachment->width / (float)vVulkanFrameBufferAttachment->height;
 
-			if (firstLoad)
-			{
-				descriptor = rendPtr->CreateImGuiTexture(
-					(VkSampler)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.sampler,
-					(VkImageView)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageView,
-					(VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout);
-				firstLoad = false;
-			}
-			else
-			{
-				descriptor = rendPtr->CreateImGuiTexture(
-					(VkSampler)vVulkanFrameBufferAttachment->attachmentSampler,
-					(VkImageView)vVulkanFrameBufferAttachment->attachmentView,
-					(VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout,
-					&descriptor);
-			}
+            if (firstLoad) {
+                descriptor = rendPtr->CreateImGuiTexture((VkSampler)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.sampler,
+                    (VkImageView)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageView,
+                    (VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout);
+                firstLoad = false;
+            } else {
+                descriptor = rendPtr->CreateImGuiTexture((VkSampler)vVulkanFrameBufferAttachment->attachmentSampler,
+                    (VkImageView)vVulkanFrameBufferAttachment->attachmentView,
+                    (VkImageLayout)vVulkanFrameBufferAttachment->attachmentDescriptorInfo.imageLayout, &descriptor);
+            }
 
-			canDisplayPreview = true;
-		}
-		else
-		{
-			ClearDescriptor();
-		}
-	}
+            canDisplayPreview = true;
+        } else {
+            ClearDescriptor();
+        }
+    }
 }
 
 void ImGuiTexture::SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, GaiApi::VulkanComputeImageTarget* vVulkanComputeImageTarget) {
@@ -132,7 +107,7 @@ void ImGuiTexture::SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, G
                     (VkSampler)vVulkanComputeImageTarget->targetDescriptorInfo.sampler,      //
                     (VkImageView)vVulkanComputeImageTarget->targetDescriptorInfo.imageView,  //
                     (VkImageLayout)vVulkanComputeImageTarget->targetDescriptorInfo.imageLayout);
-                firstLoad  = false;
+                firstLoad = false;
             } else {
                 descriptor = rendPtr->CreateImGuiTexture(                                        //
                     (VkSampler)vVulkanComputeImageTarget->targetDescriptorInfo.sampler,          //
@@ -148,31 +123,25 @@ void ImGuiTexture::SetDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRenderer, G
     }
 }
 
-void ImGuiTexture::ClearDescriptor()
-{
-	ZoneScoped;
+void ImGuiTexture::ClearDescriptor() {
+    ZoneScoped;
 
-	canDisplayPreview = false;
-	firstLoad = true;
-	descriptor = vk::DescriptorSet{};
+    canDisplayPreview = false;
+    firstLoad = true;
+    descriptor = vk::DescriptorSet{};
 }
 
-void ImGuiTexture::DestroyDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRendererWeak)
-{
-	ZoneScoped;
+void ImGuiTexture::DestroyDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRendererWeak) {
+    ZoneScoped;
 
-	if (!destroyed)
-	{
-		auto rendPtr = vVulkanImGuiRendererWeak.lock();
-		if (rendPtr && rendPtr->DestroyImGuiTexture(&descriptor))
-		{
-			destroyed = true;
-		}
-	}
-	else
-	{
+    if (!destroyed) {
+        auto rendPtr = vVulkanImGuiRendererWeak.lock();
+        if (rendPtr && rendPtr->DestroyImGuiTexture(&descriptor)) {
+            destroyed = true;
+        }
+    } else {
 #if _DEBUG
-		CTOOL_DEBUG_BREAK;
+        CTOOL_DEBUG_BREAK;
 #endif
-	}
+    }
 }

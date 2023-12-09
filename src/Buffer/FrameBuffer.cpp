@@ -75,8 +75,16 @@ FrameBuffer::~FrameBuffer() {
 // donc pas de code car pas de shader, pas de m_Pipelines[0], ni ressources
 // mais un command buffer, un fbo et une renderpass
 
-bool FrameBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vUseDepth, const bool& vNeedToClear, const ct::fvec4& vClearColor, const bool& vPingPongBufferMode, const vk::Format& vFormat,
-                       const vk::SampleCountFlagBits& vSampleCount, const bool& vCreateRenderPass, const vk::RenderPass& vExternalRenderPass) {
+bool FrameBuffer::Init(const ct::uvec2& vSize,
+    const uint32_t& vCountColorBuffers,
+    const bool& vUseDepth,
+    const bool& vNeedToClear,
+    const ct::fvec4& vClearColor,
+    const bool& vPingPongBufferMode,
+    const vk::Format& vFormat,
+    const vk::SampleCountFlagBits& vSampleCount,
+    const bool& vCreateRenderPass,
+    const vk::RenderPass& vExternalRenderPass) {
     ZoneScoped;
 
     m_Loaded = false;
@@ -135,12 +143,12 @@ void FrameBuffer::NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuf
     ZoneScoped;
     if (vNewSize) {
         m_TemporarySize = *vNewSize;
-        m_NeedResize    = true;
+        m_NeedResize = true;
     }
 
     if (vCountColorBuffers) {
         m_TemporaryCountBuffer = *vCountColorBuffers;
-        m_NeedResize           = true;
+        m_NeedResize = true;
     }
 }
 
@@ -148,13 +156,14 @@ bool FrameBuffer::ResizeIfNeeded() {
     ZoneScoped;
     if (m_NeedResize && m_Loaded) {
         DestroyFrameBuffers();
-        CreateFrameBuffers(ct::uvec2(m_TemporarySize.x, m_TemporarySize.y), m_TemporaryCountBuffer, m_UseDepth, m_NeedToClear, m_ClearColor, m_PixelFormat, m_SampleCount, m_CreateRenderPass);
+        CreateFrameBuffers(ct::uvec2(m_TemporarySize.x, m_TemporarySize.y), m_TemporaryCountBuffer, m_UseDepth, m_NeedToClear, m_ClearColor,
+            m_PixelFormat, m_SampleCount, m_CreateRenderPass);
 
         m_TemporaryCountBuffer = m_CountBuffers;
-        m_TemporarySize        = ct::ivec2(m_OutputSize.x, m_OutputSize.y);
+        m_TemporarySize = ct::ivec2(m_OutputSize.x, m_OutputSize.y);
 
-        m_RenderArea  = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_TemporarySize.x, m_TemporarySize.y));
-        m_Viewport    = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_TemporarySize.x), static_cast<float>(m_TemporarySize.y), 0, 1.0f);
+        m_RenderArea = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_TemporarySize.x, m_TemporarySize.y));
+        m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_TemporarySize.x), static_cast<float>(m_TemporarySize.y), 0, 1.0f);
         m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
         m_NeedResize = false;
@@ -201,7 +210,9 @@ void FrameBuffer::BeginRenderPass(vk::CommandBuffer* vCmdBufferPtr) {
     if (vCmdBufferPtr) {
         auto fbo = GetFrontFbo();
 
-        vCmdBufferPtr->beginRenderPass(vk::RenderPassBeginInfo(m_RenderPass, fbo->framebuffer, m_RenderArea, static_cast<uint32_t>(m_ClearColorValues.size()), m_ClearColorValues.data()), vk::SubpassContents::eInline);
+        vCmdBufferPtr->beginRenderPass(vk::RenderPassBeginInfo(m_RenderPass, fbo->framebuffer, m_RenderArea,
+                                           static_cast<uint32_t>(m_ClearColorValues.size()), m_ClearColorValues.data()),
+            vk::SubpassContents::eInline);
     }
 }
 
@@ -211,7 +222,8 @@ void FrameBuffer::ClearAttachmentsIfNeeded(vk::CommandBuffer* vCmdBufferPtr, con
     if (/*fbo->neverCleared || */ vForce) {
         if (/*fbo->needToClear || */ vForce) {
             if (vCmdBufferPtr) {
-                vCmdBufferPtr->clearAttachments(static_cast<uint32_t>(fbo->attachmentClears.size()), fbo->attachmentClears.data(), static_cast<uint32_t>(fbo->rectClears.size()), fbo->rectClears.data());
+                vCmdBufferPtr->clearAttachments(static_cast<uint32_t>(fbo->attachmentClears.size()), fbo->attachmentClears.data(),
+                    static_cast<uint32_t>(fbo->rectClears.size()), fbo->rectClears.data());
             }
         }
 
@@ -279,7 +291,7 @@ void FrameBuffer::SetRenderPass(const vk::RenderPass& vExternalRenderPass) {
     if (vExternalRenderPass) {
         if (!m_CreateRenderPass)  // we can set a renderpass only if the creation was not demand
         {
-            m_RenderPass           = vExternalRenderPass;
+            m_RenderPass = vExternalRenderPass;
             m_IsRenderPassExternal = true;
         } else {
             CTOOL_DEBUG_BREAK;
@@ -328,10 +340,10 @@ std::vector<GaiApi::VulkanFrameBufferAttachment>* FrameBuffer::GetFrontBufferAtt
 VulkanImageObjectPtr FrameBuffer::GetFrontImage(const uint32_t& vBindingPoint) {
     ZoneScoped;
     uint32_t maxBuffers = 0U;
-    auto fbos           = GetFrontBufferAttachments(&maxBuffers);
+    auto fbos = GetFrontBufferAttachments(&maxBuffers);
     if (fbos) {
-        uint32_t m_PreviewBufferId               = vBindingPoint;
-        m_PreviewBufferId                        = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        uint32_t m_PreviewBufferId = vBindingPoint;
+        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -349,10 +361,10 @@ VulkanImageObjectPtr FrameBuffer::GetFrontImage(const uint32_t& vBindingPoint) {
 vk::DescriptorImageInfo* FrameBuffer::GetFrontDescriptorImageInfo(const uint32_t& vBindingPoint) {
     ZoneScoped;
     uint32_t maxBuffers = 0U;
-    auto fbos           = GetFrontBufferAttachments(&maxBuffers);
+    auto fbos = GetFrontBufferAttachments(&maxBuffers);
     if (fbos) {
-        uint32_t m_PreviewBufferId               = vBindingPoint;
-        m_PreviewBufferId                        = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        uint32_t m_PreviewBufferId = vBindingPoint;
+        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -370,7 +382,7 @@ vk::DescriptorImageInfo* FrameBuffer::GetFrontDescriptorImageInfo(const uint32_t
 DescriptorImageInfoVector* FrameBuffer::GetFrontDescriptorImageInfos(fvec2Vector* vOutSizes) {
     ZoneScoped;
     uint32_t maxBuffers = 0U;
-    auto fbos           = GetFrontBufferAttachments(&maxBuffers);
+    auto fbos = GetFrontBufferAttachments(&maxBuffers);
     if (fbos) {
         if (m_FrontDescriptors.size() == (size_t)maxBuffers) {
             size_t offset = 0U;
@@ -379,7 +391,7 @@ DescriptorImageInfoVector* FrameBuffer::GetFrontDescriptorImageInfos(fvec2Vector
 
             for (size_t i = 0U; i < (size_t)maxBuffers; ++i) {
                 m_FrontDescriptors[i] = fbos->at(i + offset).attachmentDescriptorInfo;
-                m_DescriptorSizes[i]  = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
+                m_DescriptorSizes[i] = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
             }
 
             if (vOutSizes) {
@@ -394,10 +406,10 @@ DescriptorImageInfoVector* FrameBuffer::GetFrontDescriptorImageInfos(fvec2Vector
 VulkanImageObjectPtr FrameBuffer::GetBackImage(const uint32_t& vBindingPoint) {
     ZoneScoped;
     uint32_t maxBuffers = 0U;
-    auto fbos           = GetBackBufferAttachments(&maxBuffers);
+    auto fbos = GetBackBufferAttachments(&maxBuffers);
     if (fbos) {
-        uint32_t m_PreviewBufferId               = vBindingPoint;
-        m_PreviewBufferId                        = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        uint32_t m_PreviewBufferId = vBindingPoint;
+        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -415,10 +427,10 @@ VulkanImageObjectPtr FrameBuffer::GetBackImage(const uint32_t& vBindingPoint) {
 vk::DescriptorImageInfo* FrameBuffer::GetBackDescriptorImageInfo(const uint32_t& vBindingPoint) {
     ZoneScoped;
     uint32_t maxBuffers = 0U;
-    auto fbos           = GetBackBufferAttachments(&maxBuffers);
+    auto fbos = GetBackBufferAttachments(&maxBuffers);
     if (fbos) {
-        uint32_t m_PreviewBufferId               = vBindingPoint;
-        m_PreviewBufferId                        = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        uint32_t m_PreviewBufferId = vBindingPoint;
+        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -448,7 +460,7 @@ std::vector<GaiApi::VulkanFrameBufferAttachment>* FrameBuffer::GetBackBufferAtta
 DescriptorImageInfoVector* FrameBuffer::GetBackDescriptorImageInfos(fvec2Vector* vOutSizes) {
     ZoneScoped;
     uint32_t maxBuffers = 0U;
-    auto fbos           = GetBackBufferAttachments(&maxBuffers);
+    auto fbos = GetBackBufferAttachments(&maxBuffers);
     if (fbos) {
         if (m_BackDescriptors.size() == (size_t)maxBuffers) {
             size_t offset = 0U;
@@ -492,8 +504,14 @@ bool FrameBuffer::UpdateMipMapping(const uint32_t& vBindingPoint) {
 //// PRIVATE / FRAMEBUFFER /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vUseDepth, const bool& vNeedToClear, const ct::fvec4& vClearColor, const vk::Format& vFormat, const vk::SampleCountFlagBits& vSampleCount,
-                                     const bool& vCreateRenderPass) {
+bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize,
+    const uint32_t& vCountColorBuffers,
+    const bool& vUseDepth,
+    const bool& vNeedToClear,
+    const ct::fvec4& vClearColor,
+    const vk::Format& vFormat,
+    const vk::SampleCountFlagBits& vSampleCount,
+    const bool& vCreateRenderPass) {
     ZoneScoped;
 
     bool res = false;
@@ -506,10 +524,10 @@ bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize, const uint32_t& vCo
         ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
         if (!size.emptyOR()) {
             m_CountBuffers = countColorBuffers;
-            m_OutputSize   = ct::uvec3(size, 0);
-            m_RenderArea   = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_OutputSize.x, m_OutputSize.y));
-            m_Viewport     = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_OutputSize.x), static_cast<float>(m_OutputSize.y), 0, 1.0f);
-            m_OutputRatio  = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_OutputSize = ct::uvec3(size, 0);
+            m_RenderArea = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_OutputSize.x, m_OutputSize.y));
+            m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_OutputSize.x), static_cast<float>(m_OutputSize.y), 0, 1.0f);
+            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
             m_FrontDescriptors.clear();
             m_FrontDescriptors.resize(m_CountBuffers);
@@ -527,10 +545,12 @@ bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize, const uint32_t& vCo
             res = true;
 
             m_FrameBuffers.resize(m_PingPongBufferMode ? 2U : 1U);
-            res &= m_FrameBuffers[0U].Init(m_VulkanCore, size, m_CountBuffers, m_RenderPass, vCreateRenderPass, vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
+            res &= m_FrameBuffers[0U].Init(
+                m_VulkanCore, size, m_CountBuffers, m_RenderPass, vCreateRenderPass, vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
             if (m_PingPongBufferMode) {
-                res &= m_FrameBuffers[1U].Init(m_VulkanCore, size, m_CountBuffers, m_RenderPass, false,  // this one will re use the same Renderpass as first one
-                                               vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
+                res &= m_FrameBuffers[1U].Init(m_VulkanCore, size, m_CountBuffers, m_RenderPass,
+                    false,  // this one will re use the same Renderpass as first one
+                    vUseDepth, vNeedToClear, vClearColor, vFormat, vSampleCount);
             }
 
             if (vNeedToClear) {
