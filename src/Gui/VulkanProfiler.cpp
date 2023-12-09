@@ -143,6 +143,31 @@ void vkProfQueryZone::Clear() {
     m_ElapsedTime = 0.0;
 }
 
+const uint32_t& vkProfQueryZone::GetIdForWrite(const size_t& vIdx) {
+    if (vIdx == 0) {
+        if (calledCountPerFrame != 0U) {
+            LogVarError(u8R"(vkProfiler error : Only one query ID can be used per frame.
+You need to be sure than the section and label names are unique per frame
+when you are calling vkProf macros)");
+            assert(0);
+        }
+        ++calledCountPerFrame;
+    }
+    return ids[vIdx];
+}
+
+const uint32_t& vkProfQueryZone::GetId(const size_t& vIdx) const {
+    return ids[vIdx];
+}
+
+void vkProfQueryZone::SetId(const size_t& vIdx, const uint32_t& vID) {
+    ids[vIdx] = vID;
+}
+
+void vkProfQueryZone::NewFrame() {
+    calledCountPerFrame = 0U;
+}
+
 void vkProfQueryZone::SetStartTimeStamp(const uint64_t& vValue) {
     m_StartTimeStamp = vValue;
     ++m_StartFrameId;
@@ -179,6 +204,7 @@ void vkProfQueryZone::ComputeElapsedTime() {
             auto tmp = sup;
             sup = inf;
             inf = tmp;
+            DEBUG_BREAK;
         }
         m_AverageStartValue.AddValue(inf);
         m_AverageEndValue.AddValue(sup);
@@ -657,7 +683,7 @@ void vkProfiler::CommandBufferInfos::end(const size_t& idx) {
 void vkProfiler::CommandBufferInfos::writeTimeStamp(const size_t& idx, vkProfQueryZoneWeak vQueryZone, vk::PipelineStageFlagBits vStages) {
     auto queryPtr = vQueryZone.lock();
     assert(queryPtr != nullptr);
-    const auto& id = queryPtr->ids[idx];
+    const auto& id = queryPtr->GetIdForWrite(idx);
     assert((id + idx) % 2 == 0);
     cmds[idx].writeTimestamp(vStages, queryPool, id);
     parentProfilerPtr->m_AddMeasure();
@@ -716,8 +742,8 @@ void vkProfiler::Clear() {
     m_SelectedQuery.reset();
     vkProfQueryZone::sTabbedQueryZones.clear();
     m_RootZone.reset();
-    m_QueryIDToZone.clear();
-    m_DepthToLastZone.clear();
+    m_QueryIDToZone = {};
+    m_DepthToLastZone = {};
     m_QueryHead = 0U;
     m_ClearMeasures();
 }
@@ -741,29 +767,33 @@ void vkProfiler::Collect() {
                 corePtr->getDevice(), m_QueryPool, 0U, m_QueryCount, stride * m_QueryCount, m_TimeStampMeasures.data(), stride,
                 VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
             if (res == VK_SUCCESS) {
-                for (uint32_t id = 0; id < m_QueryCount; ++id) {
-                    auto query_it = m_QueryIDToZone.find(id);
-                    if (query_it != m_QueryIDToZone.end()) {
+                for (size_t id = 0; id < m_QueryCount; ++id) {
+                    auto query_ptr = m_QueryIDToZone.at(id);
+                    if (query_ptr != nullptr) {
                         const auto& avail64 = m_TimeStampMeasures.at(id * 2 + 1);
                         if (avail64 > 0) {
                             const auto& value64 = m_TimeStampMeasures.at(id * 2 + 0);
-                            auto ptr = query_it->second;
-                            if (ptr != nullptr) {
-                                if (id == ptr->ids[0]) {
-                                    ptr->SetStartTimeStamp(value64);
-                                } else if (id == ptr->ids[1]) {
-                                    ptr->last_count = ptr->current_count;
-                                    ptr->current_count = 0U;
-                                    ptr->SetEndTimeStamp(value64);
-                                } else {
-                                    DEBUG_BREAK;
-                                }
+                            if (id == query_ptr->GetId(0)) {
+                                query_ptr->SetStartTimeStamp(value64);
+                            } else if (id == query_ptr->GetId(1)) {
+                                query_ptr->last_count = query_ptr->current_count;
+                                query_ptr->current_count = 0U;
+                                query_ptr->SetEndTimeStamp(value64);
+                                query_ptr->NewFrame();
+                            } else {
+                                DEBUG_BREAK;
                             }
                         } else {
                             DEBUG_BREAK;
                         }
                     } else {
                         DEBUG_BREAK;
+                    }
+                }
+            } else {
+                for (const auto& query_ptr : m_QueryIDToZone) {
+                    if (query_ptr != nullptr) {
+                        query_ptr->NewFrame();
                     }
                 }
             }
@@ -912,20 +942,24 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
     }
 
     if (vkProfQueryZone::sCurrentDepth == 0) {  // root zone
-        m_DepthToLastZone.clear();
+        m_DepthToLastZone = {};
         if (m_RootZone == nullptr) {
             res = vkProfQueryZone::create(m_ThreadPtr, vPtr, vName, vSection, vIsRoot);
             if (res != nullptr) {
-                res->ids[0] = m_GetNextQueryId();
-                res->ids[1] = m_GetNextQueryId();
+                res->SetId(0, m_GetNextQueryId());
+                res->SetId(1, m_GetNextQueryId());
                 res->depth = vkProfQueryZone::sCurrentDepth;
                 res->UpdateBreadCrumbTrail();
-                m_QueryIDToZone[res->ids[0]] = res;
-                m_QueryIDToZone[res->ids[1]] = res;
+                m_QueryIDToZone[res->GetId(0)] = res;
+                m_QueryIDToZone[res->GetId(1)] = res;
                 m_RootZone = res;
             }
         } else {
             res = m_RootZone;
+            res->SetId(0, m_GetNextQueryId());
+            res->SetId(1, m_GetNextQueryId());
+            m_QueryIDToZone[res->GetId(0)] = res;
+            m_QueryIDToZone[res->GetId(1)] = res;
         }
     } else {  // else child zone
         auto root = m_GetQueryZoneFromDepth(vkProfQueryZone::sCurrentDepth - 1U);
@@ -941,14 +975,14 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
             if (!found) {  // not found
                 res = vkProfQueryZone::create(m_ThreadPtr, vPtr, vName, vSection, vIsRoot);
                 if (res != nullptr) {
-                    res->ids[0] = m_GetNextQueryId();
-                    res->ids[1] = m_GetNextQueryId();
+                    res->SetId(0, m_GetNextQueryId());
+                    res->SetId(1, m_GetNextQueryId());
                     res->parentPtr = root;
                     res->rootPtr = m_RootZone;
                     res->depth = vkProfQueryZone::sCurrentDepth;
                     res->UpdateBreadCrumbTrail();
-                    m_QueryIDToZone[res->ids[0]] = res;
-                    m_QueryIDToZone[res->ids[1]] = res;
+                    m_QueryIDToZone[res->GetId(0)] = res;
+                    m_QueryIDToZone[res->GetId(1)] = res;
                     root->zonesDico[vPtr][key_str] = res;
                     root->zonesOrdered.push_back(res);
                 } else {
@@ -956,6 +990,10 @@ vkProfQueryZonePtr vkProfiler::GetQueryZoneForName(const void* vPtr, const std::
                 }
             } else {
                 res = root->zonesDico[vPtr][key_str];
+                res->SetId(0, m_GetNextQueryId());
+                res->SetId(1, m_GetNextQueryId());
+                m_QueryIDToZone[res->GetId(0)] = res;
+                m_QueryIDToZone[res->GetId(1)] = res;
             }
         } else {
             return res;  // happen when profiling is activated inside a profiling zone
@@ -1065,6 +1103,7 @@ vkProfiler::CommandBufferInfos* vkProfiler::GetCommandBufferInfosPtr(const void*
 }
 
 void vkProfiler::m_ClearMeasures() {
+    m_QueryHead = 0U;  // will cause new id creation
     m_QueryCount = 0U;
     m_TimeStampMeasures = {};
 }
@@ -1122,7 +1161,7 @@ bool vkProfiler::m_EndZone(const VkCommandBuffer& vCmd, const bool& vIsRoot) {
 void vkProfiler::writeTimeStamp(const vk::CommandBuffer& vCmd, const size_t& idx, vkProfQueryZoneWeak vQueryZone, vk::PipelineStageFlagBits vStages) {
     auto queryPtr = vQueryZone.lock();
     assert(queryPtr != nullptr);
-    const auto& id = queryPtr->ids[idx];
+    const auto& id = queryPtr->GetIdForWrite(idx);
     assert((id + idx) % 2 == 0);
     vCmd.writeTimestamp(vStages, m_QueryPool, id);
     m_AddMeasure();
@@ -1189,13 +1228,11 @@ void vkProfiler::m_SetQueryZoneForDepth(vkProfQueryZonePtr vvkProfQueryZone, uin
 }
 
 vkProfQueryZonePtr vkProfiler::m_GetQueryZoneFromDepth(uint32_t vDepth) {
-    vkProfQueryZonePtr res = nullptr;
-
-    if (m_DepthToLastZone.find(vDepth) != m_DepthToLastZone.end()) {  // found
-        res = m_DepthToLastZone[vDepth];
+    vkProfQueryZonePtr res_ptr = m_DepthToLastZone.at(vDepth);
+    if (res_ptr != nullptr) {  // found
+        return res_ptr;
     }
-
-    return res;
+    return nullptr;
 }
 
 int32_t vkProfiler::m_GetNextQueryId() {

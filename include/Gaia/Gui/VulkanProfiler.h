@@ -171,7 +171,9 @@ public:
 
 public:
     uint32_t depth = 0U;  // the depth of the QueryZone
-    uint32_t ids[2] = {0U, 0U};
+    // inc the query each calls (for identify where a id is called 
+    // many time per frame but not reseted before and causse layer issue)
+    uint32_t calledCountPerFrame = 0U;
     std::vector<vkProfQueryZonePtr> zonesOrdered;
     std::unordered_map<const void*, std::unordered_map<std::string, vkProfQueryZonePtr>> zonesDico;  // main container
     std::string name;
@@ -185,6 +187,7 @@ public:
     VkQueryPool queryPool;
 
 private:
+    uint32_t ids[2] = {0U, 0U};
     vkProfQueryZoneWeak m_This;
     bool m_IsRoot = false;
     const void* m_Ptr = nullptr;
@@ -220,6 +223,10 @@ public:
     vkProfQueryZone(void* vThreadPtr, const void* vPtr, const std::string& vName, const std::string& vSectionName, const bool& vIsRoot = false);
     ~vkProfQueryZone();
     void Clear();
+    const uint32_t& GetIdForWrite(const size_t& vIdx);
+    const uint32_t& GetId(const size_t& vIdx) const;
+    void SetId(const size_t& vIdx, const uint32_t& vID);
+    void NewFrame();
     void SetStartTimeStamp(const uint64_t& vValue);
     void SetEndTimeStamp(const uint64_t& vValue);
     void ComputeElapsedTime();
@@ -241,6 +248,7 @@ private:
 class GAIA_API vkProfiler {
 private:
     static constexpr uint32_t sMaxQueryCount = 1024U;
+    static constexpr uint32_t sMaxDepth = 64U;
 
 public:
     typedef std::function<bool(const char*, bool*, ImGuiWindowFlags)> ImGuiBeginFunctor;
@@ -285,10 +293,9 @@ private:
     VulkanCoreWeak m_VulkanCore;
     vkProfQueryZonePtr m_RootZone = nullptr;
     vkProfQueryZoneWeak m_SelectedQuery;                                 // query to show the flamegraph in this context
-    std::unordered_map<uint32_t, vkProfQueryZonePtr> m_QueryIDToZone;    // Get the zone for a query id because a query have to id's : start and end
-    std::unordered_map<uint32_t, vkProfQueryZonePtr> m_DepthToLastZone;  // last zone registered at this depth
-
-    std::array<vkTimeStamp, sMaxQueryCount> m_TimeStampMeasures;
+    std::array<vkProfQueryZonePtr, sMaxQueryCount> m_QueryIDToZone = {};  // Get the zone for a query id because a query have to id's : start and end
+    std::array<vkProfQueryZonePtr, sMaxDepth> m_DepthToLastZone = {};     // last zone registered at this depth
+    std::array<vkTimeStamp, sMaxQueryCount> m_TimeStampMeasures = {};
     vk::QueryPool m_QueryPool = {};
     uint32_t m_QueryHead = 0U;
     uint32_t m_QueryCount = 0U;     // reseted each frames
