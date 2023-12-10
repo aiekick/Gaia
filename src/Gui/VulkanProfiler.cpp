@@ -35,6 +35,8 @@ limitations under the License.
 #define DEBUG_BREAK
 #endif
 
+#define MINIMAL_ELAPSED_TIME 1e-2
+
 static bool PlayPauseButton(bool& vPlayPause) {
     bool res = false;
     const char* play_pause_label = "Pause";
@@ -225,6 +227,9 @@ void vkProfQueryZone::DrawDetails() {
 
         bool any_childs_to_show = false;
         for (const auto zone : zonesOrdered) {
+            if (zone->m_ElapsedTime == 0) {
+                zone->m_ElapsedTime = MINIMAL_ELAPSED_TIME;
+            }
             if (zone != nullptr && zone->m_ElapsedTime > 0.0) {
                 any_childs_to_show = true;
                 break;
@@ -426,6 +431,9 @@ bool vkProfQueryZone::m_ComputeRatios(
     if (vParent.expired()) {
         vParent = m_This;
     }
+    if (vRoot->m_ElapsedTime == 0) {
+        vRoot->m_ElapsedTime = MINIMAL_ELAPSED_TIME;
+    }
     if (vRoot != nullptr && vRoot->m_ElapsedTime > 0.0) {  // avoid div by zero
         if (vDepth == 0) {
             vOutStartRatio = 0.0f;
@@ -439,11 +447,15 @@ bool vkProfQueryZone::m_ComputeRatios(
             auto parent_ptr = vParent.lock();
             if (parent_ptr) {
                 if (parent_ptr->m_ElapsedTime > 0.0) {  // avoid div by zero
-
                     ////////////////////////////////////////////////////////
                     // for correct rounding isssue with average values
+                    if (m_EndTime < m_StartTime) {
+                        m_EndTime = m_StartTime;
+                    }
+                    m_ElapsedTime = m_EndTime - m_StartTime;
                     if (parent_ptr->m_StartTime > m_StartTime) {
                         m_StartTime = parent_ptr->m_StartTime;
+                        m_EndTime = m_StartTime + m_ElapsedTime;
                     }
                     if (parent_ptr->m_EndTime < m_EndTime) {
                         m_EndTime = parent_ptr->m_EndTime;
@@ -452,6 +464,9 @@ bool vkProfQueryZone::m_ComputeRatios(
                         m_EndTime = m_StartTime;
                     }
                     m_ElapsedTime = m_EndTime - m_StartTime;
+                    if (m_ElapsedTime == 0) {
+                        m_ElapsedTime = MINIMAL_ELAPSED_TIME;
+                    }
                     if (m_ElapsedTime < 0.0) {
                         DEBUG_BREAK;
                     }
