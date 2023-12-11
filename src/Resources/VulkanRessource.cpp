@@ -202,6 +202,91 @@ VulkanImageObjectPtr VulkanRessource::createTextureImage2D(GaiApi::VulkanCoreWea
     return nullptr;
 }
 
+VulkanImageObjectPtr VulkanRessource::createTextureImage3D(GaiApi::VulkanCoreWeak vVulkanCore,
+    uint32_t width,
+    uint32_t height,
+    uint32_t depth,
+    vk::Format format,
+    void* hostdata_ptr,
+    const char* vDebugLabel) {
+    ZoneScoped;
+
+    uint32_t channels = 0;
+    uint32_t elem_size = 0;
+
+    switch (format) {
+        case vk::Format::eB8G8R8A8Unorm:
+        case vk::Format::eR8G8B8A8Unorm:
+            channels = 4;
+            elem_size = 8 / 8;
+            break;
+        case vk::Format::eB8G8R8Unorm:
+        case vk::Format::eR8G8B8Unorm:
+            channels = 3;
+            elem_size = 8 / 8;
+            break;
+        case vk::Format::eR8Unorm:
+            channels = 1;
+            elem_size = 8 / 8;
+            break;
+        case vk::Format::eD16Unorm:
+            channels = 1;
+            elem_size = 16 / 8;
+            break;
+        case vk::Format::eR32G32B32A32Sfloat:
+            channels = 4;
+            elem_size = 32 / 8;
+            break;
+        case vk::Format::eR32G32B32Sfloat:
+            channels = 3;
+            elem_size = 32 / 8;
+            break;
+        case vk::Format::eR32Sfloat:
+            channels = 1;
+            elem_size = 32 / 8;
+            break;
+        default: LogVarError("unsupported type: %s", vk::to_string(format).c_str()); throw std::invalid_argument("unsupported fomat type!");
+    }
+
+    vk::BufferCreateInfo stagingBufferInfo = {};
+    VmaAllocationCreateInfo stagingAllocInfo = {};
+    stagingBufferInfo.size = width * height * depth * channels * elem_size;
+    stagingBufferInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+    stagingAllocInfo.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_CPU_TO_GPU;
+    auto stagebufferPtr = createSharedBufferObject(vVulkanCore, stagingBufferInfo, stagingAllocInfo, vDebugLabel);
+    if (stagebufferPtr) {
+        upload(vVulkanCore, stagebufferPtr, hostdata_ptr, stagingBufferInfo.size);
+
+        auto corePtr = vVulkanCore.lock();
+        assert(corePtr != nullptr);
+
+        VmaAllocationCreateInfo image_alloc_info = {};
+        image_alloc_info.usage = VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY;
+        auto familyQueueIndex = corePtr->getQueue(vk::QueueFlagBits::eGraphics).familyQueueIndex;
+        auto texturePtr = createSharedImageObject(vVulkanCore,
+            vk::ImageCreateInfo(vk::ImageCreateFlags(), vk::ImageType::e3D, format, vk::Extent3D(width, height, depth), 1, 1U,
+                vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal,
+                vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+                vk::SharingMode::eExclusive, 1, &familyQueueIndex, vk::ImageLayout::eUndefined),
+            image_alloc_info, vDebugLabel);
+        if (texturePtr) {
+            vk::BufferImageCopy copyParams(0u, 0u, 0u, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0u, 0u, 1), vk::Offset3D(0, 0, 0),
+                vk::Extent3D(width, height, 1));
+
+            // on va copier que le mip level 0, on fera les autre dans GenerateMipmaps juste apres ce block
+            transitionImageLayout(vVulkanCore, texturePtr->image, format, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+            copy(vVulkanCore, texturePtr->image, stagebufferPtr->buffer, copyParams);
+            transitionImageLayout(
+                vVulkanCore, texturePtr->image, format, 1, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+
+            return texturePtr;
+        }
+
+        stagebufferPtr.reset();
+    }
+    return nullptr;
+}
+
 VulkanImageObjectPtr VulkanRessource::createTextureImageCube(GaiApi::VulkanCoreWeak vVulkanCore,
     uint32_t width,
     uint32_t height,

@@ -108,6 +108,10 @@ class Texture2D;
 typedef std::shared_ptr<Texture2D> Texture2DPtr;
 typedef std::weak_ptr<Texture2D> Texture2DWeak;
 
+class Texture3D;
+typedef std::shared_ptr<Texture3D> Texture3DPtr;
+typedef std::weak_ptr<Texture3D> Texture3DWeak;
+
 class TextureCube;
 typedef std::shared_ptr<TextureCube> TextureCubePtr;
 typedef std::weak_ptr<TextureCube> TextureCubeWeak;
@@ -121,19 +125,19 @@ typedef std::shared_ptr<VulkanShader> VulkanShaderPtr;
 typedef std::weak_ptr<VulkanShader> VulkanShaderWeak;
 
 namespace GaiApi {
-class VulkanSwapChain;
-typedef std::shared_ptr<VulkanSwapChain> VulkanSwapChainPtr;
-typedef std::weak_ptr<VulkanSwapChain> VulkanSwapChainWeak;
+    class VulkanSwapChain;
+    typedef std::shared_ptr<VulkanSwapChain> VulkanSwapChainPtr;
+    typedef std::weak_ptr<VulkanSwapChain> VulkanSwapChainWeak;
 
-class VulkanCore;
-typedef std::shared_ptr<VulkanCore> VulkanCorePtr;
-typedef std::weak_ptr<VulkanCore> VulkanCoreWeak;
+    class VulkanCore;
+    typedef std::shared_ptr<VulkanCore> VulkanCorePtr;
+    typedef std::weak_ptr<VulkanCore> VulkanCoreWeak;
 
-class VulkanWindow;
-typedef std::shared_ptr<VulkanWindow> VulkanWindowPtr;
-typedef std::weak_ptr<VulkanWindow> VulkanWindowWeak;
+    class VulkanWindow;
+    typedef std::shared_ptr<VulkanWindow> VulkanWindowPtr;
+    typedef std::weak_ptr<VulkanWindow> VulkanWindowWeak;
 
-class VulkanDevice;
-typedef std::shared_ptr<VulkanDevice> VulkanDevicePtr;
-typedef std::weak_ptr<VulkanDevice> VulkanDeviceWeak;
+    class VulkanDevice;
+    typedef std::shared_ptr<VulkanDevice> VulkanDevicePtr;
+    typedef std::weak_ptr<VulkanDevice> VulkanDeviceWeak;
 }  // namespace GaiApi

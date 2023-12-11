@@ -97,6 +97,13 @@ public:  // image
         vk::Format format,
         void* hostdata_ptr,
         const char* vDebugLabel);
+    static VulkanImageObjectPtr createTextureImage3D(VulkanCoreWeak vVulkanCore,
+        uint32_t width,
+        uint32_t height,
+        uint32_t depth,
+        vk::Format format,
+        void* hostdata_ptr,
+        const char* vDebugLabel);
     static VulkanImageObjectPtr createTextureImageCube(VulkanCoreWeak vVulkanCore,
         uint32_t width,
         uint32_t height,
