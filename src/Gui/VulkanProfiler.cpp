@@ -166,6 +166,9 @@ const uint32_t& vkProfQueryZone::GetId(const size_t& vIdx) const {
 void vkProfQueryZone::SetId(const size_t& vIdx, const uint32_t& vID) {
     ids[vIdx] = vID;
 }
+const bool& vkProfQueryZone::wasSeen() const {
+    return (calledCountPerFrame != 0);
+}
 
 void vkProfQueryZone::NewFrame() {
     calledCountPerFrame = 0U;
@@ -218,7 +221,7 @@ void vkProfQueryZone::ComputeElapsedTime() {
 }
 
 void vkProfQueryZone::DrawDetails() {
-    if (m_StartFrameId) {
+    if (m_StartFrameId && wasSeen()) {
         bool res = false;
 
         ImGui::TableNextColumn();  // tree
@@ -492,6 +495,9 @@ bool vkProfQueryZone::m_ComputeRatios(
 
 bool vkProfQueryZone::m_DrawHorizontalFlameGraph(
     vkProfQueryZonePtr vRoot, vkProfQueryZoneWeak& vOutSelectedQuery, vkProfQueryZoneWeak vParent, uint32_t vDepth) {
+    if (!wasSeen()) {
+        return false;
+    }
     bool pressed = false;
     const ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;

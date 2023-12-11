@@ -226,6 +226,7 @@ public:
     const uint32_t& GetIdForWrite(const size_t& vIdx);
     const uint32_t& GetId(const size_t& vIdx) const;
     void SetId(const size_t& vIdx, const uint32_t& vID);
+    const bool& wasSeen() const;
     void NewFrame();
     void SetStartTimeStamp(const uint64_t& vValue);
     void SetEndTimeStamp(const uint64_t& vValue);
