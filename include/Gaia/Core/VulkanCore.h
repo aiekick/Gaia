@@ -75,6 +75,7 @@ protected:
 #endif  // PROFILER_INCLUDE
     VulkanImGuiRendererWeak m_VulkanImGuiRendererWeak;
     Texture2DPtr m_EmptyTexture2DPtr = nullptr;
+    Texture3DPtr m_EmptyTexture3DPtr = nullptr;
     TextureCubePtr m_EmptyTextureCubePtr = nullptr;
     vk::DescriptorBufferInfo m_EmptyDescriptorBufferInfo = vk::DescriptorBufferInfo{VK_NULL_HANDLE, 0, VK_WHOLE_SIZE};
     vk::BufferView m_EmptyBufferView = VK_NULL_HANDLE;
@@ -127,8 +128,10 @@ public:  // get / set
     vk::SampleCountFlagBits getSwapchainFrameBufferSampleCount() const;
 
     Texture2DWeak getEmptyTexture2D() const;
+    Texture3DWeak getEmptyTexture3D() const;
     TextureCubeWeak getEmptyTextureCube() const;
     vk::DescriptorImageInfo* getEmptyTexture2DDescriptorImageInfo() const;
+    vk::DescriptorImageInfo* getEmptyTexture3DDescriptorImageInfo() const;
     vk::DescriptorImageInfo* getEmptyTextureCubeDescriptorImageInfo() const;
 
     // when the NullDescriptor Feature is enabled

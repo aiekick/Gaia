@@ -23,6 +23,7 @@ limitations under the License.
 #include <ctools/Logger.h>
 #include <Gaia/Core/VulkanSubmitter.h>
 #include <Gaia/Resources/Texture2D.h>
+#include <Gaia/Resources/Texture3D.h>
 #include <Gaia/Resources/TextureCube.h>
 #include <Gaia/Shader/VulkanShader.h>
 #include <Gaia/Gui/VulkanProfiler.h>
@@ -166,12 +167,14 @@ bool VulkanCore::Init(VulkanWindowWeak vVulkanWindow,
         if (m_CreateSwapChain) {
             m_VulkanSwapChainPtr = VulkanSwapChain::Create(vVulkanWindow, m_This.lock(), std::bind(&VulkanCore::resize, this));
         }
+
         setupGraphicCommandsAndSynchronization();
         setupComputeCommandsAndSynchronization();
         setupDescriptorPool();
         setupProfiler();
 
         m_EmptyTexture2DPtr = Texture2D::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTexture3DPtr = Texture3D::CreateEmptyTexture(m_This.lock(), ct::uvec3(1, 1, 1), vk::Format::eR8G8B8A8Unorm);
         m_EmptyTextureCubePtr = TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
 
         return true;
@@ -186,6 +189,7 @@ void VulkanCore::Unit() {
     m_VulkanDevicePtr->WaitIdle();
 
     m_EmptyTexture2DPtr.reset();
+    m_EmptyTexture3DPtr.reset();
     m_EmptyTextureCubePtr.reset();
 
     destroyProfiler();
@@ -245,11 +249,17 @@ vk::SampleCountFlagBits VulkanCore::getSwapchainFrameBufferSampleCount() const {
 Texture2DWeak VulkanCore::getEmptyTexture2D() const {
     return m_EmptyTexture2DPtr;
 }
+Texture3DWeak VulkanCore::getEmptyTexture3D() const {
+    return m_EmptyTexture3DPtr;
+}
 TextureCubeWeak VulkanCore::getEmptyTextureCube() const {
     return m_EmptyTextureCubePtr;
 }
 vk::DescriptorImageInfo* VulkanCore::getEmptyTexture2DDescriptorImageInfo() const {
     return &m_EmptyTexture2DPtr->m_DescriptorImageInfo;
+}
+vk::DescriptorImageInfo* VulkanCore::getEmptyTexture3DDescriptorImageInfo() const {
+    return &m_EmptyTexture3DPtr->m_DescriptorImageInfo;
 }
 vk::DescriptorImageInfo* VulkanCore::getEmptyTextureCubeDescriptorImageInfo() const {
     return &m_EmptyTextureCubePtr->m_DescriptorImageInfo;
