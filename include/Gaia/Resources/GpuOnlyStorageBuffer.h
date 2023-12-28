@@ -17,11 +17,13 @@ limitations under the License.
 #pragma once
 
 #include <vector>
+
 #include <ctools/cTools.h>
 #include <ctools/Logger.h>
+
+#include <Gaia/gaia.h>
 #include <Gaia/Core/VulkanCore.h>
 #include <Gaia/Resources/VulkanRessource.h>
-#include <Gaia/gaia.h>
 
 class GAIA_API GpuOnlyStorageBuffer {
 public:
