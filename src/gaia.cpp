@@ -2,6 +2,9 @@
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+
 #ifdef STB_IMAGE_INCLUDE
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -22,3 +25,5 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #endif
 #include STB_IMAGE_WRITE_INCLUDE
 #endif  // STB_IMAGE_WRITE_INCLUDE
+
+#pragma clang diagnostic pop

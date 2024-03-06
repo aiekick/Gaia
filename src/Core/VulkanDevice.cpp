@@ -133,7 +133,13 @@ static inline const char* GetStringFromObjetType(VkDebugReportObjectTypeEXT vObj
         case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT: return "YCBCRConversion";
         case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT: return "DescriptorUpdateTemplate";
         case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR_EXT: return "AccelerationStructure";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_MAX_ENUM_EXT: return "Unknow";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_MAX_ENUM_EXT: return "MaxEnum";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_CU_MODULE_NVX_EXT: return "CuModuleNvx";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_CU_FUNCTION_NVX_EXT: return "CuFunctionNvx";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT: return "AccelerationStructure";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_MODULE_NV: return "Cudamodule";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_FUNCTION_NV: return "CudaFunction";
+        case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA_EXT: return "BufferCollectionFuschia";
     }
     return "";
 }
@@ -642,7 +648,7 @@ bool VulkanDevice::CreatePhysicalDevice() {
 
     auto gpuid = VULKAN_GPU_ID;
 
-    if (gpuid < 0 || gpuid >= physicalDevices.size()) {
+    if (gpuid < 0 || gpuid >= (int32_t)physicalDevices.size()) {
         LogVarLightError("GPU ID error.");
         exit(EXIT_FAILURE);
     }
@@ -654,7 +660,8 @@ bool VulkanDevice::CreatePhysicalDevice() {
     m_Queues[vk::QueueFlagBits::eTransfer].familyQueueIndex = getQueueIndex(m_PhysDevice, vk::QueueFlagBits::eTransfer, false);
 
     if (m_Use_RTX) {
-        VkPhysicalDeviceProperties2 prop2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2};
+        VkPhysicalDeviceProperties2 prop2;
+        prop2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
         prop2.pNext = &m_RayTracingDeviceProperties;
         VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceProperties2(m_PhysDevice, reinterpret_cast<VkPhysicalDeviceProperties2*>(&prop2));
 
@@ -709,8 +716,8 @@ bool VulkanDevice::CreateLogicalDevice() {
     }
 
     auto features = getSupportedFeatures(m_PhysDevice);
-    auto features2 = getSupportedFeatures2(m_PhysDevice);
-    auto features2KHR = getSupportedFeatures2KHR(m_PhysDevice);
+    //auto features2 = getSupportedFeatures2(m_PhysDevice);
+    //auto features2KHR = getSupportedFeatures2KHR(m_PhysDevice);
 
     // Logical VulkanCore
     std::vector<vk::ExtensionProperties> installedDeviceExtensions = m_PhysDevice.enumerateDeviceExtensionProperties();

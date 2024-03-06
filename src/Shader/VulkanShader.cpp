@@ -139,6 +139,10 @@ std::string GetShaderStageString(const EShLanguage& stage) {
         case EShLangMiss: return "miss";
         case EShLangAnyHit: return "ahit";
         case EShLangClosestHit: return "chit";
+        case EShLangCallable: return "call";
+        case EShLangTask: return "task";
+        case EShLangMesh: return "mesh";
+        case EShLangCount: break;
     }
     return "";
 }
@@ -158,6 +162,10 @@ std::string GetFullShaderStageString(const EShLanguage& stage) {
         case EShLangMiss: return "Miss";
         case EShLangAnyHit: return "Any Hit";
         case EShLangClosestHit: return "Closest Hit";
+        case EShLangCallable: return "Callable";
+        case EShLangTask: return "Task";
+        case EShLangMesh: return "Mesh";
+        case EShLangCount: break;
     }
     return "";
 }

@@ -132,7 +132,7 @@ bool VulkanSwapChain::Load() {
 
         // All framebuffers / attachments will be the same size as the surface
         vk::SurfaceCapabilitiesKHR surfaceCapabilities = physDevice.getSurfaceCapabilitiesKHR(m_Surface);
-        if (!(surfaceCapabilities.currentExtent.width == -1 || surfaceCapabilities.currentExtent.height == -1)) {
+        if (!(surfaceCapabilities.currentExtent.width == 0U || surfaceCapabilities.currentExtent.height == 0U)) {
             swapchainSize = surfaceCapabilities.currentExtent;
             m_RenderArea = vk::Rect2D(vk::Offset2D(), swapchainSize);
             m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(swapchainSize.width), static_cast<float>(swapchainSize.height), 0, 1.0f);
@@ -219,7 +219,7 @@ void VulkanSwapChain::CheckSurfaceFormat() {
     auto corePtr = m_VulkanCore.lock();
     if (corePtr != nullptr) {
         auto physDevice = corePtr->getPhysicalDevice();
-        auto logDevice = corePtr->getDevice();
+        //auto logDevice = corePtr->getDevice();
 
         std::vector<vk::SurfaceFormatKHR> surfaceFormats = physDevice.getSurfaceFormatsKHR(m_Surface);
         for (const auto& elem : surfaceFormats) {
@@ -244,7 +244,7 @@ bool VulkanSwapChain::CreateSurface() {
     auto corePtr = m_VulkanCore.lock();
     if (corePtr != nullptr) {
         auto physDevice = corePtr->getPhysicalDevice();
-        auto logDevice = corePtr->getDevice();
+        //auto logDevice = corePtr->getDevice();
         auto queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
         // Surface
@@ -288,9 +288,9 @@ bool VulkanSwapChain::CreateFrameBuffers() {
 
     auto corePtr = m_VulkanCore.lock();
     if (corePtr != nullptr) {
-        auto physDevice = corePtr->getPhysicalDevice();
+        //auto physDevice = corePtr->getPhysicalDevice();
         auto logDevice = corePtr->getDevice();
-        auto queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
+        //auto queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
         /*m_FrameBufferPtr = FrameBuffer::Create(m_VulkanCore);
         if (m_FrameBufferPtr && m_FrameBufferPtr->Init(//
@@ -356,9 +356,9 @@ bool VulkanSwapChain::CreateRenderPass() {
 
     auto corePtr = m_VulkanCore.lock();
     if (corePtr != nullptr) {
-        auto physDevice = corePtr->getPhysicalDevice();
+        //auto physDevice = corePtr->getPhysicalDevice();
         auto logDevice = corePtr->getDevice();
-        auto queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
+        //auto queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
         std::vector<vk::AttachmentDescription> attachmentDescriptions = {
             vk::AttachmentDescription(vk::AttachmentDescriptionFlags(), m_SurfaceColorFormat, vk::SampleCountFlagBits::e1,

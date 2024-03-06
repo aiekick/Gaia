@@ -42,7 +42,18 @@
         printf("\n");                     \
     } while (false)
 #endif
+
+// disable for GGC and CLANG all warnings
+// https://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-via-pragmas
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability-completeness"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#pragma clang diagnostic ignored "-Wsign-compare"
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wswitch"
 #include <Gaia/Core/vk_mem_alloc.h>
+#pragma clang diagnostic pop
 
 #include <memory>
 #include <ctools/cTools.h>

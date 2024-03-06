@@ -71,9 +71,7 @@ bool VulkanFrameBuffer::Init(GaiApi::VulkanCoreWeak vVulkanCore,
             assert(corePtr != nullptr);
             auto logDevice = corePtr->getDevice();
 
-            vk::RenderPass renderPass;
-
-            // necessaire pour une renderpass compatible
+           // necessaire pour une renderpass compatible
             std::vector<vk::AttachmentDescription> attachmentDescriptions;
             std::vector<vk::AttachmentReference> colorReferences;
             std::vector<vk::AttachmentReference> resolveColorReferences;
