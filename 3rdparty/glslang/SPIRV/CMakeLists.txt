@@ -62,15 +62,27 @@ set(HEADERS
     disassemble.h
     GLSL.ext.AMD.h
     GLSL.ext.NV.h
-    NonSemanticDebugPrintf.h)
+    GLSL.ext.ARM.h
+    NonSemanticDebugPrintf.h
+    NonSemanticShaderDebugInfo100.h)
 
 set(SPVREMAP_HEADERS
     SPVRemapper.h
     doc.h)
 
+set(PUBLIC_HEADERS
+    GlslangToSpv.h
+    disassemble.h
+    Logger.h
+    spirv.hpp
+    SPVRemapper.h)
+
 add_library(SPIRV ${LIB_TYPE} ${SOURCES} ${HEADERS})
-set_property(TARGET SPIRV PROPERTY FOLDER glslang)
-set_property(TARGET SPIRV PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(SPIRV PROPERTIES
+    FOLDER glslang
+    POSITION_INDEPENDENT_CODE ON
+    VERSION   "${GLSLANG_VERSION}"
+    SOVERSION "${GLSLANG_VERSION_MAJOR}")
 target_include_directories(SPIRV PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -79,8 +91,11 @@ glslang_add_build_info_dependency(SPIRV)
 
 if (ENABLE_SPVREMAPPER)
     add_library(SPVRemapper ${LIB_TYPE} ${SPVREMAP_SOURCES} ${SPVREMAP_HEADERS})
-    set_property(TARGET SPVRemapper PROPERTY FOLDER glslang)
-    set_property(TARGET SPVRemapper PROPERTY POSITION_INDEPENDENT_CODE ON)
+    set_target_properties(SPVRemapper PROPERTIES
+        FOLDER glslang
+        POSITION_INDEPENDENT_CODE ON
+        VERSION   "${GLSLANG_VERSION}"
+        SOVERSION "${GLSLANG_VERSION_MAJOR}")
 endif()
 
 if(WIN32 AND BUILD_SHARED_LIBS)
@@ -91,14 +106,9 @@ if(WIN32 AND BUILD_SHARED_LIBS)
 endif()
 
 if(ENABLE_OPT)
-    target_include_directories(SPIRV
-        PRIVATE ${spirv-tools_SOURCE_DIR}/include
-        PRIVATE ${spirv-tools_SOURCE_DIR}/source
-    )
-    target_link_libraries(SPIRV PRIVATE MachineIndependent SPIRV-Tools-opt)
+    target_link_libraries(SPIRV PRIVATE MachineIndependent PUBLIC SPIRV-Tools-opt)
     target_include_directories(SPIRV PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../External>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/External>)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../External>)
 else()
     target_link_libraries(SPIRV PRIVATE MachineIndependent)
 endif()
@@ -108,7 +118,7 @@ if(WIN32)
     source_group("Source" FILES ${SPVREMAP_SOURCES} ${SPVREMAP_HEADERS})
 endif()
 
-if(ENABLE_GLSLANG_INSTALL)
+if(PROJECT_IS_TOP_LEVEL)
     if (ENABLE_SPVREMAPPER)
         install(TARGETS SPVRemapper EXPORT glslang-targets)
     endif()
@@ -121,7 +131,7 @@ if(ENABLE_GLSLANG_INSTALL)
             message(WARNING \"Using `SPVRemapperTargets.cmake` is deprecated: use `find_package(glslang)` to find glslang CMake targets.\")
 
             if (NOT TARGET glslang::SPVRemapper)
-                include(\"\${CMAKE_CURRENT_LIST_DIR}/../../${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/glslang-targets.cmake\")
+                include(\"${CMAKE_INSTALL_FULL_LIBDIR}/cmake/${PROJECT_NAME}/glslang-targets.cmake\")
             endif()
 
             add_library(SPVRemapper ALIAS glslang::SPVRemapper)
@@ -133,12 +143,12 @@ if(ENABLE_GLSLANG_INSTALL)
         message(WARNING \"Using `SPIRVTargets.cmake` is deprecated: use `find_package(glslang)` to find glslang CMake targets.\")
 
         if (NOT TARGET glslang::SPIRV)
-            include(\"\${CMAKE_CURRENT_LIST_DIR}/../../${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/glslang-targets.cmake\")
+            include(\"${CMAKE_INSTALL_FULL_LIBDIR}/cmake/${PROJECT_NAME}/glslang-targets.cmake\")
         endif()
 
         add_library(SPIRV ALIAS glslang::SPIRV)
     ")
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SPIRVTargets.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake)
 
-    install(FILES ${HEADERS} ${SPVREMAP_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/glslang/SPIRV/)
+    install(FILES ${PUBLIC_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/glslang/SPIRV/)
 endif()

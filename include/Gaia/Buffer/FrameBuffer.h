@@ -40,10 +40,6 @@ class GAIA_API FrameBuffer : public OutputSizeInterface {
 public:
     static FrameBufferPtr Create(GaiApi::VulkanCoreWeak vVulkanCore);
 
-private:
-    bool m_NeedNewUBOUpload = true;  // true for first render
-    bool m_NeedNewSBOUpload = true;  // true for first render
-
 protected:
     uint32_t m_BufferIdToResize = 0U;     // buffer id to resize (mostly used in compute, because in pixel, all attachments must have same size)
     bool m_IsRenderPassExternal = false;  // true if the renderpass is not created here, but come from external (inportant for not destroy him)

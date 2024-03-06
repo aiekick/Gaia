@@ -190,7 +190,7 @@ private:
     uint32_t ids[2] = {0U, 0U};
     vkProfQueryZoneWeak m_This;
     bool m_IsRoot = false;
-    const void* m_Ptr = nullptr;
+    //const void* m_Ptr = nullptr;
     double m_ElapsedTime = 0.0;
     double m_StartTime = 0.0;
     double m_EndTime = 0.0;
@@ -202,19 +202,19 @@ private:
     bool m_Highlighted = false;
     vkProfAverageValue<uint64_t> m_AverageStartValue;
     vkProfAverageValue<uint64_t> m_AverageEndValue;
-    void* m_ThreadPtr = nullptr;
+    //void* m_ThreadPtr = nullptr;
     std::string m_BarLabel;
     std::string m_SectionName;
     ImVec4 cv4;
     ImVec4 hsv;
-    vkProfGraphTypeEnum m_GraphType = vkProfGraphTypeEnum::IN_APP_GPU_HORIZONTAL;
+   // vkProfGraphTypeEnum m_GraphType = vkProfGraphTypeEnum::IN_APP_GPU_HORIZONTAL;
 
     // fil d'ariane
     std::array<vkProfQueryZoneWeak, vkProf_RECURSIVE_LEVELS_COUNT> m_BreadCrumbTrail;  // the parent cound is done by current depth
 
     // circular
     const float _1PI_ = 3.141592653589793238462643383279f;
-    const float _2PI_ = 6.283185307179586476925286766559f;
+    //const float _2PI_ = 6.283185307179586476925286766559f;
     const ImU32 m_BlackU32 = ImGui::GetColorU32(ImVec4(0, 0, 0, 1));
     ImVec2 m_P0, m_P1, m_LP0, m_LP1;
 
@@ -226,7 +226,7 @@ public:
     const uint32_t& GetIdForWrite(const size_t& vIdx);
     const uint32_t& GetId(const size_t& vIdx) const;
     void SetId(const size_t& vIdx, const uint32_t& vID);
-    const bool& wasSeen() const;
+    bool wasSeen() const;
     void NewFrame();
     void SetStartTimeStamp(const uint64_t& vValue);
     void SetEndTimeStamp(const uint64_t& vValue);
@@ -336,7 +336,7 @@ public:
     bool& isPausedRef();
     const bool& isPaused();
 
-    const bool canRecordTimeStamp(const bool& isRoot = false);
+    bool canRecordTimeStamp(const bool& isRoot = false);
 
     vkProfQueryZonePtr GetQueryZoneForName(const void* vPtr, const std::string& vName, const std::string& vSection = "", const bool& vIsRoot = false);
 

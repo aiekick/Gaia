@@ -116,23 +116,15 @@ vkProfQueryZonePtr vkProfQueryZone::create(
 vkProfQueryZone::circularSettings vkProfQueryZone::sCircularSettings;
 
 vkProfQueryZone::vkProfQueryZone(void* vThreadPtr, const void* vPtr, const std::string& vName, const std::string& vSectionName, const bool& vIsRoot)
-    : m_ThreadPtr(vThreadPtr), name(vName), m_IsRoot(vIsRoot), m_SectionName(vSectionName), m_Ptr(vPtr) {
-    m_StartFrameId = 0;
-    m_EndFrameId = 0;
-    m_StartTimeStamp = 0;
-    m_EndTimeStamp = 0;
-    m_ElapsedTime = 0.0;
+    : name(vName), m_IsRoot(vIsRoot), m_SectionName(vSectionName)/*, m_Ptr(vPtr), m_ThreadPtr(vThreadPtr)*/ {
+    Clear();
     depth = vkProfQueryZone::sCurrentDepth;
     imGuiLabel = vName + "##vkProfQueryZone_" + std::to_string((intptr_t)this);
 }
 
 vkProfQueryZone::~vkProfQueryZone() {
     name.clear();
-    m_StartFrameId = 0;
-    m_EndFrameId = 0;
-    m_StartTimeStamp = 0;
-    m_EndTimeStamp = 0;
-    m_ElapsedTime = 0.0;
+    Clear();
     zonesOrdered.clear();
     zonesDico.clear();
 }
@@ -166,7 +158,7 @@ const uint32_t& vkProfQueryZone::GetId(const size_t& vIdx) const {
 void vkProfQueryZone::SetId(const size_t& vIdx, const uint32_t& vID) {
     ids[vIdx] = vID;
 }
-const bool& vkProfQueryZone::wasSeen() const {
+bool vkProfQueryZone::wasSeen() const {
     return (calledCountPerFrame != 0);
 }
 
@@ -229,7 +221,7 @@ void vkProfQueryZone::DrawDetails() {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_CollapsingHeader | ImGuiTreeNodeFlags_DefaultOpen;
 
         bool any_childs_to_show = false;
-        for (const auto zone : zonesOrdered) {
+        for (auto& zone : zonesOrdered) {
             if (zone->m_ElapsedTime == 0) {
                 zone->m_ElapsedTime = MINIMAL_ELAPSED_TIME;
             }
@@ -297,7 +289,7 @@ void vkProfQueryZone::DrawDetails() {
         if (res) {
             m_Expanded = true;
             ImGui::Indent();
-            for (const auto zone : zonesOrdered) {
+            for (auto& zone : zonesOrdered) {
                 if (zone != nullptr && zone->m_ElapsedTime > 0.0) {
                     zone->DrawDetails();
                 }
@@ -323,6 +315,7 @@ bool vkProfQueryZone::DrawFlamGraph(
         case vkProfGraphTypeEnum::IN_APP_GPU_CIRCULAR:  // circular flame graph
             return m_DrawCircularFlameGraph(m_This.lock(), vOutSelectedQuery, vParent, vDepth);
             break;
+        case vkProfGraphTypeEnum::IN_APP_GPU_Count: break;
     }
     return false;
 }
@@ -335,7 +328,7 @@ void vkProfQueryZone::UpdateBreadCrumbTrail() {
             _parent_ptr = _parent_ptr->parentPtr;
             if (_parent_ptr && _parent_ptr->depth == (_depth - 1U)) {
                 _depth = _parent_ptr->depth;
-                if (_depth < m_BreadCrumbTrail.size()) {
+                if (_depth < (int32_t)m_BreadCrumbTrail.size()) {
                     m_BreadCrumbTrail[_depth] = _parent_ptr;
                 } else {
                     DEBUG_BREAK;
@@ -518,7 +511,7 @@ bool vkProfQueryZone::m_DrawHorizontalFlameGraph(
                 const ImVec2 label_size = ImGui::CalcTextSize(label, nullptr, true);
                 const float height = label_size.y + style.FramePadding.y * 2.0f;
                 const ImVec2 bPos = ImVec2(bar_start + style.FramePadding.x, vDepth * height + style.FramePadding.y);
-                const ImVec2 bSize = ImVec2(bar_size - style.FramePadding.x, 0.0f);
+                //const ImVec2 bSize = ImVec2(bar_size - style.FramePadding.x, 0.0f);
                 const ImVec2 pos = window->DC.CursorPos + bPos;
                 const ImVec2 size = ImVec2(bar_size, height);
                 const ImRect bb(pos, pos + size);
@@ -552,7 +545,7 @@ bool vkProfQueryZone::m_DrawHorizontalFlameGraph(
             }
 
             // we dont show child if this one have elapsed time to 0.0
-            for (const auto zone : zonesOrdered) {
+            for (const auto& zone : zonesOrdered) {
                 if (zone != nullptr) {
                     pressed |= zone->m_DrawHorizontalFlameGraph(vRoot, vOutSelectedQuery, m_This, vDepth);
                 }
@@ -654,7 +647,7 @@ bool vkProfQueryZone::m_DrawCircularFlameGraph(
 
             // we dont show child if this one have elapsed time to 0.0
             // childs
-            for (const auto zone : zonesOrdered) {
+            for (auto& zone : zonesOrdered) {
                 if (zone != nullptr) {
                     pressed |= zone->m_DrawCircularFlameGraph(vRoot, vOutSelectedQuery, m_This, vDepth);
                 }
@@ -698,7 +691,10 @@ void vkProfiler::CommandBufferInfos::end(const size_t& idx) {
     assert(corePtr != nullptr);
     auto submitInfos = vk::SubmitInfo(0, nullptr, nullptr, 1, &cmds[idx], 0, nullptr);
     if (GaiApi::VulkanSubmitter::Submit(core, vk::QueueFlagBits::eGraphics, submitInfos, fences[idx])) {
-        corePtr->getDevice().waitForFences(1, &fences[idx], VK_TRUE, UINT64_MAX);
+        const auto& res = corePtr->getDevice().waitForFences(1, &fences[idx], VK_TRUE, UINT64_MAX);
+        if (res != vk::Result::eSuccess) {
+            std::cout << "waitForFences is failing for some reason : " << res << std::endl;
+        }
     }
 }
 
@@ -843,7 +839,7 @@ const bool& vkProfiler::isPaused() {
     return m_IsPaused;
 }
 
-const bool vkProfiler::canRecordTimeStamp(const bool& isRoot) {
+bool vkProfiler::canRecordTimeStamp(const bool& isRoot) {
     if (m_IsActive && !m_IsPaused) {
         if (!isRoot) {
             return (vkProfQueryZone::sCurrentDepth > 0);  // child is authorized only if there a root frame
