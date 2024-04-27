@@ -137,8 +137,8 @@ static inline const char* GetStringFromObjetType(VkDebugReportObjectTypeEXT vObj
         case VK_DEBUG_REPORT_OBJECT_TYPE_CU_MODULE_NVX_EXT: return "CuModuleNvx";
         case VK_DEBUG_REPORT_OBJECT_TYPE_CU_FUNCTION_NVX_EXT: return "CuFunctionNvx";
         case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT: return "AccelerationStructure";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_MODULE_NV: return "Cudamodule";
-        case VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_FUNCTION_NV: return "CudaFunction";
+        //case VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_MODULE_NV: return "Cudamodule";
+        //case VK_DEBUG_REPORT_OBJECT_TYPE_CUDA_FUNCTION_NV: return "CudaFunction";
         case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA_EXT: return "BufferCollectionFuschia";
     }
     return "";
