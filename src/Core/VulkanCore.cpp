@@ -73,6 +73,7 @@ limitations under the License.
     } while (false)
 #endif
 
+#if defined(__clang__) || defined(__GNUC__)
 // disable for GGC and CLANG all warnings
 // https://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-via-pragmas
 #pragma clang diagnostic push
@@ -82,8 +83,11 @@ limitations under the License.
 #pragma clang diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic ignored "-Wmissing-field-initializers"
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
 #include <Gaia/Core/vk_mem_alloc.h>
+#if defined(__clang__) || defined(__GNUC__)
 #pragma clang diagnostic pop
+#endif
 
 #ifndef ZoneScoped
 #define ZoneScoped

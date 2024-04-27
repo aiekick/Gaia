@@ -2,8 +2,10 @@
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
+#if defined(__clang__) || defined(__GNUC__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#endif
 
 #ifdef STB_IMAGE_INCLUDE
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -26,4 +28,6 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include STB_IMAGE_WRITE_INCLUDE
 #endif  // STB_IMAGE_WRITE_INCLUDE
 
+#if defined(__clang__) || defined(__GNUC__)
 #pragma clang diagnostic pop
+#endif

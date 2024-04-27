@@ -43,6 +43,7 @@
     } while (false)
 #endif
 
+#if defined(__clang__) || defined(__GNUC__)
 // disable for GGC and CLANG all warnings
 // https://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-via-pragmas
 #pragma clang diagnostic push
@@ -52,8 +53,11 @@
 #pragma clang diagnostic ignored "-Wsign-compare"
 #pragma clang diagnostic ignored "-Wmissing-field-initializers"
 #pragma clang diagnostic ignored "-Wswitch"
+#endif // __clang__
 #include <Gaia/Core/vk_mem_alloc.h>
+#if defined(__clang__) || defined(__GNUC__)
 #pragma clang diagnostic pop
+#endif // __clang__
 
 #include <memory>
 #include <ctools/cTools.h>

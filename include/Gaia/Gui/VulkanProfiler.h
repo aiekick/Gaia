@@ -146,7 +146,7 @@ T vkProfAverageValue<T>::GetAverage() {
     return m_AverageValue;
 }
 
-class vkProfQueryZone {
+class GAIA_API vkProfQueryZone {
 public:
     struct circularSettings {
         float count_point = 20.0f;  // 60 for 2pi

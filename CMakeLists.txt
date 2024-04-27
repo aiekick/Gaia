@@ -11,7 +11,7 @@ project(
 enable_language(C CXX)
 
 option(GAIA_DEBUG_PRINT "Enable debug print of Gaia" OFF) 
-option(USE_PROFILERS "Enable the use of profilers. affect teh reset of  Command Buffers" ON)
+option(USE_PROFILERS "Enable the use of profilers. affect the reset of  Command Buffers" ON)
 
 set(GAIA_PROFILER_INCLUDE "Tracy Profiler Include file" CACHE FILEPATH "${PROFILER_INCLUDE}")
 set(GAIA_STB_IMAGE_INCLUDE "Stb Image Include file" CACHE FILEPATH "${STB_IMAGE_INCLUDE}")
@@ -75,7 +75,7 @@ elseif(WIN32)
 endif()
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 ")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 ")
 	add_definitions(-D__STDC__)
 	add_definitions(-DMSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
