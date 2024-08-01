@@ -22,7 +22,7 @@
 
 #pragma once
 #include <Gaia/gaia.h>
-#include <imgui.h>  // IMGUI_IMPL_API
+#include <ImGuiPack.h>
 
 #define IMGUI_IMPL_API GAIA_API
 
