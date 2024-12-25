@@ -19,7 +19,6 @@ limitations under the License.
 
 #include <Gaia/gaia.h>
 
-struct BaseNodeState;
 class GAIA_API TaskInterface {
 protected:
     // to compare to current frame
@@ -41,20 +40,20 @@ protected:
     // ex : - un ExecuteWhenNeeded quand il y a une maj d'un input de mesh, pour calcul des smooths normal une fois seulement
     //      - un ExecuteAllTime pour le traitement a chaque frame du mesh
 
-    virtual bool ExecuteAllTime(const uint32_t& vCurrentFrame, vk::CommandBuffer* vCmd = nullptr, BaseNodeState* vBaseNodeState = nullptr) {
+    virtual bool ExecuteAllTime(const uint32_t& vCurrentFrame, vk::CommandBuffer* vCmd = nullptr, GaiaUserDatas vUserDatas = nullptr) {
         UNUSED(vCurrentFrame);
         UNUSED(vCmd);
-        UNUSED(vBaseNodeState);
+        UNUSED(vUserDatas);
 
         EZ_TOOLS_DEBUG_BREAK;  // pour eviter d'oublier d'avoir implement� cette fonction alors qu'on l'apelle
 
         return false;
     }
 
-    virtual bool ExecuteWhenNeeded(const uint32_t& vCurrentFrame, vk::CommandBuffer* vCmd = nullptr, BaseNodeState* vBaseNodeState = nullptr) {
+    virtual bool ExecuteWhenNeeded(const uint32_t& vCurrentFrame, vk::CommandBuffer* vCmd = nullptr, GaiaUserDatas vUserDatas = nullptr) {
         UNUSED(vCurrentFrame);
         UNUSED(vCmd);
-        UNUSED(vBaseNodeState);
+        UNUSED(vUserDatas);
 
         EZ_TOOLS_DEBUG_BREAK;  // pour eviter d'oublier d'avoir implement� cette fonction alors qu'on l'apelle
 
@@ -64,7 +63,7 @@ protected:
 public:
     // il reviends a chaque classe qui derive de TaskInterface de choisir son mode d'execution
     // donc on appellera Execute entre classe
-    bool Execute(const uint32_t& vCurrentFrame, vk::CommandBuffer* vCmd = nullptr, BaseNodeState* vBaseNodeState = nullptr) {
+    bool Execute(const uint32_t& vCurrentFrame, vk::CommandBuffer* vCmd = nullptr, GaiaUserDatas vUserDatas = nullptr) {
         if (m_LastExecutedFrame != vCurrentFrame) {
             m_LastExecutedFrame = vCurrentFrame;
 
@@ -72,10 +71,10 @@ public:
                 if (m_NeedNewExecution) {
                     m_NeedNewExecution = false;
 
-                    return ExecuteWhenNeeded(vCurrentFrame, vCmd, vBaseNodeState);
+                    return ExecuteWhenNeeded(vCurrentFrame, vCmd, vUserDatas);
                 }
             } else {
-                return ExecuteAllTime(vCurrentFrame, vCmd, vBaseNodeState);
+                return ExecuteAllTime(vCurrentFrame, vCmd, vUserDatas);
             }
         }
 

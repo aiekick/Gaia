@@ -156,3 +156,5 @@ namespace GaiApi {
     typedef std::shared_ptr<VulkanDevice> VulkanDevicePtr;
     typedef std::weak_ptr<VulkanDevice> VulkanDeviceWeak;
 }  // namespace GaiApi
+
+typedef void* GaiaUserDatas;
