@@ -10,9 +10,6 @@ public:
 
     virtual bool isValid() const = 0;
     virtual bool isThereAnError() const = 0;
-
-protected:
-    virtual bool m_build() = 0;
 };
 
 }  // namespace gaia
