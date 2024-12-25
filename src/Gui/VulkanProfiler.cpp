@@ -22,7 +22,7 @@ limitations under the License.
 #include <cstdarg> /* va_list, va_start, va_arg, va_end */
 #include <cmath>
 
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 #include <Gaia/Core/VulkanCore.h>
 #include <Gaia/Core/VulkanSubmitter.h>
 
@@ -409,7 +409,8 @@ void vkProfQueryZone::m_DrawList_DrawBar(const char* vLabel, const ImRect& vRect
     ImGui::PopStyleVar();
 
     const bool pushed = PushStyleColorWithContrast(colorU32, ImGuiCol_Text, ImVec4(0, 0, 0, 1), vkProfQueryZone::sContrastRatio);
-    ImGui::RenderTextClipped(vRect.Min + style.FramePadding, vRect.Max - style.FramePadding,  //
+    ImGui::RenderTextClipped(ImVec2(vRect.Min.x + style.FramePadding.x, vRect.Min.y + style.FramePadding.y), 
+        ImVec2(vRect.Max.x - style.FramePadding.x, vRect.Max.y - style.FramePadding.y),  //
         vLabel, nullptr, &label_size, ImVec2(0.5f, 0.5f), &vRect);
     if (pushed) {
         ImGui::PopStyleColor();
@@ -512,9 +513,9 @@ bool vkProfQueryZone::m_DrawHorizontalFlameGraph(
                 const float height = label_size.y + style.FramePadding.y * 2.0f;
                 const ImVec2 bPos = ImVec2(bar_start + style.FramePadding.x, vDepth * height + style.FramePadding.y);
                 //const ImVec2 bSize = ImVec2(bar_size - style.FramePadding.x, 0.0f);
-                const ImVec2 pos = window->DC.CursorPos + bPos;
+                const ImVec2 pos = ImVec2(window->DC.CursorPos.x + bPos.x,window->DC.CursorPos.y + bPos.y);
                 const ImVec2 size = ImVec2(bar_size, height);
-                const ImRect bb(pos, pos + size);
+                const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y+size.y));
                 bool hovered, held;
                 pressed = ImGui::ButtonBehavior(bb, id, &hovered, &held,  //
                     ImGuiButtonFlags_PressedOnClick |                     //
@@ -561,7 +562,7 @@ bool vkProfQueryZone::m_DrawHorizontalFlameGraph(
         const ImVec2 pos = window->DC.CursorPos;
         const ImVec2 size = ImVec2(aw, ImGui::GetFrameHeight() * (vkProfQueryZone::sMaxDepth + 1U));
         ImGui::ItemSize(size);
-        const ImRect bb(pos, pos + size);
+        const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
         const ImGuiID id = window->GetID((name + "##canvas").c_str());
         if (!ImGui::ItemAdd(bb, id)) {
             return pressed;
@@ -594,7 +595,8 @@ bool vkProfQueryZone::m_DrawCircularFlameGraph(
     if (m_ComputeRatios(vRoot, vParent, vDepth, barStartRatio, barSizeRatio)) {
         if (barSizeRatio > 0.0f) {
             if ((zonesOrdered.empty() && vkProfQueryZone::sShowLeafMode) || !vkProfQueryZone::sShowLeafMode) {
-                ImVec2 center = window->DC.CursorPos + ImGui::GetContentRegionAvail() * 0.5f;
+                ImVec2 avail = ImGui::GetContentRegionAvail();
+                ImVec2 center = ImVec2(window->DC.CursorPos.x + avail.x * 0.5f, window->DC.CursorPos.y + avail.y * 0.5f);
                 ImGui::ColorConvertHSVtoRGB(hsv.x, hsv.y, hsv.z, cv4.x, cv4.y, cv4.z);
                 cv4.w = 1.0f;
 

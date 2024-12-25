@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Resources/VulkanRessource.h>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 
 namespace GaiApi {
 class VulkanComputeImageTarget {
@@ -28,7 +28,7 @@ public:
 
 public:
     bool InitTarget2D(
-        GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, vk::SampleCountFlagBits vSampleCount);
+        GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat, uint32_t vMipLevelCount, vk::SampleCountFlagBits vSampleCount);
     void Unit();
 };
 }  // namespace GaiApi

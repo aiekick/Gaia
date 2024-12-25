@@ -18,7 +18,7 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <unordered_map>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <Gaia/gaia.h>
 
 #define VULKAN_DEBUG 1
@@ -75,7 +75,7 @@ public:
     static void findBestExtensions(const char* vLabel,
         const std::vector<vk::ExtensionProperties>& installed,
         const std::vector<const char*>& wanted,
-        ct::SearchableVector<std::string>& out);
+        ez::cnt::DicoVector<std::string>& out);
     static void findBestLayers(
         const std::vector<vk::LayerProperties>& installed, const std::vector<const char*>& wanted, std::vector<const char*>& out);
     static uint32_t getQueueIndex(vk::PhysicalDevice& physicalDevice, vk::QueueFlags flags, bool standalone);
@@ -100,7 +100,7 @@ public:
     VulkanQueue getQueue(vk::QueueFlagBits vQueueType);
 
     // debug extention must use dynamic loader m_Dldy ( not part of vulkan core), so we let it here
-    void BeginDebugLabel(vk::CommandBuffer* vCmd, const char* vLabel, ct::fvec4 vColor = 0.0f);
+    void BeginDebugLabel(vk::CommandBuffer* vCmd, const char* vLabel, ez::fvec4 vColor = 0.0f);
     void EndDebugLabel(vk::CommandBuffer* vCmd);
 
     void SetUseRTX(const bool& vFlag) {

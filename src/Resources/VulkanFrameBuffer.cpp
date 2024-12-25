@@ -19,8 +19,8 @@ limitations under the License.
 
 #include <Gaia/Resources/VulkanFrameBuffer.h>
 #include <Gaia/Core/VulkanCore.h>
-#include <ctools/cTools.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezTools.hpp>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef PROFILER_INCLUDE
 #include <vulkan/vulkan.hpp>
@@ -42,13 +42,13 @@ VulkanFrameBuffer::~VulkanFrameBuffer() {
 }
 
 bool VulkanFrameBuffer::Init(GaiApi::VulkanCoreWeak vVulkanCore,
-    ct::uvec2 vSize,
+    ez::uvec2 vSize,
     uint32_t vCountColorBuffers,
     vk::RenderPass& vRenderPass,
     bool vCreateRenderPass,
     bool vUseDepth,
     bool vNeedToClear,
-    ct::fvec4 vClearColor,
+    ez::fvec4 vClearColor,
     vk::Format vFormat,
     vk::SampleCountFlagBits vSampleCount) {
     ZoneScoped;
@@ -59,7 +59,7 @@ bool VulkanFrameBuffer::Init(GaiApi::VulkanCoreWeak vVulkanCore,
     needToClear = vNeedToClear;
 
     if (vCountColorBuffers > 0 && vCountColorBuffers <= 8) {
-        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
         if (!size.emptyOR()) {
             attachments.clear();
             attachmentViews.clear();

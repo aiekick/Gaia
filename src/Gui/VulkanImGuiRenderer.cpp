@@ -22,11 +22,11 @@ limitations under the License.
 #include <cstdio>
 
 #include <Gaia/gaia.h>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <backends/imgui_impl_glfw.h>
 #include <Gaia/Core/VulkanCommandBuffer.h>
 #include <Gaia/Core/VulkanCore.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef ENABLE_AIEKICK_CODE
 #include <Gaia/Resources/VulkanRessource.h>

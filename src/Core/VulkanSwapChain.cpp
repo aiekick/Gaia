@@ -20,7 +20,7 @@ limitations under the License.
 #include <Gaia/Core/VulkanSwapChain.h>
 #include <Gaia/Gui/VulkanWindow.h>
 #include <Gaia/Core/VulkanCore.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 #include <Gaia/Core/VulkanSubmitter.h>
 #include <Gaia/Resources/VulkanFrameBuffer.h>
 #include <Gaia/Buffer/FrameBuffer.h>
@@ -125,7 +125,7 @@ bool VulkanSwapChain::Load() {
         assert(winPtr != nullptr);
 
         auto size = winPtr->getFrameBufferResolution();
-        m_DisplayRect = ct::frect(0, 0, (float)size.x, (float)size.y);
+        m_DisplayRect = ez::fvec4(0, 0, (float)size.x, (float)size.y);
 
         // Setup viewports, Vsync
         vk::Extent2D swapchainSize = vk::Extent2D(size.x, size.y);
@@ -183,10 +183,10 @@ bool VulkanSwapChain::Load() {
         // Tested on an NVIDIA 1050 TI and 60 Hz display (aiekick)
         // Tested on an NVIDIA 3060 and 60 Hz display (aiekick)
         // Tested on an NVIDIA 1080 and 165 Hz 2K display (original author)
-        // uint32_t backbufferCount = ct::clamp<uint32_t>(SWAPCHAIN_IMAGES_COUNT, 2u, surfaceCapabilities.maxImageCount);
+        // uint32_t backbufferCount = ez::clamp<uint32_t>(SWAPCHAIN_IMAGES_COUNT, 2u, surfaceCapabilities.maxImageCount);
         if (desiredNumOfSwapchainImages != SWAPCHAIN_IMAGES_COUNT) {
             LogVarError("Cant Create swapchain. exit!");
-            CTOOL_DEBUG_BREAK;
+            EZ_TOOLS_DEBUG_BREAK;
             return false;
         }
 
@@ -294,10 +294,10 @@ bool VulkanSwapChain::CreateFrameBuffers() {
 
         /*m_FrameBufferPtr = FrameBuffer::Create(m_VulkanCore);
         if (m_FrameBufferPtr && m_FrameBufferPtr->Init(//
-            ct::uvec2(m_OutputSize.width, m_OutputSize.height), //
+            ez::uvec2(m_OutputSize.width, m_OutputSize.height), //
             SWAPCHAIN_IMAGES_COUNT, //
             true, true, //
-            ct::fvec4(0, 0, 0, 1), //
+            ez::fvec4(0, 0, 0, 1), //
             false, //
             m_SurfaceColorFormat, //
             vk::SampleCountFlagBits::e1)) {

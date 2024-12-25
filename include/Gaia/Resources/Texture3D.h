@@ -18,7 +18,7 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <string>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Core/VulkanCore.h>
 #include <Gaia/Resources/VulkanRessource.h>
@@ -26,7 +26,7 @@ limitations under the License.
 
 class GAIA_API Texture3D {
 public:
-    static Texture3DPtr CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec3 vSize, vk::Format vFormat);
+    static Texture3DPtr CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec3 vSize, vk::Format vFormat);
 
 public:
     std::shared_ptr<VulkanImageObject> m_Texture3D = nullptr;
@@ -46,6 +46,6 @@ public:
     Texture3D(GaiApi::VulkanCoreWeak vVulkanCore);
     ~Texture3D();
 
-    bool InitEmptyTexture(const ct::uvec3& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
+    bool InitEmptyTexture(const ez::uvec3& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
     void Destroy();
 };

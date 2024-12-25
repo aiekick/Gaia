@@ -60,7 +60,7 @@
 #endif // __clang__
 
 #include <memory>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <vulkan/vulkan.hpp>
 
 // Clang/GCC warnings with -Weverything
@@ -104,7 +104,7 @@
                                                     // trivial copy-assignment; use assignment or value-initialization instead
 #endif
 
-typedef std::vector<ct::fvec2> fvec2Vector;
+typedef std::vector<ez::fvec2> fvec2Vector;
 typedef std::vector<vk::DescriptorImageInfo> DescriptorImageInfoVector;
 
 class FrameBuffer;

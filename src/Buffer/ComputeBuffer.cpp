@@ -22,8 +22,8 @@ limitations under the License.
 #include <utility>
 #include <functional>
 
-#include <ctools/Logger.h>
-#include <ctools/FileHelper.h>
+#include <ezlibs/ezLog.hpp>
+#include <ezlibs/ezFile.hpp>
 #include <ImWidgets.h>
 #include <Gaia/Core/VulkanSubmitter.h>
 
@@ -71,7 +71,7 @@ ComputeBuffer::~ComputeBuffer() {
 //// PUBLIC / INIT/UNIT ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool ComputeBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vPingPongBufferMode, const vk::Format& vFormat) {
+bool ComputeBuffer::Init(const ez::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vPingPongBufferMode, const vk::Format& vFormat) {
     ZoneScoped;
 
     m_Loaded = false;
@@ -79,17 +79,17 @@ bool ComputeBuffer::Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuff
     auto corePtr = m_VulkanCore.lock();
     if (corePtr != nullptr) {
         m_Device = corePtr->getDevice();
-        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
         if (!size.emptyOR()) {
             m_PingPongBufferMode = vPingPongBufferMode;
 
-            m_TemporarySize = ct::ivec2(size.x, size.y);
+            m_TemporarySize = ez::ivec2(size.x, size.y);
             m_TemporaryCountBuffer = vCountColorBuffers;
 
             m_Queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
-            m_OutputSize = ct::uvec3(size.x, size.y, 0);
-            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_OutputSize = ez::uvec3(size.x, size.y, 0);
+            m_OutputRatio = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
             m_Format = vFormat;
 
@@ -114,7 +114,7 @@ void ComputeBuffer::Unit() {
 //// PUBLIC / RESIZE ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void ComputeBuffer::NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers) {
+void ComputeBuffer::NeedResize(ez::ivec2* vNewSize, const uint32_t* vCountColorBuffers) {
     ZoneScoped;
     if (vNewSize) {
         m_TemporarySize = *vNewSize;
@@ -131,11 +131,11 @@ bool ComputeBuffer::ResizeIfNeeded() {
     ZoneScoped;
     if (m_NeedResize && m_Loaded) {
         DestroyComputeBuffers();
-        CreateComputeBuffers(ct::uvec2(m_TemporarySize.x, m_TemporarySize.y), m_TemporaryCountBuffer, m_Format);
+        CreateComputeBuffers(ez::uvec2(m_TemporarySize.x, m_TemporarySize.y), m_TemporaryCountBuffer, m_Format);
 
         m_TemporaryCountBuffer = m_CountBuffers;
-        m_TemporarySize = ct::ivec2(m_OutputSize.x, m_OutputSize.y);
-        m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+        m_TemporarySize = ez::ivec2(m_OutputSize.x, m_OutputSize.y);
+        m_OutputRatio = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
         m_NeedResize = false;
 
@@ -186,9 +186,9 @@ float ComputeBuffer::GetOutputRatio() const {
     return m_OutputRatio;
 }
 
-ct::fvec2 ComputeBuffer::GetOutputSize() const {
+ez::fvec2 ComputeBuffer::GetOutputSize() const {
     ZoneScoped;
-    return ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
+    return ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
 }
 
 uint32_t ComputeBuffer::GetBuffersCount() const {
@@ -251,7 +251,7 @@ bool ComputeBuffer::UpdateMipMapping(const uint32_t& vBindingPoint) {
 //// PRIVATE / FRAMEBUFFER /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool ComputeBuffer::CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const vk::Format& vFormat) {
+bool ComputeBuffer::CreateComputeBuffers(const ez::uvec2& vSize, const uint32_t& vCountColorBuffers, const vk::Format& vFormat) {
     ZoneScoped;
 
     bool res = false;
@@ -261,11 +261,11 @@ bool ComputeBuffer::CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t&
         countColorBuffers = m_CountBuffers;
 
     if (countColorBuffers > 0 && countColorBuffers <= 8) {
-        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
         if (!size.emptyOR()) {
             m_CountBuffers = countColorBuffers;
-            m_OutputSize = ct::uvec3(size, 0);
-            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_OutputSize = ez::uvec3(size, 0);
+            m_OutputRatio = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
             res = true;
 

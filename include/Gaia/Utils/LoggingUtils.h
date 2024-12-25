@@ -21,8 +21,7 @@ limitations under the License.
 #include <string>
 #include <memory>
 
-#include <ctools/cTools.h>
-#include <ctools/ConfigAbstract.h>
+#include <ezlibs/ezTools.hpp>
 #include <Gaia/gaia.h>
 
 #include <vulkan/vulkan.hpp>

@@ -20,7 +20,8 @@ limitations under the License.
 #include <Gaia/Core/VulkanCore.h>
 
 #include <Gaia/gaia.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
+#include <ezlibs/ezTime.hpp>
 #include <Gaia/Core/VulkanSubmitter.h>
 #include <Gaia/Resources/Texture2D.h>
 #include <Gaia/Resources/Texture3D.h>
@@ -35,7 +36,7 @@ limitations under the License.
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 
 #include <cstdio>     // printf, fprintf
 #include <cstdlib>    // abort
@@ -188,9 +189,9 @@ bool VulkanCore::Init(VulkanWindowWeak vVulkanWindow,
         setupDescriptorPool();
         setupProfiler();
 
-        m_EmptyTexture2DPtr = Texture2D::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
-        m_EmptyTexture3DPtr = Texture3D::CreateEmptyTexture(m_This.lock(), ct::uvec3(1, 1, 1), vk::Format::eR8G8B8A8Unorm);
-        m_EmptyTextureCubePtr = TextureCube::CreateEmptyTexture(m_This.lock(), ct::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTexture2DPtr = Texture2D::CreateEmptyTexture(m_This.lock(), ez::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTexture3DPtr = Texture3D::CreateEmptyTexture(m_This.lock(), ez::uvec3(1, 1, 1), vk::Format::eR8G8B8A8Unorm);
+        m_EmptyTextureCubePtr = TextureCube::CreateEmptyTexture(m_This.lock(), ez::uvec2(1, 1), vk::Format::eR8G8B8A8Unorm);
 
         return true;
     }
@@ -329,7 +330,7 @@ float VulkanCore::GetDeltaTime(const uint32_t& vCurrentFrame) {
     static uint32_t current_frame = 0U;
     static float delta_time = 0.0f;
     if (vCurrentFrame != current_frame) {
-        delta_time = ct::GetTimeInterval();
+        delta_time = ez::time::getTimeInterval();
     }
     return delta_time;
 }
@@ -703,7 +704,7 @@ void VulkanCore::setupMemoryAllocator() {
     vmaCreateAllocator(&allocatorInfo, &VulkanCore::sAllocator);
 }
 
-ct::frect* VulkanCore::getDisplayRect() {
+ez::fvec4* VulkanCore::getDisplayRect() {
     ZoneScoped;
 
     if (m_CreateSwapChain) {

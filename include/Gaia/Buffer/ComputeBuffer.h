@@ -21,8 +21,7 @@ limitations under the License.
 #include <string>
 #include <memory>
 
-#include <ctools/cTools.h>
-#include <ctools/ConfigAbstract.h>
+#include <ezlibs/ezTools.hpp>
 #include <Gaia/gaia.h>
 
 #include <vulkan/vulkan.hpp>
@@ -53,7 +52,7 @@ protected:
 
     uint32_t m_CountBuffers = 0U;  // count buffers
 
-    ct::ivec2 m_TemporarySize;           // temporary size before resize can be used by imgui
+    ez::ivec2 m_TemporarySize;           // temporary size before resize can be used by imgui
     int32_t m_TemporaryCountBuffer = 0;  // temporary count before resize can be used by imgui
 
     uint32_t m_CurrentFrame = 0U;
@@ -75,7 +74,7 @@ protected:
     // dynamic state
     // vk::Rect2D m_RenderArea = {};
     // vk::Viewport m_Viewport = {};
-    ct::uvec3 m_OutputSize;  // output size for compute stage
+    ez::uvec3 m_OutputSize;  // output size for compute stage
     float m_OutputRatio = 1.0f;
 
 public:  // contructor
@@ -83,11 +82,11 @@ public:  // contructor
     virtual ~ComputeBuffer();
 
     // init/unit
-    bool Init(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vPingPongBufferMode, const vk::Format& vFormat);
+    bool Init(const ez::uvec2& vSize, const uint32_t& vCountColorBuffers, const bool& vPingPongBufferMode, const vk::Format& vFormat);
     void Unit();
 
     // resize
-    void NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr);  // to call at any moment
+    void NeedResize(ez::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr);  // to call at any moment
 
     // not to call at any moment, to call only aftter submit or before any command buffer recording
     // return true, if was resized
@@ -106,7 +105,7 @@ public:  // contructor
 
     // OutputSizeInterface
     float GetOutputRatio() const override;
-    ct::fvec2 GetOutputSize() const override;
+    ez::fvec2 GetOutputSize() const override;
 
     bool UpdateMipMapping(const uint32_t& vBindingPoint);
 
@@ -114,6 +113,6 @@ public:  // contructor
 
 protected:
     // Framebuffer
-    bool CreateComputeBuffers(const ct::uvec2& vSize, const uint32_t& vCountColorBuffers, const vk::Format& vFormat);
+    bool CreateComputeBuffers(const ez::uvec2& vSize, const uint32_t& vCountColorBuffers, const vk::Format& vFormat);
     void DestroyComputeBuffers();
 };

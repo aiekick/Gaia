@@ -18,7 +18,7 @@ limitations under the License.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <Gaia/Resources/TextureCube.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef STB_IMAGE_INCLUDE
 #include STB_IMAGE_INCLUDE
@@ -171,7 +171,7 @@ uint32_t& channels)
 }
 */
 
-TextureCubePtr TextureCube::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat) {
+TextureCubePtr TextureCube::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat) {
     ZoneScoped;
 
     auto res = std::make_shared<TextureCube>(vVulkanCore);
@@ -184,7 +184,7 @@ TextureCubePtr TextureCube::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCor
 }
 
 /*
-TextureCubePtr TextureCube::CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat)
+TextureCubePtr TextureCube::CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat)
 {
     ZonvVulkanCorePtr	if (vVulkanCore.expired()) return nullptr;
     auto res = std::make_vVulkanCorePtrreCube>(vVulkanCore);
@@ -289,7 +289,7 @@ bool TextureCube::LoadMemories(const std::array<std::vector<uint8_t>, 6U>& buffe
 
         uint32_t maxMipLevelCount = GetMiplevelCount(m_Width, m_Height);
 
-        m_MipLevelCount = ct::clamp(vMipLevelCount, 1u, maxMipLevelCount);
+        m_MipLevelCount = ez::clamp(vMipLevelCount, 1u, maxMipLevelCount);
 
         m_TextureCubePtr = VulkanRessource::createTextureImageCube(m_VulkanCore, m_Width, m_Height, m_MipLevelCount, vFormat, buffers, "TextureCube");
         if (m_TextureCubePtr) {
@@ -333,7 +333,7 @@ bool TextureCube::LoadMemories(const std::array<std::vector<uint8_t>, 6U>& buffe
     return m_Loaded;
 }
 
-bool TextureCube::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vFormat) {
+bool TextureCube::LoadEmptyTexture(const ez::uvec2& vSize, const vk::Format& vFormat) {
     ZoneScoped;
 
     auto corePtr = m_VulkanCore.lock();
@@ -438,7 +438,7 @@ bool TextureCube::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vFo
 
 // for compute
 /*
-bool TextureCube::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat)
+bool TextureCube::LoadEmptyImage(const ez::uvec2& vSize, const vk::Format& vFormat)
 {
     ZoneScoped;
 
@@ -508,7 +508,7 @@ void TextureCube::Destroy() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
-bool TextureCube::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize)
+bool TextureCube::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize)
 {
     ZoneScoped;
 
@@ -613,7 +613,7 @@ bool TextureCube::SaveToPng(const std::string& vFilePathName, const bool& vFlipY
 */
 
 /*
-bool TextureCube::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize)
+bool TextureCube::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize)
 {
     ZoneScoped;
 
@@ -715,7 +715,7 @@ bool TextureCube::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY
 
 /*
 bool TextureCube::SaveToJpg(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const int& vQualityFrom0To100, const
-ct::uvec2& vNewSize)
+ez::uvec2& vNewSize)
 {
     ZoneScoped;
 
@@ -817,7 +817,7 @@ ct::uvec2& vNewSize)
 */
 
 /*
-bool TextureCube::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize)
+bool TextureCube::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize)
 {
     UNUSED(vNewSize);
     UNUSED(vSubSamplesCount);
@@ -829,7 +829,7 @@ bool TextureCube::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY
 */
 /*
 
-bool TextureCube::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize)
+bool TextureCube::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize)
 {
     ZoneScoped;
 

@@ -18,8 +18,8 @@ limitations under the License.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <Gaia/Gui/VulkanWindow.h>
-#include <ctools/Logger.h>
-#include <ctools/FileHelper.h>
+#include <ezlibs/ezLog.hpp>
+#include <ezlibs/ezFile.hpp>
 #include <GLFW/glfw3.h>
 
 #ifdef PROFILER_INCLUDE
@@ -127,18 +127,18 @@ void VulkanWindow::CloseWindowWhenPossible() {
     glfwSetWindowShouldClose(m_Window, 1);
 }
 
-ct::ivec2 VulkanWindow::getFrameBufferResolution() const {
+ez::ivec2 VulkanWindow::getFrameBufferResolution() const {
     ZoneScoped;
 
-    ct::ivec2 res;
+    ez::ivec2 res;
     glfwGetFramebufferSize(m_Window, &res.x, &res.y);
     return res;
 }
 
-ct::ivec2 VulkanWindow::getWindowResolution() const {
+ez::ivec2 VulkanWindow::getWindowResolution() const {
     ZoneScoped;
 
-    ct::ivec2 res;
+    ez::ivec2 res;
     glfwGetWindowSize(m_Window, &res.x, &res.y);
 
     return res;

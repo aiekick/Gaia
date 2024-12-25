@@ -81,7 +81,7 @@ you can define VULKAN_HPP_NO_DEFAULT_DISPATCHER before you include vulkan.hpp to
 #include <Gaia/Core/VulkanDevice.h>
 #include <Gaia/Gui/VulkanWindow.h>
 #include <Gaia/Core/VulkanCore.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef PROFILER_INCLUDE
 #include <vulkan/vulkan.hpp>
@@ -185,7 +185,7 @@ VulkanDevicePtr VulkanDevice::Create(VulkanWindowWeak vVulkanWindow,
 void VulkanDevice::findBestExtensions(const char* vLabel,
     const std::vector<vk::ExtensionProperties>& installed,
     const std::vector<const char*>& wanted,
-    ct::SearchableVector<std::string>& out) {
+    ez::cnt::DicoVector<std::string>& out) {
     ZoneScoped;
 
     assert(vLabel);
@@ -198,7 +198,7 @@ void VulkanDevice::findBestExtensions(const char* vLabel,
         for (const char* const& w : wanted) {
             if (std::string((const char*)i.extensionName).compare(w) == 0) {
                 extFound = true;
-                out.try_add(w);
+                out.tryAdd(w);
                 break;
             }
         }
@@ -380,7 +380,7 @@ void VulkanDevice::WaitIdle() {
     m_LogDevice.waitIdle();
 }
 
-void VulkanDevice::BeginDebugLabel(vk::CommandBuffer* vCmd, const char* vLabel, ct::fvec4 vColor) {
+void VulkanDevice::BeginDebugLabel(vk::CommandBuffer* vCmd, const char* vLabel, ez::fvec4 vColor) {
 #ifdef VULKAN_DEBUG
     if (m_Debug_Utils_Supported && vCmd && vLabel) {
         markerInfo.pLabelName = vLabel;
@@ -441,7 +441,7 @@ bool CheckValidationLayerSupport() {
 
     size_t maxSize = 0U;
     for (const auto& layer_info : availableLayers) {
-        maxSize = ct::maxi(maxSize, strlen(layer_info.layerName));
+        maxSize = ez::maxi(maxSize, strlen(layer_info.layerName));
     }
 
     LogVarLightTag(MESSAGING_TYPE_VKLAYER, "Vulkan available validation layers : [%u]", layerCount);
@@ -476,7 +476,7 @@ bool PrintActiveExtensions() {
     size_t maxSize = 0U;
     for (const auto& layer_info : availableLayers)
     {
-        maxSize = ct::maxi(maxSize, strlen(layer_info.layerName));
+        maxSize = ez::maxi(maxSize, strlen(layer_info.layerName));
     }
 
     LogVarLightInfo("Vulkan available validation layers : [%u]", layerCount);
@@ -550,7 +550,7 @@ bool VulkanDevice::CreateVulkanInstance(
 
             // Find the best Instance Extensions
             auto installedExtensions = vk::enumerateInstanceExtensionProperties();
-            ct::SearchableVector<std::string> instanceExtensions = {};
+            ez::cnt::DicoVector<std::string> instanceExtensions = {};
             findBestExtensions("Instance", installedExtensions, wantedExtensions, instanceExtensions);
 
             // verification of needed instance extention presence
@@ -761,7 +761,7 @@ bool VulkanDevice::CreateLogicalDevice() {
         wantedDeviceExtensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
     }
 
-    ct::SearchableVector<std::string> deviceExtensions = {};
+    ez::cnt::DicoVector<std::string> deviceExtensions = {};
     findBestExtensions("Device", installedDeviceExtensions, wantedDeviceExtensions, deviceExtensions);
 
     m_Use_RTX = (deviceExtensions.exist(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME) &&  //

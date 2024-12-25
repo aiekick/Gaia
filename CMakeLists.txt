@@ -40,10 +40,10 @@ endif()
 
 set(GAIA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include PARENT_SCOPE)
 
-include(cmake/vulkanheaders.cmake)
+include(cmake/vkheaders.cmake)
 include(cmake/glfw.cmake)
 include(cmake/glslang.cmake)
-include(cmake/ctools.cmake)
+include(cmake/ezlibs.cmake)
 include(cmake/imguipack.cmake)
 
 file(GLOB_RECURSE PROJECT_SRC_RECURSE 
@@ -98,7 +98,7 @@ add_definitions(-DVULKAN_HPP_TYPESAFE_CONVERSION=1)
 
 if (USE_SHARED_LIBS)
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL ON CACHE BOOL "" FORCE)
-	add_library(${PROJECT} ${PROJECT_SRC_RECURSE} ${PROJECT_INC_RECURSE} ${PROJECT_CMAKE_FILES})
+	add_library(${PROJECT} ${PROJECT_SRC_RECURSE} ${PROJECT_INC_RECURSE} ${PROJECT_CMAKE_FILES} ${EZ_LIBS_SOURCES})
 	target_compile_definitions(${PROJECT} INTERFACE BUILD_GAIA_SHARED_LIBS)
 	target_compile_definitions(${PROJECT} PRIVATE BUILD_CTOOLS_SHARED_LIBS)	
 	target_compile_definitions(${PROJECT} PRIVATE BUILD_IMGUI_PACK_SHARED_LIBS)
@@ -106,7 +106,7 @@ if (USE_SHARED_LIBS)
 	set_target_properties(${PROJECT} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 else()
 	set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF CACHE BOOL "" FORCE)
-	add_library(${PROJECT} STATIC ${PROJECT_SRC_RECURSE} ${PROJECT_INC_RECURSE} ${PROJECT_CMAKE_FILES})
+	add_library(${PROJECT} STATIC ${PROJECT_SRC_RECURSE} ${PROJECT_INC_RECURSE} ${PROJECT_CMAKE_FILES} ${EZ_LIBS_SOURCES})
 endif()
 
 if(USE_DEBUG_SANITIZER)

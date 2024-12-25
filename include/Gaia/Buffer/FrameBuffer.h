@@ -21,8 +21,7 @@ limitations under the License.
 #include <string>
 #include <memory>
 
-#include <ctools/cTools.h>
-#include <ctools/ConfigAbstract.h>
+#include <ezlibs/ezTools.hpp>
 #include <Gaia/gaia.h>
 
 #include <vulkan/vulkan.hpp>
@@ -53,12 +52,12 @@ protected:
 
     uint32_t m_CountBuffers = 0U;  // FRAGMENT count framebuffer color attachment from 0 to 7
 
-    ct::ivec2 m_TemporarySize;           // temporary size before resize can be used by imgui
+    ez::ivec2 m_TemporarySize;           // temporary size before resize can be used by imgui
     int32_t m_TemporaryCountBuffer = 0;  // temporary count before resize can be used by imgui
 
     bool m_UseDepth = false;        // if depth needed for creation
     bool m_NeedToClear = false;     // if color can be cleared for attachment
-    ct::fvec4 m_ClearColor = 0.0f;  // color to clear
+    ez::fvec4 m_ClearColor = 0.0f;  // color to clear
 
     uint32_t m_CurrentFrame = 0U;
 
@@ -83,7 +82,7 @@ protected:
     // dynamic state
     vk::Rect2D m_RenderArea = {};
     vk::Viewport m_Viewport = {};
-    ct::uvec3 m_OutputSize;  // output size for compute stage
+    ez::uvec3 m_OutputSize;  // output size for compute stage
     float m_OutputRatio = 1.0f;
 
     // Renderpass
@@ -103,11 +102,11 @@ public:  // contructor
     virtual ~FrameBuffer();
 
     // init/unit
-    bool Init(const ct::uvec2& vSize,
+    bool Init(const ez::uvec2& vSize,
         const uint32_t& vCountColorBuffers,
         const bool& vUseDepth,
         const bool& vNeedToClear,
-        const ct::fvec4& vClearColor,
+        const ez::fvec4& vClearColor,
         const bool& vPingPongBufferMode,
         const vk::Format& vFormat,
         const vk::SampleCountFlagBits& vSampleCount,
@@ -116,7 +115,7 @@ public:  // contructor
     void Unit();
 
     // resize
-    void NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr);  // to call at any moment
+    void NeedResize(ez::ivec2* vNewSize, const uint32_t* vCountColorBuffers = nullptr);  // to call at any moment
 
     // not to call at any moment, to call only aftter submit or before any command buffer recording
     // return true, if was resized
@@ -149,7 +148,7 @@ public:  // contructor
 
     // OutputSizeInterface
     float GetOutputRatio() const override;
-    ct::fvec2 GetOutputSize() const override;
+    ez::fvec2 GetOutputSize() const override;
 
     void BeginRenderPass(vk::CommandBuffer* vCmdBufferPtr);
     void ClearAttachmentsIfNeeded(
@@ -157,7 +156,7 @@ public:  // contructor
     void EndRenderPass(vk::CommandBuffer* vCmdBufferPtr);
 
     void ClearAttachments();  // set clear flag for clearing at next render
-    void SetClearColorValue(const ct::fvec4& vColor);
+    void SetClearColorValue(const ez::fvec4& vColor);
 
     bool UpdateMipMapping(const uint32_t& vBindingPoint);
 
@@ -165,11 +164,11 @@ public:  // contructor
 
 protected:
     // Framebuffer
-    bool CreateFrameBuffers(const ct::uvec2& vSize,
+    bool CreateFrameBuffers(const ez::uvec2& vSize,
         const uint32_t& vCountColorBuffers,
         const bool& vUseDepth,
         const bool& vNeedToClear,
-        const ct::fvec4& vClearColor,
+        const ez::fvec4& vClearColor,
         const vk::Format& vFormat,
         const vk::SampleCountFlagBits& vSampleCount,
         const bool& vCreateRenderPass);

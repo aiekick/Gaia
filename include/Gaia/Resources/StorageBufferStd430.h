@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Resources/VulkanRessource.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #include <map>
 #include <string>

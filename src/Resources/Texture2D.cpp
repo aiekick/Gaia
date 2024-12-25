@@ -18,7 +18,7 @@ limitations under the License.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <Gaia/Resources/Texture2D.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef STB_IMAGE_INCLUDE
 #include STB_IMAGE_INCLUDE
@@ -209,7 +209,7 @@ Texture2DPtr Texture2D::CreateFromMemory(
     return res;
 }
 
-Texture2DPtr Texture2D::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat) {
+Texture2DPtr Texture2D::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat) {
     ZoneScoped;
 
     if (vVulkanCore.expired())
@@ -223,7 +223,7 @@ Texture2DPtr Texture2D::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, c
     return res;
 }
 
-Texture2DPtr Texture2D::CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat) {
+Texture2DPtr Texture2D::CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat) {
     ZoneScoped;
 
     if (vVulkanCore.expired())
@@ -315,7 +315,7 @@ bool Texture2D::LoadMemory(uint8_t* buffer,
 
         uint32_t maxMipLevelCount = GetMiplevelCount(m_Width, m_Height);
 
-        m_MipLevelCount = ct::clamp(vMipLevelCount, 1u, maxMipLevelCount);
+        m_MipLevelCount = ez::clamp(vMipLevelCount, 1u, maxMipLevelCount);
 
         m_Texture2D = VulkanRessource::createTextureImage2D(m_VulkanCore, m_Width, m_Height, m_MipLevelCount, vFormat, buffer, "Texture2D");
 
@@ -363,7 +363,7 @@ bool Texture2D::LoadMemory(uint8_t* buffer,
     return m_Loaded;
 }
 
-bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vFormat) {
+bool Texture2D::LoadEmptyTexture(const ez::uvec2& vSize, const vk::Format& vFormat) {
     ZoneScoped;
 
     auto corePtr = m_VulkanCore.lock();
@@ -465,7 +465,7 @@ bool Texture2D::LoadEmptyTexture(const ct::uvec2& vSize, const vk::Format& vForm
 }
 
 // for compute
-bool Texture2D::LoadEmptyImage(const ct::uvec2& vSize, const vk::Format& vFormat) {
+bool Texture2D::LoadEmptyImage(const ez::uvec2& vSize, const vk::Format& vFormat) {
     ZoneScoped;
 
     auto corePtr = m_VulkanCore.lock();
@@ -536,7 +536,7 @@ void Texture2D::Destroy() {
 ///// SAVE TO PICTURE FILES (PBG, BMP, TGA, HDR) SO STB EXPORT FILES //////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize) {
+bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize) {
     ZoneScoped;
 
     bool res = false;
@@ -620,7 +620,7 @@ bool Texture2D::SaveToPng(const std::string& vFilePathName, const bool& vFlipY, 
     return res;
 }
 
-bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize) {
+bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize) {
     ZoneScoped;
 
     bool res = false;
@@ -703,7 +703,7 @@ bool Texture2D::SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, 
 }
 
 bool Texture2D::SaveToJpg(
-    const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const int& vQualityFrom0To100, const ct::uvec2& vNewSize) {
+    const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const int& vQualityFrom0To100, const ez::uvec2& vNewSize) {
     ZoneScoped;
 
     bool res = false;
@@ -784,7 +784,7 @@ bool Texture2D::SaveToJpg(
     return res;
 }
 
-bool Texture2D::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize) {
+bool Texture2D::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize) {
     UNUSED(vNewSize);
     UNUSED(vSubSamplesCount);
     UNUSED(vFlipY);
@@ -897,7 +897,7 @@ bool Texture2D::SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, 
     return res;
 }
 
-bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize) {
+bool Texture2D::SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize) {
     ZoneScoped;
 
     bool res = false;

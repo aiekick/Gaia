@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <Gaia/gaia.h>
 
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 
 // the deph here is not compatible wiht imgui viewport who is not suning depth is the wiewport swapchain
 // this will create many validation layering issues
@@ -77,7 +77,7 @@ public:
     DepthImageMem m_Depth;
 #endif
     vk::SampleCountFlagBits m_SampleCount = vk::SampleCountFlagBits::e1;
-    ct::frect m_DisplayRect;
+    ez::fvec4 m_DisplayRect;
     std::array<SwapChainFrameBuffer, SWAPCHAIN_IMAGES_COUNT> m_SwapchainFrameBuffers;
     uint32_t m_FrameIndex = 0;
 

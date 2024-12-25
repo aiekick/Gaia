@@ -22,7 +22,7 @@ limitations under the License.
 #include <Gaia/Core/VulkanCore.h>
 #include <Gaia/Core/VulkanCommandBuffer.h>
 
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef PROFILER_INCLUDE
 #include <vulkan/vulkan.hpp>
@@ -122,7 +122,7 @@ VulkanImageObjectPtr VulkanRessource::createTextureImage2D(GaiApi::VulkanCoreWea
     uint32_t channels = 0;
     uint32_t elem_size = 0;
 
-    mipLevelCount = ct::maxi(mipLevelCount, 1u);
+    mipLevelCount = ez::maxi(mipLevelCount, 1u);
 
     switch (format) {
         case vk::Format::eB8G8R8A8Unorm:
@@ -299,7 +299,7 @@ VulkanImageObjectPtr VulkanRessource::createTextureImageCube(GaiApi::VulkanCoreW
     uint32_t channels = 0;
     uint32_t elem_size = 0;
 
-    mipLevelCount = ct::maxi(mipLevelCount, 1u);
+    mipLevelCount = ez::maxi(mipLevelCount, 1u);
 
     switch (format) {
         case vk::Format::eB8G8R8A8Unorm:
@@ -409,7 +409,7 @@ VulkanImageObjectPtr VulkanRessource::createColorAttachment2D(GaiApi::VulkanCore
     const char* vDebugLabel) {
     ZoneScoped;
 
-    mipLevelCount = ct::maxi(mipLevelCount, 1u);
+    mipLevelCount = ez::maxi(mipLevelCount, 1u);
 
     auto corePtr = vVulkanCore.lock();
     assert(corePtr != nullptr);
@@ -465,7 +465,7 @@ VulkanImageObjectPtr VulkanRessource::createComputeTarget2D(GaiApi::VulkanCoreWe
     const char* vDebugLabel) {
     ZoneScoped;
 
-    mipLevelCount = ct::maxi(mipLevelCount, 1u);
+    mipLevelCount = ez::maxi(mipLevelCount, 1u);
 
     auto corePtr = vVulkanCore.lock();
     assert(corePtr != nullptr);

@@ -26,8 +26,8 @@ limitations under the License.
 #include <glslang/Include/ShHandle.h>
 #include <glslang/OSDependent/osinclude.h>
 
-#include <ctools/Logger.h>
-#include <ctools/FileHelper.h>
+#include <ezlibs/ezLog.hpp>
+#include <ezlibs/ezFile.hpp>
 #include <Gaia/Shader/IRUniformsLocator.h>
 
 #include <cstdio>     // printf, fprintf
@@ -437,7 +437,7 @@ const std::vector<unsigned int> VulkanShader::CompileGLSLString(const std::strin
         glslang::GlslangToSpv(*Program.getIntermediate(shaderType), SpirV, &logger, &spvOptions);
 
         if (logger.getAllMessages().length() > 0) {
-            CTOOL_DEBUG_BREAK;
+            EZ_TOOLS_DEBUG_BREAK;
 
             std::string allmsgs = logger.getAllMessages();
             std::cout << allmsgs << std::endl;

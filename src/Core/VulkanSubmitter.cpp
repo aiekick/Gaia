@@ -16,7 +16,7 @@ limitations under the License.
 
 #include <Gaia/Core/VulkanSubmitter.h>
 #include <Gaia/Core/VulkanCore.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef PROFILER_INCLUDE
 #include <vulkan/vulkan.hpp>

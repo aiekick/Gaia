@@ -22,8 +22,8 @@ limitations under the License.
 #include <utility>
 #include <functional>
 
-#include <ctools/Logger.h>
-#include <ctools/FileHelper.h>
+#include <ezlibs/ezLog.hpp>
+#include <ezlibs/ezFile.hpp>
 #include <ImWidgets.h>
 #include <Gaia/Core/VulkanSubmitter.h>
 
@@ -75,11 +75,11 @@ FrameBuffer::~FrameBuffer() {
 // donc pas de code car pas de shader, pas de m_Pipelines[0], ni ressources
 // mais un command buffer, un fbo et une renderpass
 
-bool FrameBuffer::Init(const ct::uvec2& vSize,
+bool FrameBuffer::Init(const ez::uvec2& vSize,
     const uint32_t& vCountColorBuffers,
     const bool& vUseDepth,
     const bool& vNeedToClear,
-    const ct::fvec4& vClearColor,
+    const ez::fvec4& vClearColor,
     const bool& vPingPongBufferMode,
     const vk::Format& vFormat,
     const vk::SampleCountFlagBits& vSampleCount,
@@ -92,7 +92,7 @@ bool FrameBuffer::Init(const ct::uvec2& vSize,
     auto corePtr = m_VulkanCore.lock();
     if (corePtr != nullptr) {
         m_Device = corePtr->getDevice();
-        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
         if (!size.emptyOR()) {
             m_PingPongBufferMode = vPingPongBufferMode;
 
@@ -100,15 +100,15 @@ bool FrameBuffer::Init(const ct::uvec2& vSize,
 
             SetRenderPass(vExternalRenderPass);  // can only be set if m_CreateRenderPass is false
 
-            m_TemporarySize = ct::ivec2(size.x, size.y);
+            m_TemporarySize = ez::ivec2(size.x, size.y);
             m_TemporaryCountBuffer = vCountColorBuffers;
 
             m_Queue = corePtr->getQueue(vk::QueueFlagBits::eGraphics);
 
             m_RenderArea = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_OutputSize.x, m_OutputSize.y));
             m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_OutputSize.x), static_cast<float>(m_OutputSize.y), 0, 1.0f);
-            m_OutputSize = ct::uvec3(size.x, size.y, 0);
-            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_OutputSize = ez::uvec3(size.x, size.y, 0);
+            m_OutputRatio = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
             m_UseDepth = vUseDepth;
             m_NeedToClear = vNeedToClear;
@@ -139,7 +139,7 @@ void FrameBuffer::Unit() {
 //// PUBLIC / RESIZE ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FrameBuffer::NeedResize(ct::ivec2* vNewSize, const uint32_t* vCountColorBuffers) {
+void FrameBuffer::NeedResize(ez::ivec2* vNewSize, const uint32_t* vCountColorBuffers) {
     ZoneScoped;
     if (vNewSize) {
         m_TemporarySize = *vNewSize;
@@ -156,15 +156,15 @@ bool FrameBuffer::ResizeIfNeeded() {
     ZoneScoped;
     if (m_NeedResize && m_Loaded) {
         DestroyFrameBuffers();
-        CreateFrameBuffers(ct::uvec2(m_TemporarySize.x, m_TemporarySize.y), m_TemporaryCountBuffer, m_UseDepth, m_NeedToClear, m_ClearColor,
+        CreateFrameBuffers(ez::uvec2(m_TemporarySize.x, m_TemporarySize.y), m_TemporaryCountBuffer, m_UseDepth, m_NeedToClear, m_ClearColor,
             m_PixelFormat, m_SampleCount, m_CreateRenderPass);
 
         m_TemporaryCountBuffer = m_CountBuffers;
-        m_TemporarySize = ct::ivec2(m_OutputSize.x, m_OutputSize.y);
+        m_TemporarySize = ez::ivec2(m_OutputSize.x, m_OutputSize.y);
 
         m_RenderArea = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_TemporarySize.x, m_TemporarySize.y));
         m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_TemporarySize.x), static_cast<float>(m_TemporarySize.y), 0, 1.0f);
-        m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+        m_OutputRatio = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
         m_NeedResize = false;
 
@@ -245,7 +245,7 @@ void FrameBuffer::ClearAttachments() {
     }
 }
 
-void FrameBuffer::SetClearColorValue(const ct::fvec4& vColor) {
+void FrameBuffer::SetClearColorValue(const ez::fvec4& vColor) {
     ZoneScoped;
     if (!m_ClearColorValues.empty()) {
         m_ClearColorValues[0] = vk::ClearColorValue(std::array<float, 4>{vColor.x, vColor.y, vColor.z, vColor.w});
@@ -294,7 +294,7 @@ void FrameBuffer::SetRenderPass(const vk::RenderPass& vExternalRenderPass) {
             m_RenderPass = vExternalRenderPass;
             m_IsRenderPassExternal = true;
         } else {
-            CTOOL_DEBUG_BREAK;
+            EZ_TOOLS_DEBUG_BREAK;
         }
     }
 }
@@ -304,9 +304,9 @@ vk::SampleCountFlagBits FrameBuffer::GetSampleCount() const {
     return m_SampleCount;
 }
 
-ct::fvec2 FrameBuffer::GetOutputSize() const {
+ez::fvec2 FrameBuffer::GetOutputSize() const {
     ZoneScoped;
-    return ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
+    return ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
 }
 
 uint32_t FrameBuffer::GetBuffersCount() const {
@@ -343,7 +343,7 @@ VulkanImageObjectPtr FrameBuffer::GetFrontImage(const uint32_t& vBindingPoint) {
     auto fbos = GetFrontBufferAttachments(&maxBuffers);
     if (fbos) {
         uint32_t m_PreviewBufferId = vBindingPoint;
-        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        m_PreviewBufferId = ez::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -364,7 +364,7 @@ vk::DescriptorImageInfo* FrameBuffer::GetFrontDescriptorImageInfo(const uint32_t
     auto fbos = GetFrontBufferAttachments(&maxBuffers);
     if (fbos) {
         uint32_t m_PreviewBufferId = vBindingPoint;
-        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        m_PreviewBufferId = ez::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -391,7 +391,7 @@ DescriptorImageInfoVector* FrameBuffer::GetFrontDescriptorImageInfos(fvec2Vector
 
             for (size_t i = 0U; i < (size_t)maxBuffers; ++i) {
                 m_FrontDescriptors[i] = fbos->at(i + offset).attachmentDescriptorInfo;
-                m_DescriptorSizes[i] = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
+                m_DescriptorSizes[i] = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
             }
 
             if (vOutSizes) {
@@ -409,7 +409,7 @@ VulkanImageObjectPtr FrameBuffer::GetBackImage(const uint32_t& vBindingPoint) {
     auto fbos = GetBackBufferAttachments(&maxBuffers);
     if (fbos) {
         uint32_t m_PreviewBufferId = vBindingPoint;
-        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        m_PreviewBufferId = ez::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -430,7 +430,7 @@ vk::DescriptorImageInfo* FrameBuffer::GetBackDescriptorImageInfo(const uint32_t&
     auto fbos = GetBackBufferAttachments(&maxBuffers);
     if (fbos) {
         uint32_t m_PreviewBufferId = vBindingPoint;
-        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        m_PreviewBufferId = ez::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -469,7 +469,7 @@ DescriptorImageInfoVector* FrameBuffer::GetBackDescriptorImageInfos(fvec2Vector*
 
             for (size_t i = 0U; i < (size_t)maxBuffers; ++i) {
                 m_BackDescriptors[i] = fbos->at(i + offset).attachmentDescriptorInfo;
-                m_DescriptorSizes[i] = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
+                m_DescriptorSizes[i] = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y);
             }
 
             if (vOutSizes) {
@@ -486,7 +486,7 @@ bool FrameBuffer::UpdateMipMapping(const uint32_t& vBindingPoint) {
     auto fbos = GetBackBufferAttachments(&maxBuffers);
     if (fbos) {
         uint32_t m_PreviewBufferId = vBindingPoint;
-        m_PreviewBufferId = ct::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
+        m_PreviewBufferId = ez::clamp<uint32_t>(m_PreviewBufferId, 0U, maxBuffers - 1);
         GaiApi::VulkanFrameBufferAttachment* att = &fbos->at(m_PreviewBufferId);
         if (att->sampleCount != vk::SampleCountFlagBits::e1) {
             if (m_PreviewBufferId + maxBuffers < fbos->size()) {
@@ -504,11 +504,11 @@ bool FrameBuffer::UpdateMipMapping(const uint32_t& vBindingPoint) {
 //// PRIVATE / FRAMEBUFFER /////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize,
+bool FrameBuffer::CreateFrameBuffers(const ez::uvec2& vSize,
     const uint32_t& vCountColorBuffers,
     const bool& vUseDepth,
     const bool& vNeedToClear,
-    const ct::fvec4& vClearColor,
+    const ez::fvec4& vClearColor,
     const vk::Format& vFormat,
     const vk::SampleCountFlagBits& vSampleCount,
     const bool& vCreateRenderPass) {
@@ -521,13 +521,13 @@ bool FrameBuffer::CreateFrameBuffers(const ct::uvec2& vSize,
         countColorBuffers = m_CountBuffers;
 
     if (countColorBuffers > 0 && countColorBuffers <= 8) {
-        ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+        ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
         if (!size.emptyOR()) {
             m_CountBuffers = countColorBuffers;
-            m_OutputSize = ct::uvec3(size, 0);
+            m_OutputSize = ez::uvec3(size, 0);
             m_RenderArea = vk::Rect2D(vk::Offset2D(), vk::Extent2D(m_OutputSize.x, m_OutputSize.y));
             m_Viewport = vk::Viewport(0.0f, 0.0f, static_cast<float>(m_OutputSize.x), static_cast<float>(m_OutputSize.y), 0, 1.0f);
-            m_OutputRatio = ct::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
+            m_OutputRatio = ez::fvec2((float)m_OutputSize.x, (float)m_OutputSize.y).ratioXY<float>();
 
             m_FrontDescriptors.clear();
             m_FrontDescriptors.resize(m_CountBuffers);

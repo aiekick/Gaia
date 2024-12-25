@@ -20,7 +20,7 @@ limitations under the License.
 #include <Gaia/gaia.h>
 #include <glm/glm.hpp>
 
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 
 #include <Gaia/Gui/VulkanWindow.h>
 #include <Gaia/Core/VulkanSwapChain.h>
@@ -175,7 +175,7 @@ public:
     void Present();
     uint32_t getSwapchainFrameBuffers() const;
     bool justGainFocus();
-    ct::frect* getDisplayRect();
+    ez::fvec4* getDisplayRect();
 
     // reset
     void ResetCommandPools();

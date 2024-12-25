@@ -36,7 +36,7 @@ VulkanFrameBufferAttachment::~VulkanFrameBufferAttachment() {
 }
 
 bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore,
-    ct::uvec2 vSize,
+    ez::uvec2 vSize,
     vk::Format vFormat,
     uint32_t vMipLevelCount,
     bool vNeedToClear,
@@ -47,7 +47,7 @@ bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore
 
     bool res = false;
 
-    ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+    ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
         mipLevelCount = vMipLevelCount;
         width = size.x;
@@ -124,14 +124,14 @@ bool VulkanFrameBufferAttachment::InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore
 }
 
 bool VulkanFrameBufferAttachment::InitDepth(
-    GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount) {
+    GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount) {
     ZoneScoped;
 
     m_VulkanCore = vVulkanCore;
 
     bool res = false;
 
-    ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+    ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
         mipLevelCount = 1U;
         width = size.x;

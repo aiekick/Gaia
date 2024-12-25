@@ -17,7 +17,7 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <vulkan/vulkan.hpp>
 #include <Gaia/gaia.h>
 

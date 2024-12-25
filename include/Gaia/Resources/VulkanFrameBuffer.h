@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Resources/VulkanFrameBufferAttachment.h>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 
 namespace GaiApi {
 class VulkanCore;
@@ -50,13 +50,13 @@ public:
 
 public:
     bool Init(GaiApi::VulkanCoreWeak vVulkanCore,
-        ct::uvec2 vSize,
+        ez::uvec2 vSize,
         uint32_t vCount,
         vk::RenderPass& vRenderPass,
         bool vCreateRenderPass,
         bool vUseDepth = false,
         bool vNeedToClear = false,
-        ct::fvec4 vClearColor = 0.0f,
+        ez::fvec4 vClearColor = 0.0f,
         vk::Format vFormat = vk::Format::eR32G32B32A32Sfloat,
         vk::SampleCountFlagBits vSampleCount = vk::SampleCountFlagBits::e1);
     void Unit();

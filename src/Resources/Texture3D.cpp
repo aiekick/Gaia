@@ -18,7 +18,7 @@ limitations under the License.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <Gaia/Resources/Texture3D.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #ifdef PROFILER_INCLUDE
 #include <vulkan/vulkan.hpp>
@@ -34,7 +34,7 @@ using namespace GaiApi;
 ///// STATIC /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Texture3DPtr Texture3D::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec3 vSize, vk::Format vFormat) {
+Texture3DPtr Texture3D::CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec3 vSize, vk::Format vFormat) {
     ZoneScoped;
 
     if (vVulkanCore.expired())
@@ -62,7 +62,7 @@ Texture3D::~Texture3D() {
     Destroy();
 }
 
-bool Texture3D::InitEmptyTexture(const ct::uvec3& vSize, const vk::Format& vFormat) {
+bool Texture3D::InitEmptyTexture(const ez::uvec3& vSize, const vk::Format& vFormat) {
     ZoneScoped;
 
     auto corePtr = m_VulkanCore.lock();

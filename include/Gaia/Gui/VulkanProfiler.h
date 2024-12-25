@@ -27,8 +27,8 @@ limitations under the License.
 #include <functional>
 #include <unordered_map>
 
-#include <Gaia/gaia.h>
 #include <ImGuiPack.h>
+#include <Gaia/gaia.h>
 
 ///////////////////////////////////
 //// MACROS ///////////////////////

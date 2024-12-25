@@ -41,7 +41,7 @@
 #include <cctype>
 
 #include <Gaia/Shader/ResourceLimits.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 namespace glslang {
 const TBuiltInResource DefaultTBuiltInResource = {

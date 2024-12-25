@@ -21,7 +21,7 @@ VulkanComputeImageTarget::~VulkanComputeImageTarget() {
 
 bool VulkanComputeImageTarget::InitTarget2D(  //
     GaiApi::VulkanCoreWeak vVulkanCore,       //
-    ct::uvec2 vSize,                          //
+    ez::uvec2 vSize,                          //
     vk::Format vFormat,                       //
     uint32_t vMipLevelCount,                  //
     vk::SampleCountFlagBits vSampleCount) {
@@ -31,7 +31,7 @@ bool VulkanComputeImageTarget::InitTarget2D(  //
 
     m_VulkanCore = vVulkanCore;
 
-    ct::uvec2 size = ct::clamp(vSize, 1u, 8192u);
+    ez::uvec2 size = ez::clamp(vSize, 1u, 8192u);
     if (!size.emptyOR()) {
         mipLevelCount = vMipLevelCount;
         width = size.x;

@@ -3,7 +3,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Resources/VulkanRessource.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezLog.hpp>
 
 #include <string>
 #include <vector>

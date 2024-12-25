@@ -18,7 +18,7 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <string>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Core/VulkanCore.h>
 #include <Gaia/Resources/VulkanRessource.h>
@@ -36,8 +36,8 @@ public:
     static Texture2DPtr CreateFromFile(GaiApi::VulkanCoreWeak vVulkanCore, std::string vFilePathName, const uint32_t& vMaxHeight = 0U);
     static Texture2DPtr CreateFromMemory(
         GaiApi::VulkanCoreWeak vVulkanCore, uint8_t* buffer, const uint32_t& width, const uint32_t& height, const uint32_t& channels);
-    static Texture2DPtr CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat);
-    static Texture2DPtr CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat);
+    static Texture2DPtr CreateEmptyTexture(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat);
+    static Texture2DPtr CreateEmptyImage(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat);
 
 public:
     std::shared_ptr<VulkanImageObject> m_Texture2D = nullptr;
@@ -68,16 +68,16 @@ public:
         const uint32_t& channels,
         const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm,
         const uint32_t& vMipLevelCount = 1u);
-    bool LoadEmptyTexture(const ct::uvec2& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
-    bool LoadEmptyImage(const ct::uvec2& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
+    bool LoadEmptyTexture(const ez::uvec2& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
+    bool LoadEmptyImage(const ez::uvec2& vSize = 1, const vk::Format& vFormat = vk::Format::eR8G8B8A8Unorm);
     void Destroy();
 
-    bool SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
-    bool SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
+    bool SaveToPng(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize);
+    bool SaveToBmp(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize);
     bool SaveToJpg(
-        const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const int& vQualityFrom0To100, const ct::uvec2& vNewSize);
-    bool SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
-    bool SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ct::uvec2& vNewSize);
+        const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const int& vQualityFrom0To100, const ez::uvec2& vNewSize);
+    bool SaveToHdr(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize);
+    bool SaveToTga(const std::string& vFilePathName, const bool& vFlipY, const int& vSubSamplesCount, const ez::uvec2& vNewSize);
 
     bool UpdateMipMapping();
 };

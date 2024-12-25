@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#include <ctools/cTools.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezTools.hpp>
+#include <ezlibs/ezLog.hpp>
 #include <Gaia/Gui/ImGuiTexture.h>
 #include <Gaia/Gui/VulkanImGuiRenderer.h>
 #include <Gaia/Resources/VulkanComputeImageTarget.h>
@@ -141,7 +141,7 @@ void ImGuiTexture::DestroyDescriptor(VulkanImGuiRendererWeak vVulkanImGuiRendere
         }
     } else {
 #if _DEBUG
-        CTOOL_DEBUG_BREAK;
+        EZ_TOOLS_DEBUG_BREAK;
 #endif
     }
 }

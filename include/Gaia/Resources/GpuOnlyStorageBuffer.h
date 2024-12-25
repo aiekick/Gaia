@@ -18,8 +18,8 @@ limitations under the License.
 
 #include <vector>
 
-#include <ctools/cTools.h>
-#include <ctools/Logger.h>
+#include <ezlibs/ezTools.hpp>
+#include <ezlibs/ezLog.hpp>
 
 #include <Gaia/gaia.h>
 #include <Gaia/Core/VulkanCore.h>

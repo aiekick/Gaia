@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <vulkan/vulkan.hpp>
 #include <Gaia/Resources/VulkanRessource.h>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <Gaia/gaia.h>
 
 namespace GaiApi {
@@ -46,12 +46,12 @@ public:
 
 public:
     bool InitColor2D(GaiApi::VulkanCoreWeak vVulkanCore,
-        ct::uvec2 vSize,
+        ez::uvec2 vSize,
         vk::Format vFormat,
         uint32_t vMipLevelCount,
         bool vNeedToClear,
         vk::SampleCountFlagBits vSampleCount);
-    bool InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, ct::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount);
+    bool InitDepth(GaiApi::VulkanCoreWeak vVulkanCore, ez::uvec2 vSize, vk::Format vFormat, vk::SampleCountFlagBits vSampleCount);
     void Unit();
 
     bool UpdateMipMapping();

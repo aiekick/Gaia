@@ -18,7 +18,7 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <vulkan/vulkan.hpp>
-#include <ctools/cTools.h>
+#include <ezlibs/ezTools.hpp>
 #include <Gaia/gaia.h>
 
 struct GLFWwindow;
@@ -37,8 +37,8 @@ public:
     bool Init(const int& vWidth, const int& vHeight, const std::string& vName, const bool& vOffScreen, const bool& vDecorated = true);
     void Unit();
 
-    [[nodiscard]] ct::ivec2 getFrameBufferResolution() const;
-    [[nodiscard]] ct::ivec2 getWindowResolution() const;
+    [[nodiscard]] ez::ivec2 getFrameBufferResolution() const;
+    [[nodiscard]] ez::ivec2 getWindowResolution() const;
 
     bool IsMinimized();
 
