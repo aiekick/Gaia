@@ -1,9 +1,11 @@
 #pragma once
 #pragma warning(disable : 4251)
 
+#include <Gaia/gaia.h>
+
 namespace gaia {
 
-class iService {
+class GAIA_API iService {
 public:
     virtual bool init() = 0;
     virtual void unit() = 0;

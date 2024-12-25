@@ -18,9 +18,6 @@ limitations under the License.
 
 #include <Gaia/gaia.h>
 
-#include <ctools/cTools.h>
-
-#include <Gaia/Headers/LumoBackendDefs.h>
 #include <Gaia/Resources/VulkanFrameBuffer.h>
 #include <Gaia/Resources/VulkanComputeImageTarget.h>
 #include <Gaia/Buffer/ComputeBuffer.h>

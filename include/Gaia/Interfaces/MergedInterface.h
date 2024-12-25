@@ -18,9 +18,7 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <vector>
-#include <ctools/cTools.h>
 #include <Gaia/gaia.h>
-#include <Gaia/Headers/LumoBackendDefs.h>
 
 class GAIA_API MergedInterface {
 public:

@@ -17,23 +17,21 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <set>
-#include <string>
-#include <vector>
+#include <map>
+#include <memory>
 #include <Gaia/gaia.h>
-#include <Gaia/Utils/Mesh/VertexStruct.h>
-#include <Gaia/Resources/VulkanFrameBufferAttachment.h>
+#include <ImWidgets.h>
+#include <Gaia/Core/VulkanCore.h>
 
-class CameraInterface;
-class GAIA_API RendererInterface
+template<size_t size_of_array>
+class GAIA_API TexelBufferInputInterface
 {
-public:
-	std::string name;
-	bool canWeRender = false;
-	std::weak_ptr<RendererInterface> m_This;
+protected:
+	std::array<vk::Buffer, size_of_array> m_TexelBuffers;
+	std::array<vk::BufferView, size_of_array> m_TexelBufferViews;
+	std::array<ez::uvec2, size_of_array> m_TexelBufferViewsSize;
 
 public:
-	virtual void Render(vk::CommandBuffer* vCmdBufferPtr) = 0;
-	virtual std::vector<GaiApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t* vMaxBuffers) { return nullptr; }
-	virtual void UpdateShaders(const std::set<std::string>& vFiles, vk::RenderPass* vRenderPass) {}
+	virtual void SetTexelBuffer(const uint32_t& vBindingPoint, vk::Buffer* vTexelBuffer, ez::uvec2* vTexelBufferSize) = 0;
+	virtual void SetTexelBufferView(const uint32_t& vBindingPoint, vk::BufferView* vTexelBufferView, ez::uvec2* vTexelBufferSize) = 0;
 };

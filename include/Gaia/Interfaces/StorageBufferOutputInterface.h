@@ -17,23 +17,11 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <set>
-#include <string>
-#include <vector>
+#include <map>
 #include <Gaia/gaia.h>
-#include <Gaia/Utils/Mesh/VertexStruct.h>
-#include <Gaia/Resources/VulkanFrameBufferAttachment.h>
 
-class CameraInterface;
-class GAIA_API RendererInterface
+class GAIA_API StorageBufferOutputInterface
 {
 public:
-	std::string name;
-	bool canWeRender = false;
-	std::weak_ptr<RendererInterface> m_This;
-
-public:
-	virtual void Render(vk::CommandBuffer* vCmdBufferPtr) = 0;
-	virtual std::vector<GaiApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t* vMaxBuffers) { return nullptr; }
-	virtual void UpdateShaders(const std::set<std::string>& vFiles, vk::RenderPass* vRenderPass) {}
+	virtual vk::DescriptorBufferInfo* GetStorageBuffer(const uint32_t& vBindingPoint, uint32_t* vOutSize = nullptr) = 0;
 };

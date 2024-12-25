@@ -18,7 +18,6 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <Gaia/gaia.h>
-#include <Gaia/Headers/LumoBackendDefs.h>
 
 struct BaseNodeState;
 class GAIA_API TaskInterface {

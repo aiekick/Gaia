@@ -17,23 +17,12 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <set>
-#include <string>
-#include <vector>
 #include <Gaia/gaia.h>
-#include <Gaia/Utils/Mesh/VertexStruct.h>
-#include <Gaia/Resources/VulkanFrameBufferAttachment.h>
 
-class CameraInterface;
-class GAIA_API RendererInterface
+//todo : split the interface in one input interface and one output interface
+// can clarify some code who jsut need output and not input 
+class GAIA_API Texture3DOutputInterface
 {
 public:
-	std::string name;
-	bool canWeRender = false;
-	std::weak_ptr<RendererInterface> m_This;
-
-public:
-	virtual void Render(vk::CommandBuffer* vCmdBufferPtr) = 0;
-	virtual std::vector<GaiApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t* vMaxBuffers) { return nullptr; }
-	virtual void UpdateShaders(const std::set<std::string>& vFiles, vk::RenderPass* vRenderPass) {}
+    virtual vk::DescriptorImageInfo* GetDescriptorImage3DInfo(const uint32_t& vBindingPoint, ez::fvec3* vOutSize = nullptr) = 0;
 };

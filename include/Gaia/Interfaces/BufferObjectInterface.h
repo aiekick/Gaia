@@ -19,11 +19,9 @@ limitations under the License.
 
 #include <string>
 #include <memory>
-#include <ctools/cTools.h>
 #include <Gaia/gaia.h>
 #include <Gaia/Resources/VulkanRessource.h>
 #include <Gaia/gaia.h>
-#include <Gaia/Headers/LumoBackendDefs.h>
 
 class GAIA_API BufferObjectInterface {
 protected:

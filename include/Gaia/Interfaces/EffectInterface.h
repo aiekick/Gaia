@@ -16,8 +16,6 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <Gaia/Headers/LumoBackendDefs.h>
-
 class EffectInterface {
 protected:
     bool m_EffectEnabled = true;

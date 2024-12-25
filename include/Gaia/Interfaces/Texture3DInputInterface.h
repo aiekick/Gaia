@@ -17,23 +17,19 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <set>
-#include <string>
-#include <vector>
+#include <map>
+#include <memory>
 #include <Gaia/gaia.h>
-#include <Gaia/Utils/Mesh/VertexStruct.h>
-#include <Gaia/Resources/VulkanFrameBufferAttachment.h>
+#include <ImWidgets.h>
+#include <Gaia/Core/VulkanCore.h>
+#include <Gaia/Gui/ImGuiTexture.h>
 
-class CameraInterface;
-class GAIA_API RendererInterface
-{
-public:
-	std::string name;
-	bool canWeRender = false;
-	std::weak_ptr<RendererInterface> m_This;
+template <size_t size_of_array>
+class Texture3DInputInterface {
+protected:
+    std::array<vk::DescriptorImageInfo, size_of_array> m_Image3DInfos;
+    std::array<ez::fvec3, size_of_array> m_Image3DInfosSize;
 
 public:
-	virtual void Render(vk::CommandBuffer* vCmdBufferPtr) = 0;
-	virtual std::vector<GaiApi::VulkanFrameBufferAttachment>* GetBufferAttachments(uint32_t* vMaxBuffers) { return nullptr; }
-	virtual void UpdateShaders(const std::set<std::string>& vFiles, vk::RenderPass* vRenderPass) {}
+    virtual void SetTexture3D(const uint32_t& vBindingPoint, vk::DescriptorImageInfo* vImage3DInfo, ez::fvec3* vTextureSize) = 0;
 };

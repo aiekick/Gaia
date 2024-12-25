@@ -16,9 +16,9 @@ limitations under the License.
 #pragma once
 #pragma warning(disable : 4251)
 
-#include <Gaia/Headers/LumoBackendDefs.h>
+#include <Gaia/gaia.h>
 
-class MouseInterface {
+class GAIA_API MouseInterface {
 public:
     bool canUpdateMouse = false;
     bool buttonDown[3] = {false, false, false};

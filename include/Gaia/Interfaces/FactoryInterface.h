@@ -17,7 +17,6 @@ limitations under the License.
 #pragma warning(disable : 4251)
 
 #include <memory>
-#include <Gaia/Headers/LumoBackendDefs.h>
 
 template<typename T>
 class WeakThisInterface {
