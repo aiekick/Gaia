@@ -1,8 +1,6 @@
 #pragma once
 #pragma warning(disable : 4251)
 
-namespace gaia {
-
 template <typename T>
 class iSurface {
 protected:
@@ -13,5 +11,3 @@ public:
     virtual const T& getSize() const = 0;
     virtual bool resize(const T& vNewSize) = 0;
 };
-
-}  // namespace gaia
