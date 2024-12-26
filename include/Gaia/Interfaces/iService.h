@@ -3,7 +3,7 @@
 
 #include <Gaia/gaia.h>
 
-class GAIA_API iService {
+class iService {
 public:
     virtual bool init() = 0;
     virtual void unit() = 0;

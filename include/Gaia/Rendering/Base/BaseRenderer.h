@@ -137,7 +137,7 @@ public:  // contructor
     void SetMergedRendering(const bool& vMergedRendering);
 
     // render
-    virtual void RenderShaderPasses(vk::CommandBuffer* vCmdBufferPtr);
+    virtual void RenderShaderPasses(const char* vSectionLabel, vk::CommandBuffer* vCmdBufferPtr);
     void Render(const char* vSectionLabel = nullptr, vk::CommandBuffer* vCmdBufferPtr = nullptr);
 
     virtual void UpdateDescriptorsBeforeCommandBuffer();

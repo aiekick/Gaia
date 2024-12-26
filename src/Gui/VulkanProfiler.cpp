@@ -202,7 +202,7 @@ void vkProfQueryZone::ComputeElapsedTime() {
             auto tmp = sup;
             sup = inf;
             inf = tmp;
-            DEBUG_BREAK;
+            //DEBUG_BREAK;
         }
         m_AverageStartValue.AddValue(inf);
         m_AverageEndValue.AddValue(sup);

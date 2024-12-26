@@ -426,7 +426,8 @@ void BaseRenderer::NeedResizeByResizeEvent(ez::ivec2* vNewSize, const uint32_t* 
 //// PUBLIC / RENDER ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BaseRenderer::RenderShaderPasses(vk::CommandBuffer* vCmdBufferPtr) {
+void BaseRenderer::RenderShaderPasses(const char* vSectionLabel, vk::CommandBuffer* vCmdBufferPtr) {
+    m_SectionLabel = vSectionLabel;
     vkProfScopedPtrNoCmd(this, m_SectionLabel, "%s : Passes", m_SectionLabel);
     if (m_MergedRendering) {
         vCmdBufferPtr->setViewport(0, 1, &m_Viewport);
@@ -448,7 +449,7 @@ void BaseRenderer::Render(const char* vSectionLabel, vk::CommandBuffer* /*vCmdBu
         if (cmd) {
             vkProfScopedPtrNoCmd(this, m_SectionLabel, "%s : Render", m_SectionLabel);
             if (BeginRender(vSectionLabel)) {
-                RenderShaderPasses(cmd);
+                RenderShaderPasses(vSectionLabel, cmd);
                 EndRender();
             }
         }

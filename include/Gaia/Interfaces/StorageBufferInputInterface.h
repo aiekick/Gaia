@@ -25,7 +25,7 @@ limitations under the License.
 #include <Gaia/Core/VulkanCore.h>
 
 template<size_t size_of_array>
-class GAIA_API StorageBufferInputInterface
+class StorageBufferInputInterface
 {
 protected:
 	std::array<vk::DescriptorBufferInfo, size_of_array> m_StorageBuffers;

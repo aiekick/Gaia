@@ -544,6 +544,12 @@ vk::Rect2D VulkanSwapChain::getRenderArea() const {
     return m_RenderArea;
 }
 
+vk::RenderPass VulkanSwapChain::getRenderPass() const {
+    ZoneScoped;
+
+    return m_RenderPass;
+}
+
 uint32_t VulkanSwapChain::getSwapchainFrameBuffers() const {
     ZoneScoped;
 

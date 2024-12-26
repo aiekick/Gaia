@@ -114,6 +114,7 @@ public:  // get
     vk::SwapchainKHR getSwapchain() const;
     vk::Viewport getViewport() const;
     vk::Rect2D getRenderArea() const;
+    vk::RenderPass getRenderPass() const;
     uint32_t getSwapchainFrameBuffers() const;
     vk::SampleCountFlagBits getSwapchainFrameBufferSampleCount() const;
 

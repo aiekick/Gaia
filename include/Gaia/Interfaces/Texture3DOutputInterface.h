@@ -21,7 +21,7 @@ limitations under the License.
 
 //todo : split the interface in one input interface and one output interface
 // can clarify some code who jsut need output and not input 
-class GAIA_API Texture3DOutputInterface
+class Texture3DOutputInterface
 {
 public:
     virtual vk::DescriptorImageInfo* GetDescriptorImage3DInfo(const uint32_t& vBindingPoint, ez::fvec3* vOutSize = nullptr) = 0;

@@ -25,7 +25,7 @@ limitations under the License.
 #include <Gaia/Gui/ImGuiTexture.h>
 
 template<size_t size_of_array>
-class TextureCubeInputInterface : public TextureCubeInputFunctions
+class TextureCubeInputInterface 
 {
 protected:
 	std::array<vk::DescriptorImageInfo, size_of_array> m_ImageCubeInfos;

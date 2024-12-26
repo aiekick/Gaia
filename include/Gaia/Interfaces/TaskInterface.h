@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <Gaia/gaia.h>
 
-class GAIA_API TaskInterface {
+class TaskInterface {
 protected:
     // to compare to current frame
     // to know is the execution was already done
